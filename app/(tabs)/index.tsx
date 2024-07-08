@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, TextInput } from "react-native";
 import { useForm, Resolver } from "react-hook-form";
 import Constants from "expo-constants";
 import Button from "@components/Button";
+import { useUserList } from "@hooks/useUser";
 
 type FormValues = {
   user: string;
@@ -37,6 +38,10 @@ const Login = () => {
     console.log("data", data);
   };
 
+  const users = useUserList();
+
+  console.log("Users", users);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>User</Text>
@@ -45,7 +50,9 @@ const Login = () => {
         style={styles.input}
         onChangeText={(text) => setValue("user", text)}
       />
-      {errors.user && <Text style={{ color: "red" }}>{errors.user.message}</Text>}
+      {errors.user && (
+        <Text style={{ color: "red" }}>{errors.user.message}</Text>
+      )}
       <Text style={styles.label}>Password</Text>
       <TextInput
         {...register("password")}
@@ -53,7 +60,9 @@ const Login = () => {
         style={styles.input}
         onChangeText={(text) => setValue("password", text)}
       />
-      {errors.password && <Text style={{ color: "red" }}>{errors.password.message}</Text>}
+      {errors.password && (
+        <Text style={{ color: "red" }}>{errors.password.message}</Text>
+      )}
 
       <View style={styles.buttonContainer}>
         <Button onPress={handleSubmit(onSubmit)} />

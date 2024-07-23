@@ -1,8 +1,8 @@
 import { Text, View, StyleSheet } from "react-native";
-import { usePokemonList } from "@hooks/usePokemon";
+import { useUserList } from "@hooks/useUser";
 
 const Home = () => {
-  const { data } = usePokemonList();
+  const { data } = useUserList();
 
   return (
     <View style={styles.container}>
@@ -11,11 +11,15 @@ const Home = () => {
         <View className="flex-1 items-center justify-center bg-red-500">
           <Text className="text-md font-bold">Hello World</Text>
         </View>
-        <Text style={styles.subtitle}>This is the Details page of your app.</Text>
+        <Text style={styles.subtitle}>
+          This is the Details page of your app.
+        </Text>
         <View>
-          {data?.results ? data.results.map((item) => (
-            <Text key={item.name}>{item.name}</Text>
-          )) : <Text>No data</Text>}
+          {data?.length ? (
+            data?.map((item) => <Text key={item.name}>{item.name}</Text>)
+          ) : (
+            <Text>No data</Text>
+          )}
         </View>
       </View>
     </View>

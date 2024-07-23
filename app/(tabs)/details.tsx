@@ -1,15 +1,22 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
+import { useUser } from "@hooks/useUser";
 
 const Details = () => {
   const { user } = useLocalSearchParams();
+
+  const { data } = useUser(user as string);
+
+  console.log("user", data);
 
   return (
     <View style={styles.container}>
       <View style={styles.main}>
         <Text style={styles.title}>Details</Text>
-        <Text style={styles.subtitle}>This is the Details page of your app.</Text>
-        <Text style={styles.user}>Use param: {user}</Text>
+        <Text style={styles.subtitle}>
+          This is the Details page of your app.
+        </Text>
+        <Text style={styles.user}>Use param: {data?.name}</Text>
         <Link href="/" style={styles.linkButton}>
           Go to Login
         </Link>

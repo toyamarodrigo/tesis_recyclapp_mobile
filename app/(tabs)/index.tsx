@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, TextInput } from "react-native";
 import { useForm, Resolver } from "react-hook-form";
 import Constants from "expo-constants";
 import Button from "@components/Button";
-import { useUserList } from "@hooks/useUser";
+import { useUser } from "@hooks/useUser";
 
 type FormValues = {
   user: string;
@@ -38,9 +38,9 @@ const Login = () => {
     console.log("data", data);
   };
 
-  const users = useUserList();
+  const { data } = useUser("cleuifi5a0000v8fc341gbc31");
 
-  console.log("Users", users);
+  console.log("user cleuifi5a0000v8fc341gbc31", data);
 
   return (
     <View style={styles.container}>

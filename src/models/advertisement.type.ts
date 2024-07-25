@@ -1,41 +1,50 @@
 import * as z from "zod";
+import { ImageSchema } from "./image.type";
+import { SubscriptionSchema } from "./subscription.type";
+import { UserSchema } from "./user.type";
 
-const AdvertisementSchema = z.object({
+export const AdvertisementSchema = z.object({
   id: z.string(),
-  durationStart: z.coerce.date(), //datetime
-  durationEnd: z.coerce.date(), //datetime
+  durationStart: z.coerce.date().optional(), //datetime
+  durationEnd: z.coerce.date().optional(), //datetime
   title: z.string(),
   text: z.string(),
   userId: z.string(),
   subscriptionId: z.string(),
   paymentCompleted: z.boolean(),
   isArchived: z.boolean(),
-  //   Image            Image?
+  subscription: SubscriptionSchema.pick({ id: true }),
+  user: UserSchema.pick({ id: true }),
+  Image: ImageSchema.optional(),
 });
 
 const AdvertisementPostSchema = z.object({
-  durationStart: z.coerce.date(), //datetime
-  durationEnd: z.coerce.date(), //datetime
+  durationStart: z.coerce.date().optional(), //datetime
+  durationEnd: z.coerce.date().optional(), //datetime
   title: z.string(),
   text: z.string(),
   userId: z.string(),
   subscriptionId: z.string(),
   paymentCompleted: z.boolean(),
   isArchived: z.boolean(),
-  //   Image            Image?
+  subscription: SubscriptionSchema.pick({ id: true }),
+  user: UserSchema.pick({ id: true }),
+  Image: ImageSchema.optional(),
 });
 
 const AdvertisementPutSchema = z.object({
   id: z.string(),
-  durationStart: z.coerce.date(), //datetime
-  durationEnd: z.coerce.date(), //datetime
+  durationStart: z.coerce.date().optional(), //datetime
+  durationEnd: z.coerce.date().optional(), //datetime
   title: z.string().optional(),
   text: z.string().optional(),
   userId: z.string().optional(),
   subscriptionId: z.string().optional(),
   paymentCompleted: z.boolean().optional(),
   isArchived: z.boolean().optional(),
-  //   Image            Image?
+  subscription: SubscriptionSchema.pick({ id: true }).optional(),
+  user: UserSchema.pick({ id: true }).optional(),
+  Image: ImageSchema.optional(),
 });
 
 export type Advertisement = z.infer<typeof AdvertisementSchema>;

@@ -24,12 +24,7 @@ const useAdvertisementById = (id: string) => {
     advertisementKeys.advertisement.detail(id)
   );
 
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return { data, error, isError, isLoading };
 };
 
 const useCreateAdvertisement = (advertisement: AdvertisementPost) => {
@@ -52,12 +47,7 @@ const useUpdateAdvertisement = (advertisement: AdvertisementPut) => {
     mutationKey: [advertisement],
   });
 
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
+  return { mutate, isPending, isError, error };
 };
 
 const useDeleteAdvertisement = (id: string) => {
@@ -66,18 +56,5 @@ const useDeleteAdvertisement = (id: string) => {
     mutationKey: [id],
   });
 
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
-};
-
-export {
-  useAdvertisementList,
-  useAdvertisementById,
-  useCreateAdvertisement,
-  useDeleteAdvertisement,
-  useUpdateAdvertisement,
+  return { mutate, isPending, isError, error };
 };

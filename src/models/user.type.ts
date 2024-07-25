@@ -1,6 +1,14 @@
 import * as z from "zod";
+import { AddressSchema } from "./address.type";
+import { AdvertisementSchema } from "./advertisement.type";
+import { ChatMessageSchema } from "./chatMessage.type";
+import { PostSchema } from "./post.type";
+import { RatingSchema } from "./rating.type";
+import { UserStoreSchema } from "./userStore.type";
+import { UserCustomerSchema } from "./userCustomer.type";
+import { ImageSchema } from "./image.type";
 
-const UserSchema = z.object({
+export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   surname: z.string(),
@@ -11,15 +19,15 @@ const UserSchema = z.object({
   isArchived: z.boolean(),
   createDate: z.coerce.date(),
   userType: z.string(),
-  //   address             Address[]
-  //   Advertisement       Advertisement[]
-  //   ChatMessageReceived ChatMessage[]   @relation("chatReceiver")
-  //   ChatMessageSent     ChatMessage[]   @relation("chatSender")
-  //   Post                Post[]
-  //   Rating              Rating?
-  //   UserStore           UserStore?
-  //   UserCustomer        UserCustomer?
-  //   Image               Image?
+  address: z.array(AddressSchema),
+  Advertisement: z.array(AdvertisementSchema),
+  ChatMessageReceived: z.array(ChatMessageSchema),
+  ChatMessageSent: z.array(ChatMessageSchema),
+  Post: z.array(PostSchema),
+  Rating: RatingSchema.optional(),
+  UserStore: UserStoreSchema.optional(),
+  UserCustomer: UserCustomerSchema.optional(),
+  Image: ImageSchema.optional(),
 });
 
 const UserPostSchema = z.object({
@@ -32,24 +40,15 @@ const UserPostSchema = z.object({
   isArchived: z.boolean(),
   createDate: z.coerce.date(),
   userType: z.string(),
-  address: z
-    .object({
-      city: z.string(),
-      flat: z.string(),
-      street: z.string(),
-      latitude: z.number(),
-      longitude: z.number(),
-      state: z.string(),
-    })
-    .optional(),
-  //   Advertisement       Advertisement[]
-  //   ChatMessageReceived ChatMessage[]   @relation("chatReceiver")
-  //   ChatMessageSent     ChatMessage[]   @relation("chatSender")
-  //   Post                Post[]
-  //   Rating              Rating?
-  //   UserStore           UserStore?
-  //   UserCustomer        UserCustomer?
-  //   Image               Image?
+  address: z.array(AddressSchema),
+  Advertisement: z.array(AdvertisementSchema),
+  ChatMessageReceived: z.array(ChatMessageSchema),
+  ChatMessageSent: z.array(ChatMessageSchema),
+  Post: z.array(PostSchema),
+  Rating: RatingSchema.optional(),
+  UserStore: UserStoreSchema.optional(),
+  UserCustomer: UserCustomerSchema.optional(),
+  Image: ImageSchema.optional(),
 });
 
 const UserPutSchema = z.object({
@@ -63,24 +62,15 @@ const UserPutSchema = z.object({
   isArchived: z.boolean().optional(),
   createDate: z.coerce.date().optional(),
   userType: z.string().optional(),
-  address: z
-    .object({
-      city: z.string(),
-      flat: z.string(),
-      street: z.string(),
-      latitude: z.number(),
-      longitude: z.number(),
-      state: z.string(),
-    })
-    .optional(),
-  //   Advertisement       Advertisement[]
-  //   ChatMessageReceived ChatMessage[]   @relation("chatReceiver")
-  //   ChatMessageSent     ChatMessage[]   @relation("chatSender")
-  //   Post                Post[]
-  //   Rating              Rating?
-  //   UserStore           UserStore?
-  //   UserCustomer        UserCustomer?
-  //   Image               Image?
+  address: z.array(AddressSchema).optional(),
+  Advertisement: z.array(AdvertisementSchema).optional(),
+  ChatMessageReceived: z.array(ChatMessageSchema).optional(),
+  ChatMessageSent: z.array(ChatMessageSchema).optional(),
+  Post: z.array(PostSchema).optional(),
+  Rating: RatingSchema.optional(),
+  UserStore: UserStoreSchema.optional(),
+  UserCustomer: UserCustomerSchema.optional(),
+  Image: ImageSchema.optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

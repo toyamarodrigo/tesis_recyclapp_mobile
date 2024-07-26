@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import { useUserList } from "@hooks/useUser";
+import { colors } from "@constants/colors.constant";
 
 const Home = () => {
   const { data } = useUserList();
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 24,
+    backgroundColor: colors.gray[50],
   },
   main: {
     flex: 1,

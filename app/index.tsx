@@ -3,6 +3,7 @@ import { useForm, Resolver } from "react-hook-form";
 import Constants from "expo-constants";
 import Button from "@components/Button";
 import { useUser } from "@hooks/useUser";
+import { colors } from "@constants/colors.constant";
 
 type FormValues = {
   user: string;
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
     padding: 8,
-    backgroundColor: "#0e101c",
+    backgroundColor: colors.gray[50],
   },
   input: {
     backgroundColor: "white",

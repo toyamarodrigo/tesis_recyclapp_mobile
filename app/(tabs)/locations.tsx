@@ -1,8 +1,9 @@
 import Button from "@components/Button";
+import { colors } from "@constants/colors.constant";
 import { useAppStore } from "@stores/useAppStore";
 import { View, Text, StyleSheet } from "react-native";
 
-const Counter = () => {
+const Locations = () => {
   const increment = useAppStore((state) => state.increment);
   const decrement = useAppStore((state) => state.decrement);
   const count = useAppStore((state) => state.count);
@@ -10,8 +11,10 @@ const Counter = () => {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Text style={styles.title}>Counter</Text>
-        <Text style={styles.subtitle}>This is the Counter page of your app.</Text>
+        <Text style={styles.title}>Locations</Text>
+        <Text style={styles.subtitle}>
+          This is the Locations page of your app.
+        </Text>
         <View style={styles.countContainer}>
           <Button title="-" onPress={decrement} />
           <Text style={styles.subtitle}>{count}</Text>
@@ -27,6 +30,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 24,
+    backgroundColor: colors.gray[50],
   },
   main: {
     flex: 1,
@@ -52,4 +56,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Counter;
+export default Locations;

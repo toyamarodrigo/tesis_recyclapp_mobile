@@ -21,13 +21,14 @@
     "paths": {
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
+      "@constants/*": ["src/constants/*"],
       "@stores/*": ["src/stores/*"],
       "@utils/*": ["src/utils/*"],
       "@assets/*": ["assets/*"],
       "@api/*": ["src/api/*"],
       "@models/*": ["src/models/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@adapters/*": ["src/adapters/*"]
+      "@adapters/*": ["src/adapters/*"],
     }
   },
   "exclude": ["node_modules"],

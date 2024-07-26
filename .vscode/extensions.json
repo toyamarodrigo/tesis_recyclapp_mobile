@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    "steoates.autoimport", // Auto import
+    "aaron-bond.better-comments", // Better comments
+    "naumovs.color-highlight", // Color highlight
+    "usernamehw.errorlens", // Error lens
+    "dsznajder.es7-react-js-snippets", // ES7 React snippets
+    "msjsdiag.vscode-react-native", // React Native
+    "ms-vsliveshare.vsliveshare-pack", // Live share
+    "wayou.vscode-todo-highlight", // Todo highlight
+    "yoavbls.pretty-ts-errors", // Pretty TS Errors
+    "bradlc.vscode-tailwindcss", // Tailwind CSS
+    "dbaeumer.vscode-eslint", // ESLint
+    "esbenp.prettier-vscode", // Prettier code formatter
+    "christian-kohler.npm-intellisense", // Autocompletes npm modules in import statements
+    "eamodio.gitlens", // IDE Git information
+    "shardulm94.trailing-spaces", // Show trailing spaces
+    "Gruntfuggly.todo-tree", // Highlights TODO comments
+    "bierner.emojisense", // Emoji sense for markdown
+    "stkb.rewrap" // rewrap comments after n characters on one line
+  ]
+}

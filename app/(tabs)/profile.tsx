@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { useUser } from "@hooks/useUser";
+import { colors } from "@constants/colors.constant";
 
-const Details = () => {
+const Profile = () => {
   const { user } = useLocalSearchParams();
 
   const { data } = useUser(user as string);
@@ -12,9 +13,9 @@ const Details = () => {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Text style={styles.title}>Details</Text>
+        <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>
-          This is the Details page of your app.
+          This is the Profile page of your app.
         </Text>
         <Text style={styles.user}>Use param: {data?.name}</Text>
         <Link href="/" style={styles.linkButton}>
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 24,
+    backgroundColor: colors.gray[50],
   },
   main: {
     flex: 1,
@@ -57,4 +59,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Details;
+export default Profile;

@@ -50,6 +50,7 @@
     "@tanstack/eslint-plugin-query": "^5.32.1",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react": "~18.2.45",
+    "@types/react-native": "^0.73.0",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint-config-prettier": "^9.1.0",

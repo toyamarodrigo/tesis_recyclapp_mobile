@@ -36,9 +36,9 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="feed"
         options={{
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              color={colors.green[600]}
+              color={focused ? colors.green[600] : colors.gray[500]}
               name="timeline-text-outline"
               size={24}
             />
@@ -49,9 +49,9 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="wiki"
         options={{
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              color={colors.green[600]}
+              color={focused ? colors.green[600] : colors.gray[500]}
               name="bookshelf"
               size={24}
             />
@@ -62,9 +62,9 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              color={colors.green[600]}
+              color={focused ? colors.green[600] : colors.gray[500]}
               name="leaf-circle"
               size={36}
             />
@@ -75,9 +75,9 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="locations"
         options={{
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              color={colors.green[600]}
+              color={focused ? colors.green[600] : colors.gray[500]}
               name="map-marker-radius"
               size={24}
             />
@@ -88,9 +88,9 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="rewards"
         options={{
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
-              color={colors.green[600]}
+              color={focused ? colors.green[600] : colors.gray[500]}
               name="gift-outline"
               size={24}
             />

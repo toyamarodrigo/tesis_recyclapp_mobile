@@ -4,6 +4,7 @@ import Constants from "expo-constants";
 import Button from "@components/Button";
 import { useUser } from "@hooks/useUser";
 import { colors } from "@constants/colors.constant";
+import { useRouter } from "expo-router";
 
 type FormValues = {
   user: string;
@@ -39,6 +40,8 @@ const Login = () => {
     console.log("data", data);
   };
 
+  const router = useRouter()
+
   const { data } = useUser("cleuifi5a0000v8fc341gbc31");
 
   console.log("user cleuifi5a0000v8fc341gbc31", data);
@@ -67,6 +70,7 @@ const Login = () => {
 
       <View style={styles.buttonContainer}>
         <Button onPress={handleSubmit(onSubmit)} />
+        <Button onPress={() => router.push("/(tabs)")}/>
       </View>
     </View>
   );

@@ -93,9 +93,9 @@ const RootLayout = () => {
           name="(tabs)"
           options={{
             title: "",
+            headerShown: false,
           }}
         />
-        <Stack.Screen name="profile" />
       </Stack>
     </QueryClientProvider>
   );
@@ -107,13 +107,5 @@ const RootLayout = () => {
 //           borderTopColor: colors.gray[50],
 //           backgroundColor: colors.gray[100],
 //         },
-
-{
-  /* <MaterialCommunityIcons
-        color={colors.green[600]}
-        name="face-man"
-        size={36}
-      /> */
-}
 
 export default RootLayout;

@@ -1,15 +1,14 @@
 import { Link, Tabs } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "@constants/colors.constant";
-import { View } from "react-native";
 
 const RouterTabs = () => {
   return (
     <Tabs
-      initialRouteName="home"
+      initialRouteName="index"
       screenOptions={() => ({
         headerRight: () => (
-          <Link asChild href={"/profile"}>
+          <Link asChild href={"/profile"} onPress={() => console.log("boton")}>
             <MaterialCommunityIcons.Button
               color={colors.green[600]}
               name="face-man"
@@ -20,7 +19,7 @@ const RouterTabs = () => {
           </Link>
         ),
         tabBarStyle: {
-          height: `10%`,
+          height: "10%",
           borderTopColor: colors.gray[50],
           backgroundColor: colors.gray[100],
         },
@@ -50,10 +49,6 @@ const RouterTabs = () => {
       <Tabs.Screen
         name="wiki"
         options={{
-          href: {
-            pathname: "/wiki",
-            params: { user: "cleuifi5a0000v8fc341gbc31" },
-          },
           tabBarIcon: () => (
             <MaterialCommunityIcons
               color={colors.green[600]}
@@ -65,7 +60,7 @@ const RouterTabs = () => {
         }}
       />
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           tabBarIcon: () => (
             <MaterialCommunityIcons
@@ -103,16 +98,16 @@ const RouterTabs = () => {
           tabBarLabel: "",
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="profile"
         options={{
           tabBarIcon: () => (
-            <View style={{ width: 0, height: 0, opacity: 0 }}></View>
+            <View style={{ width: 0, height: 0, opacity: 0 }}/>
           ),
           title: "",
           tabBarStyle: { display: "none" },
         }}
-      />
+      /> */}
     </Tabs>
   );
 };

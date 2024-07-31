@@ -30,7 +30,7 @@ const RouterTabs = () => {
           borderBottomColor: colors.gray[50],
           backgroundColor: colors.gray[100],
         },
-        tabBarActiveBackgroundColor: colors.gray[50],
+        tabBarActiveBackgroundColor: colors.gray[100],
       })}
     >
       <Tabs.Screen

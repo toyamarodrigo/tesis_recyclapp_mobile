@@ -1934,8 +1934,10 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.2"
     eslint-plugin-react-native: "npm:^4.1.0"
     expo: "npm:51.0.24"
+    expo-asset: "npm:^10.0.10"
     expo-constants: "npm:~16.0.2"
     expo-font: "npm:~12.0.9"
+    expo-image: "npm:~1.12.13"
     expo-linking: "npm:~6.3.1"
     expo-router: "npm:~3.5.20"
     expo-splash-screen: "npm:~0.27.5"
@@ -5525,7 +5527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-asset@npm:~10.0.10":
+"expo-asset@npm:^10.0.10, expo-asset@npm:~10.0.10":
   version: 10.0.10
   resolution: "expo-asset@npm:10.0.10"
   dependencies:
@@ -5574,6 +5576,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/9c7b63b3a3ee89bfcdbc1704451019b956b451208f0eca3bb1e57b53dd5dcdfb4d080d423583b92f864889a2a5d7624985c0e5103c54b36b8daf813471696b41
+  languageName: node
+  linkType: hard
+
+"expo-image@npm:~1.12.13":
+  version: 1.12.13
+  resolution: "expo-image@npm:1.12.13"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/8ca3844419ace3c37e75db89a7a1b955b3d82ebd1a4987ca7f80d25f89ed910bb5ba3d96756bcf7fe6b90ca070c14fc6a49b5bf0f5a8cea40dc2b4d135f59960
   languageName: node
   linkType: hard
 

@@ -4,6 +4,7 @@ import { useUser } from "@hooks/useUser";
 import { colors } from "@constants/colors.constant";
 import { Image } from "expo-image";
 import { useAssets } from "expo-asset";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Profile = () => {
   const { user } = useLocalSearchParams();
@@ -31,30 +32,64 @@ const Profile = () => {
         }
          */}
         <View style={{ flex: 1 }}>
+          A
           <Image
             source={
               "https://media.airedesantafe.com.ar/p/cef46f680e54ca2de6aa212dc19fe326/adjuntos/268/imagenes/002/132/0002132396/1200x675/smart/guillermo-francella-tiene-coronavirus.png"
             }
-            style={{ flex: 1, width: "100%", backgroundColor: "red" }}
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "10%",
+              backgroundColor: "red",
+            }}
           />
         </View>
         <Text style={styles.user}>@usuario{data?.name}</Text>
-        <Link href="/personal-info" style={styles.linkButton}>
+        <Link href="/profile/personal-info" style={styles.linkButton}>
+          <MaterialCommunityIcons
+            name="human-greeting-variant"
+            size={20}
+            onPress={() => console.log("boton")}
+            style={styles.linkIcon}
+          />
           Datos personales
         </Link>
-        <Link href="/" style={styles.linkButton}>
+        <Link href="/profile/address" style={styles.linkButton}>
+          <MaterialCommunityIcons
+            name="map-marker-radius"
+            size={20}
+            onPress={() => console.log("boton")}
+            style={styles.linkIcon}
+          />
           Mis direcciones
         </Link>
-        <Link href="/" style={styles.linkButton}>
+        <Link href="/profile/notifications" style={styles.linkButton}>
+          <MaterialCommunityIcons
+            name="bell-ring"
+            size={20}
+            onPress={() => console.log("boton")}
+            style={styles.linkIcon}
+          />
           Notificaciones
         </Link>
-        <Link href="/" style={styles.linkButton}>
+        {/* PERFIL TIENNODA */}
+        <Link href="/profile/benefits" style={styles.linkButton}>
+          <MaterialCommunityIcons
+            name="tag-multiple"
+            size={20}
+            onPress={() => console.log("boton")}
+            style={styles.linkIcon}
+          />
           Mis beneficios
         </Link>
-        <Link href="/" style={styles.linkButton}>
-          Mis cobros
-        </Link>
-        <Link href="/" style={styles.linkButton}>
+        <Link href="/profile/change-password" style={styles.linkButton}>
+          <MaterialCommunityIcons
+            name="lock"
+            size={20}
+            onPress={() => console.log("boton")}
+            style={styles.linkIcon}
+          />
           Cambiar contraseña
         </Link>
       </View>
@@ -90,8 +125,13 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     fontSize: 14,
-    color: "#1B95E0",
+    color: colors.gray[600],
     marginTop: 16,
+    fontWeight: "600",
+  },
+  linkIcon: {
+    marginRight: 10,
+    color: colors.gray[600],
   },
 });
 

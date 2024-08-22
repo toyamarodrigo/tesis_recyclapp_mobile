@@ -40,7 +40,7 @@ const Login = () => {
     console.log("data", data);
   };
 
-  const router = useRouter()
+  const router = useRouter();
 
   const { data } = useUser("cleuifi5a0000v8fc341gbc31");
 
@@ -70,7 +70,7 @@ const Login = () => {
 
       <View style={styles.buttonContainer}>
         <Button onPress={handleSubmit(onSubmit)} />
-        <Button onPress={() => router.push("/(tabs)")}/>
+        <Button onPress={() => router.push("/(tabs)")} />
       </View>
     </View>
   );

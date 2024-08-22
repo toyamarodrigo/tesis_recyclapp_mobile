@@ -1,7 +1,9 @@
 import { colors } from "@constants/colors.constant";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
+import { Pressable } from "react-native";
 
 export default function ProfileLayout() {
+  const router = useRouter();
   return (
     <Stack
       screenOptions={{
@@ -10,9 +12,18 @@ export default function ProfileLayout() {
           fontWeight: "bold",
           fontSize: 20,
         },
+        headerBackButtonMenuEnabled: true,
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Mi perfil" }} />
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Mi perfil",
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()}>TUKI</Pressable>
+          ),
+        }}
+      />
     </Stack>
   );
 }

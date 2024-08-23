@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
   label: {
     color: "white",
     margin: 20,
-    marginLeft: 0,
   },
   buttonContainer: {
     paddingVertical: 16,

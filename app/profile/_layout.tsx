@@ -13,6 +13,9 @@ export default function ProfileLayout() {
           fontSize: 20,
         },
         headerBackButtonMenuEnabled: true,
+        headerStyle: {
+          backgroundColor: colors.gray[100],
+        },
       }}
     >
       <Stack.Screen

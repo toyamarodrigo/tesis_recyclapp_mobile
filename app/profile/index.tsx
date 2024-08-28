@@ -6,12 +6,16 @@ import { Image } from "expo-image";
 import { useAssets } from "expo-asset";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from "@components/Button";
+import { useImageById } from "@hooks/useImage";
 
 const Profile = () => {
   const { user } = useLocalSearchParams();
 
-  const { data } = useUser(user as string);
-
+  const { data } = useUser("cleuipzo60002v8fcwfmyp9xk");
+  const { data: userImages, isLoading: userImageLoading } = useImageById(
+    "cleuipzo60002v8fcwfmyp9xk"
+  );
+  console.log(userImages);
   console.log("user", data);
 
   // const [assets] = useAssets([require("./assets/images/francella.PNG")]);
@@ -34,14 +38,18 @@ const Profile = () => {
          */}
         <View style={styles.centeredContainer}>
           <View style={styles.imageView}>
-            <Image
-              source={
-                "https://media.airedesantafe.com.ar/p/cef46f680e54ca2de6aa212dc19fe326/adjuntos/268/imagenes/002/132/0002132396/1200x675/smart/guillermo-francella-tiene-coronavirus.png"
-              }
-              style={styles.image}
-            />
+            {!userImageLoading && (
+              <Image
+                source={
+                  userImages && userImages.url != ""
+                    ? userImages.url
+                    : "https://res.cloudinary.com/dakunjike/image/upload/v1724803574/RecyclApp/Utils/userGeneric.png"
+                }
+                style={styles.image}
+              />
+            )}
           </View>
-          <Text style={styles.user}>@usuario{data?.name}</Text>
+          <Text style={styles.user}>@{data?.name}</Text>
         </View>
 
         <View style={styles.linkView}>

@@ -13,9 +13,9 @@ export const AddressSchema = z.object({
   longitude: z.number(),
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
-  isArchived: z.string(),
-  GreenPoint: GreenPointSchema.pick({ id: true }).optional(),
-  User: UserSchema.pick({ id: true }).optional(),
+  isArchived: z.boolean(), // Changed from z.string() to z.boolean()
+  GreenPoint: z.object({ id: z.string() }).optional(),
+  User: z.object({ id: z.string() }).optional(),
 });
 
 const AddressPostSchema = z.object({

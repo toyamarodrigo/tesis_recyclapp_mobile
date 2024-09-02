@@ -18,10 +18,10 @@ export const PostSchema = z.object({
   isReserved: z.boolean(),
   isArchived: z.boolean(),
   Chat: z.array(ChatSchema),
-  materialProduct: MaterialProductSchema.pick({ id: true }),
-  userPost: UserSchema.pick({ id: true }),
+  materialProduct: z.object({ id: z.boolean() }),
+  userPost: z.object({ id: z.boolean() }),
   PostCommitment: z.array(PostCommitmentSchema),
-  Image: ImageSchema.optional(),
+  // Image: ImageSchema.optional(),
 });
 
 const PostPostSchema = z.object({
@@ -36,8 +36,8 @@ const PostPostSchema = z.object({
   isReserved: z.boolean(),
   isArchived: z.boolean(),
   Chat: z.array(ChatSchema),
-  materialProduct: MaterialProductSchema.pick({ id: true }),
-  userPost: UserSchema.pick({ id: true }),
+  materialProduct: z.object({ id: z.boolean() }),
+  userPost: z.object({ id: z.boolean() }),
   PostCommitment: z.array(PostCommitmentSchema),
   Image: ImageSchema.optional(),
 });
@@ -53,8 +53,8 @@ const PostPutSchema = z.object({
   materialProductId: z.string().optional(),
   isActive: z.boolean().optional(),
   Chat: z.array(ChatSchema).optional(),
-  materialProduct: MaterialProductSchema.pick({ id: true }).optional(),
-  userPost: UserSchema.pick({ id: true }).optional(),
+  materialProduct: z.object({ id: z.boolean() }).optional(),
+  userPost: z.object({ id: z.boolean() }).optional(),
   PostCommitment: z.array(PostCommitmentSchema).optional(),
   Image: ImageSchema.optional(),
 });

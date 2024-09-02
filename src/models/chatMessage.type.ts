@@ -10,9 +10,9 @@ export const ChatMessageSchema = z.object({
   receiverId: z.string(),
   chatId: z.string(),
   isArchived: z.boolean(),
-  chat: ChatSchema.pick({ id: true }),
-  receiver: UserSchema.pick({ id: true }),
-  sender: UserSchema.pick({ id: true }),
+  chat: z.object({ id: z.boolean() }),
+  receiver: z.object({ id: z.boolean() }),
+  sender: z.object({ id: z.boolean() }),
 });
 
 const ChatMessagePostSchema = z.object({
@@ -22,9 +22,9 @@ const ChatMessagePostSchema = z.object({
   receiverId: z.string(),
   chatId: z.string(),
   isArchived: z.boolean(),
-  chat: ChatSchema.pick({ id: true }),
-  receiver: UserSchema.pick({ id: true }),
-  sender: UserSchema.pick({ id: true }),
+  chat: z.object({ id: z.boolean() }),
+  receiver: z.object({ id: z.boolean() }),
+  sender: z.object({ id: z.boolean() }),
 });
 
 const ChatMessagePutSchema = z.object({
@@ -36,8 +36,8 @@ const ChatMessagePutSchema = z.object({
   chatId: z.string().optional(),
   isArchived: z.boolean().optional(),
   chat: ChatSchema.pick({ id: true }).optional(),
-  receiver: UserSchema.pick({ id: true }).optional(),
-  sender: UserSchema.pick({ id: true }).optional(),
+  receiver: z.object({ id: z.boolean() }).optional(),
+  sender: z.object({ id: z.boolean() }).optional(),
 });
 
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;

@@ -13,9 +13,9 @@ export const AdvertisementSchema = z.object({
   subscriptionId: z.string(),
   paymentCompleted: z.boolean(),
   isArchived: z.boolean(),
-  subscription: SubscriptionSchema.pick({ id: true }),
-  user: UserSchema.pick({ id: true }),
-  Image: ImageSchema.optional(),
+  subscription: z.object({ id: z.boolean() }).optional(),
+  user: z.object({ id: z.boolean() }),
+  // Image: ImageSchema.optional(),
 });
 
 const AdvertisementPostSchema = z.object({

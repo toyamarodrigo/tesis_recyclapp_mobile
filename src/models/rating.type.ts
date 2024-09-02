@@ -7,7 +7,7 @@ export const RatingSchema = z.object({
   value: z.number(),
   userId: z.string(),
   isArchived: z.boolean(),
-  user: UserSchema.pick({ id: true }),
+  user: z.object({ id: z.boolean() }),
 });
 
 const RatingPostSchema = z.object({
@@ -15,7 +15,7 @@ const RatingPostSchema = z.object({
   value: z.number(),
   userId: z.string(),
   isArchived: z.boolean(),
-  user: UserSchema.pick({ id: true }),
+  user: z.object({ id: z.boolean() }),
 });
 
 const RatingPutSchema = z.object({
@@ -24,7 +24,7 @@ const RatingPutSchema = z.object({
   value: z.number().optional(),
   userId: z.string().optional(),
   isArchived: z.boolean().optional(),
-  user: UserSchema.pick({ id: true }),
+  user: z.object({ id: z.boolean() }),
 });
 
 export type Rating = z.infer<typeof RatingSchema>;

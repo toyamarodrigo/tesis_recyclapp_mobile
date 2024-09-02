@@ -12,7 +12,7 @@ export const BenefitSchema = z.object({
   userStoreId: z.string(),
   isActive: z.boolean(),
   isArchived: z.boolean(),
-  userStore: UserStoreSchema.pick({ id: true }),
+  userStore: z.object({ id: z.boolean() }),
   userCustomerActive: z.array(UserCustomerSchema),
   userCustomerHistory: z.array(UserCustomerSchema),
 });
@@ -26,7 +26,7 @@ const BenefitPostSchema = z.object({
   userStoreId: z.string(),
   isActive: z.boolean(),
   isArchived: z.boolean(),
-  userStore: UserStoreSchema.pick({ id: true }),
+  userStore: z.object({ id: z.boolean() }),
   userCustomerActive: z.array(UserCustomerSchema),
   userCustomerHistory: z.array(UserCustomerSchema),
 });
@@ -41,7 +41,7 @@ const BenefitPutSchema = z.object({
   userStoreId: z.string().optional(),
   isActive: z.boolean().optional(),
   isArchived: z.boolean().optional(),
-  userStore: UserStoreSchema.pick({ id: true }).optional(),
+  userStore: z.object({ id: z.boolean() }).optional(),
   userCustomerActive: z.array(UserCustomerSchema).optional(),
   userCustomerHistory: z.array(UserCustomerSchema).optional(),
 });

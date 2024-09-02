@@ -7,7 +7,7 @@ export const UserCustomerSchema = z.object({
   pointsCurrent: z.number(),
   pointsTotal: z.number(),
   userId: z.string(),
-  User: UserSchema.pick({ id: true }),
+  User: z.object({ id: z.boolean() }),
   benefitsActive: z.array(BenefitSchema),
   benefitsHistory: z.array(BenefitSchema),
 });
@@ -16,7 +16,7 @@ const UserCustomerPostSchema = z.object({
   pointsCurrent: z.number(),
   pointsTotal: z.number(),
   userId: z.string(),
-  User: UserSchema.pick({ id: true }),
+  User: z.object({ id: z.boolean() }),
   benefitsActive: z.array(BenefitSchema),
   benefitsHistory: z.array(BenefitSchema),
 });
@@ -26,7 +26,7 @@ const UserCustomerPutSchema = z.object({
   pointsCurrent: z.number().optional(),
   pointsTotal: z.number().optional(),
   userId: z.string().optional(),
-  User: UserSchema.pick({ id: true }),
+  User: z.object({ id: z.boolean() }),
   benefitsActive: z.array(BenefitSchema),
   benefitsHistory: z.array(BenefitSchema),
 });

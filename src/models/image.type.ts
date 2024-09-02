@@ -17,7 +17,7 @@ export const ImageSchema = z.object({
   materialComponentId: z.string().optional(),
   postId: z.string().optional(),
   User: UserSchema.pick({ id: true }).optional(),
-  Advertisement: AdvertisementSchema.pick({ id: true }).optional(),
+  Advertisement: z.object({ id: z.boolean() }).optional(),
   Organic: OrganicSchema.pick({ id: true }).optional(),
   MaterialProduct: MaterialProductSchema.pick({ id: true }).optional(),
   MaterialComponent: MaterialComponentSchema.pick({ id: true }).optional(),

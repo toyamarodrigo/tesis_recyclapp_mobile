@@ -15,13 +15,13 @@ const useUserList = () => {
 };
 
 const useUser = (id: string) => {
-  const { data, isLoading, isError, error } = useQuery(
+  const { data, isPending, isError, error } = useQuery(
     userKeys.user.detail(id)
   );
 
   return {
     data,
-    isLoading,
+    isLoading: isPending,
     isError,
     error,
   };

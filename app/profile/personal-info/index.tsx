@@ -13,6 +13,8 @@ import {
   Title,
   Surface,
 } from "react-native-paper";
+import { useAppTheme } from "src/theme";
+import { useUserStore } from "@stores/useUserStore";
 
 type FormValues = {
   name: string;
@@ -74,8 +76,9 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function PersonalInfo() {
-  const { data } = useUser("cleuipzo60002v8fcwfmyp9xk");
+  const { user } = useUserStore();
   const [isEditable, setIsEditable] = useState<boolean>(false);
+  const theme = useAppTheme();
 
   const {
     control,
@@ -88,10 +91,10 @@ export default function PersonalInfo() {
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
-      name: data?.name ?? "",
-      surname: data?.surname ?? "",
-      mail: data?.mail ?? "",
-      phone: data?.phone ?? "",
+      name: user?.name ?? "",
+      surname: user?.surname ?? "",
+      mail: user?.mail ?? "",
+      phone: user?.phone ?? "",
     },
   });
 
@@ -120,7 +123,7 @@ export default function PersonalInfo() {
   return (
     <Surface style={{ flex: 1, padding: 24 }}>
       <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
-        <Title style={{ color: colors.green[500], marginBottom: 20 }}>
+        <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
           Datos personales
         </Title>
         <View style={{ flex: 1, width: "100%" }}>
@@ -234,7 +237,11 @@ export default function PersonalInfo() {
               >
                 Confirmar cambios
               </Button>
-              <Button mode="outlined" onPress={onCancel}>
+              <Button
+                mode="outlined"
+                onPress={onCancel}
+                textColor={theme.colors.error}
+              >
                 Cancelar
               </Button>
             </View>

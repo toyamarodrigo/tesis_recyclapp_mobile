@@ -1,192 +1,99 @@
-import { StyleSheet, Text, View } from "react-native";
-import { Link, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { View } from "react-native";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useUser } from "@hooks/useUser";
-import { colors } from "@constants/colors.constant";
 import { Image } from "expo-image";
-import { useAssets } from "expo-asset";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Button from "@components/Button";
 import { useImageById } from "@hooks/useImage";
+import { Button, Text, Avatar, List, Surface } from "react-native-paper";
+import { useAppTheme } from "src/theme";
 
 const Profile = () => {
   const { user } = useLocalSearchParams();
-
   const { data } = useUser("cleuipzo60002v8fcwfmyp9xk");
   const { data: userImages, isLoading: userImageLoading } = useImageById(
     "cleuipzo60002v8fcwfmyp9xk"
   );
-  console.log(userImages);
-  console.log("user", data);
+  const theme = useAppTheme();
 
-  // const [assets] = useAssets([require("./assets/images/francella.PNG")]);
+  const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        {/* {assets != undefined ? 
-        (<Image source={assets[0]} style={{ width: 50, height: 50 }} />)
-        : 
-        (
-          <MaterialCommunityIcons
-              color={colors.green[600]}
-              name="face-man"
-              size={36}
-              backgroundColor={colors.gray[100]}
-            />
-        )
-        }
-         */}
-        <View style={styles.centeredContainer}>
-          <View style={styles.imageView}>
-            {!userImageLoading && (
-              <Image
-                source={
-                  userImages && userImages.url != ""
+    <Surface style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          width: "100%",
+          marginTop: "10%",
+        }}
+      >
+        <View style={{ alignItems: "center", marginBottom: 20 }}>
+          {!userImageLoading && (
+            <Avatar.Image
+              size={100}
+              source={{
+                uri:
+                  userImages && userImages.url !== ""
                     ? userImages.url
-                    : "https://res.cloudinary.com/dakunjike/image/upload/v1724803574/RecyclApp/Utils/userGeneric.png"
-                }
-                style={styles.image}
-              />
-            )}
-          </View>
-          <Text style={styles.user}>@{data?.name}</Text>
+                    : "https://res.cloudinary.com/dakunjike/image/upload/v1724803574/RecyclApp/Utils/userGeneric.png",
+              }}
+            />
+          )}
+          <Text style={{ margin: 10 }}>@{data?.name}</Text>
         </View>
 
-        <View style={styles.linkView}>
-          <Link href="/profile/personal-info" style={styles.linkButton}>
-            <MaterialCommunityIcons
-              name="human-greeting-variant"
-              size={20}
-              style={styles.linkIcon}
-            />
-            Datos personales
-          </Link>
-          <Link href="/profile/address" style={styles.linkButton}>
-            <MaterialCommunityIcons
-              name="map-marker-radius"
-              size={20}
-              style={styles.linkIcon}
-            />
-            Mis direcciones
-          </Link>
-          <Link href="/profile/notifications" style={styles.linkButton}>
-            <MaterialCommunityIcons
-              name="bell-ring"
-              size={20}
-              style={styles.linkIcon}
-            />
-            Notificaciones
-          </Link>
-          {/* PERFIL TIENNODA */}
-          <Link href="/profile/benefits" style={styles.linkButton}>
-            <MaterialCommunityIcons
-              name="tag-multiple"
-              size={20}
-              style={styles.linkIcon}
-            />
-            Mis beneficios
-          </Link>
-          <Link href="/profile/change-password" style={styles.linkButton}>
-            <MaterialCommunityIcons
-              name="lock"
-              size={20}
-              style={styles.linkIcon}
-            />
-            Cambiar contraseña
-          </Link>{" "}
-        </View>
-        <View style={styles.actionsView}>
-          <Button
-            onPress={() => console.log("Cerrar sesión")}
-            title="Cerrar sesión"
-            colorText={colors.gray[500]}
+        <List.Section>
+          <List.Item
+            title="Datos personales"
+            left={() => <List.Icon icon="human-greeting-variant" />}
+            onPress={() => {
+              router.push("/profile/personal-info");
+            }}
           />
-
-          <Button
-            onPress={() => console.log("Eliminar cuenta")}
-            title="Eliminar cuenta"
-            colorText={colors.red[500]}
+          <List.Item
+            title="Mis direcciones"
+            left={() => <List.Icon icon="map-marker-radius" />}
+            onPress={() => {}}
           />
-        </View>
+          <List.Item
+            title="Notificaciones"
+            left={() => <List.Icon icon="bell-ring" />}
+            onPress={() => {}}
+          />
+          <List.Item
+            title="Mis beneficios"
+            left={() => <List.Icon icon="tag-multiple" />}
+            onPress={() => {}}
+          />
+          <List.Item
+            title="Cambiar contraseña"
+            left={() => <List.Icon icon="lock" />}
+            onPress={() => {
+              router.push("/profile/change-password");
+            }}
+          />
+        </List.Section>
       </View>
-    </View>
+      <View
+        style={{
+          position: "absolute",
+          bottom: "5%",
+          left: 0,
+          right: 0,
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <Button mode="text" onPress={() => console.log("Cerrar sesión")}>
+          Cerrar sesión
+        </Button>
+        <Button mode="text" onPress={() => console.log("Eliminar cuenta")}>
+          Eliminar cuenta
+        </Button>
+      </View>
+    </Surface>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: colors.gray[50],
-  },
-  main: {
-    flex: 1,
-    alignItems: "flex-start",
-    width: "100%",
-    marginHorizontal: "auto",
-    marginTop: "10%",
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
-  },
-  user: {
-    fontSize: 20,
-    color: colors.gray[500],
-    margin: 10,
-    textAlign: "center",
-  },
-  linkView: {
-    marginTop: "20%",
-    alignItems: "flex-start",
-  },
-  linkButton: {
-    fontSize: 14,
-    color: colors.gray[600],
-    marginTop: 16,
-    fontWeight: "600",
-  },
-  linkIcon: {
-    marginRight: 10,
-    color: colors.gray[600],
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    maxHeight: "20%",
-  },
-  imageView: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
-    width: "50%",
-    margin: 10,
-  },
-  image: {
-    resizeMode: "cover",
-    height: "100%",
-    width: "100%",
-    borderColor: colors.green[500],
-    borderWidth: 3,
-    borderRadius: 100,
-  },
-  actionsView: {
-    position: "absolute",
-    bottom: "5%",
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default Profile;

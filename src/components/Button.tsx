@@ -1,11 +1,13 @@
 import { colors } from "@constants/colors.constant";
 import { Text, StyleSheet, Pressable, PressableProps } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface ButtonProps extends PressableProps {
   onPress: () => void;
   title?: string;
   colorText?: string;
   colorBg?: string;
+  // icon?: MaterialCommunityIcons;
 }
 
 const Button = ({
@@ -44,4 +46,20 @@ const createStyles = (colorText: string, colorBg: string) =>
     },
   });
 
-export default Button;
+const ButtonIcon = ({
+  onPress,
+  title = "Button",
+  colorText = colors.gray[700],
+  colorBg = "none",
+  ...rest
+}: ButtonProps) => {
+  const styles = createStyles(colorText, colorBg);
+
+  return (
+    <Pressable style={styles.button} onPress={onPress} {...rest}>
+      <Text style={styles.text}>{title}</Text>
+    </Pressable>
+  );
+};
+
+export default { Button, ButtonIcon };

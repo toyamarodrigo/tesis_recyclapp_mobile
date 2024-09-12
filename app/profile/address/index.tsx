@@ -1,13 +1,8 @@
-import { View, StyleSheet } from "react-native";
-import {
-  Avatar,
-  Card,
-  IconButton,
-  Surface,
-  Title,
-  Button,
-} from "react-native-paper";
-import { theme, useAppTheme } from "src/theme";
+import CardProfile from "@components/CardProfile";
+import React from "react";
+import { View } from "react-native";
+import { Surface, Title, Button } from "react-native-paper";
+import { useAppTheme } from "src/theme";
 
 export default function Address() {
   const theme = useAppTheme();
@@ -20,8 +15,14 @@ export default function Address() {
         </Title>
         <View style={{ flex: 1, width: "100%" }}>
           <View style={{ marginBottom: 20 }}>
-            <AddressCard address={"Direcci asdas asd asd asdasd ads234234"} />
-            <AddressCard address={"Direcci asdas asd asd asdasd ads234234"} />
+            <CardProfile
+              title={"Direcci asdas asd asd asdasd ads234234"}
+              type={"dirección"}
+            />
+            <CardProfile
+              title={"Direcci asdas asd asd asdasd ads234234"}
+              type={"dirección"}
+            />
           </View>
           <Button
             mode="contained"
@@ -34,43 +35,3 @@ export default function Address() {
     </Surface>
   );
 }
-
-const AddressCard = ({ address }: { address: string }) => (
-  <Card.Title
-    title={address}
-    titleVariant="titleMedium"
-    style={styles.card}
-    right={(props) => (
-      <>
-        <IconButton
-          {...props}
-          icon="delete"
-          onPress={() => {
-            console.log("delete");
-          }}
-        />
-        <IconButton
-          {...props}
-          icon="pencil"
-          onPress={() => {
-            console.log("edit");
-          }}
-        />
-      </>
-    )}
-  />
-);
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 20,
-    borderRadius: 10,
-    shadowColor: theme.colors.surfaceVariant,
-    shadowOffset: {
-      height: 5,
-      width: 5,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 3,
-  },
-});

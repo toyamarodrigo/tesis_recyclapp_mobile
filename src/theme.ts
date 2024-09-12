@@ -48,6 +48,10 @@ export const theme = {
     // surfaceDisabled: "rgba(26, 28, 25, 0.12)",
     // onSurfaceDisabled: "rgba(26, 28, 25, 0.38)",
     // backdrop: "rgba(44, 50, 42, 0.4)",
+    green: "rgb(2, 110, 35)",
+    onGreen: "rgb(255, 255, 255)",
+    greenContainer: "rgb(154, 248, 155)",
+    onGreenContainer: "rgb(0, 33, 5)",
   },
 };
 

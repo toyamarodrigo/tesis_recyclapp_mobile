@@ -1,32 +1,34 @@
-import { colors } from "@constants/colors.constant";
 import { Stack, useRouter } from "expo-router";
-import { Pressable } from "react-native";
+
+const routes = [
+  { name: "index", title: "Mi perfil" },
+  { name: "personal-info/index", title: "Datos personales" },
+  { name: "address/index", title: "Mis direcciones" },
+  { name: "address/new/index" },
+  { name: "notifications/index", title: "Notificaciones" },
+  { name: "benefits/index", title: "Mis beneficios" },
+  { name: "benefits/new", title: "Nuevo beneficio" },
+  { name: "change-password/index", title: "Cambiar contraseña" },
+];
 
 export default function ProfileLayout() {
   const router = useRouter();
   return (
     <Stack
       screenOptions={{
-        headerTintColor: colors.blue[100],
         headerTitleStyle: {
           fontWeight: "bold",
           fontSize: 20,
         },
-        headerBackButtonMenuEnabled: true,
-        headerStyle: {
-          backgroundColor: colors.gray[100],
-        },
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Mi perfil",
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()}>TUKI</Pressable>
-          ),
-        }}
-      />
+      {routes.map((route) => (
+        <Stack.Screen
+          key={route.name}
+          name={route.name}
+          options={{ title: route.title }}
+        />
+      ))}
     </Stack>
   );
 }

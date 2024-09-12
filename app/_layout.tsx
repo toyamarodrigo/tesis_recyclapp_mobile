@@ -9,7 +9,7 @@ import * as Updates from "expo-updates";
 import { PaperProvider } from "react-native-paper";
 import { theme } from "src/theme";
 
-const client = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
@@ -25,7 +25,7 @@ const client = new QueryClient({
 });
 
 const RootLayout = () => {
-  useReactQueryDevTools(client);
+  useReactQueryDevTools(queryClient);
   const segments = useSegments();
   const isLogin = segments[segments.length - 1] === "(tabs)";
   const drawerTitle = isLogin
@@ -41,7 +41,7 @@ const RootLayout = () => {
   console.log("runTypeMessage", runTypeMessage);
 
   return (
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       <PaperProvider theme={theme}>
         <Stack
           screenOptions={{
@@ -55,17 +55,16 @@ const RootLayout = () => {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name="profile/index"
+            options={{
+              title: "Mi perfil",
+            }}
+          />
         </Stack>
       </PaperProvider>
     </QueryClientProvider>
   );
 };
-
-// headerShown: false,
-//         tabBarStyle: {
-//           height: `10%`,
-//           borderTopColor: colors.gray[50],
-//           backgroundColor: colors.gray[100],
-//         },
 
 export default RootLayout;

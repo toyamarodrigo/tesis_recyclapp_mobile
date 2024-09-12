@@ -1,7 +1,7 @@
-import { Text, View, StyleSheet, TextInput } from "react-native";
+import { View } from "react-native";
 import { useForm, Resolver } from "react-hook-form";
 import Constants from "expo-constants";
-import Button from "@components/Button";
+import { Button, TextInput, Text } from "react-native-paper";
 import { useUser } from "@hooks/useUser";
 import { colors } from "@constants/colors.constant";
 import { useRouter } from "expo-router";
@@ -47,56 +47,57 @@ const Login = () => {
   console.log("user cleuifi5a0000v8fc341gbc31", data);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>User</Text>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingTop: Constants.statusBarHeight,
+        padding: 16,
+      }}
+    >
       <TextInput
+        label="User"
         {...register("user")}
-        style={styles.input}
         onChangeText={(text) => setValue("user", text)}
+        mode="outlined"
+        error={!!errors.user}
+        style={{ width: "100%", marginBottom: 16 }}
       />
       {errors.user && (
-        <Text style={{ color: "red" }}>{errors.user.message}</Text>
+        <Text style={{ color: colors.red[500], marginBottom: 8 }}>
+          {errors.user.message}
+        </Text>
       )}
-      <Text style={styles.label}>Password</Text>
       <TextInput
+        label="Password"
         {...register("password")}
         secureTextEntry
-        style={styles.input}
         onChangeText={(text) => setValue("password", text)}
+        mode="outlined"
+        error={!!errors.password}
+        style={{ width: "100%", marginBottom: 16 }}
       />
       {errors.password && (
-        <Text style={{ color: "red" }}>{errors.password.message}</Text>
+        <Text style={{ color: colors.red[500], marginBottom: 8 }}>
+          {errors.password.message}
+        </Text>
       )}
 
-      <View style={styles.buttonContainer}>
-        <Button onPress={handleSubmit(onSubmit)} />
-        <Button onPress={() => router.push("/(tabs)")} />
+      <View style={{ width: "100%" }}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          style={{ marginBottom: 8 }}
+        >
+          Login
+        </Button>
+        <Button mode="outlined" onPress={() => router.push("/(tabs)")}>
+          Home
+        </Button>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  label: {
-    color: "white",
-    margin: 20,
-  },
-  buttonContainer: {
-    paddingVertical: 16,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    padding: 8,
-    backgroundColor: colors.gray[50],
-  },
-  input: {
-    backgroundColor: "white",
-    height: 40,
-    padding: 10,
-    borderRadius: 4,
-  },
-});
 
 export default Login;

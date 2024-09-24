@@ -1,8 +1,19 @@
 import { Link, Tabs } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors } from "@constants/colors.constant";
+import { useTheme } from "react-native-paper";
+
+const tabScreens = [
+  { name: "feed", icon: "timeline-text-outline" as const },
+  { name: "wiki", icon: "bookshelf" as const },
+  { name: "index", icon: "leaf-circle" as const, size: 36 },
+  { name: "locations", icon: "map-marker-radius" as const },
+  { name: "rewards", icon: "gift-outline" as const },
+];
 
 const RouterTabs = () => {
+  const theme = useTheme();
+
   return (
     <Tabs
       initialRouteName="index"
@@ -10,104 +21,47 @@ const RouterTabs = () => {
         headerRight: () => (
           <Link asChild href={"/profile"} onPress={() => console.log("boton")}>
             <MaterialCommunityIcons.Button
-              color={colors.green[600]}
+              color={theme.colors.primary}
               name="face-man"
               size={36}
               onPress={() => console.log("boton")}
-              backgroundColor={colors.gray[100]}
+              backgroundColor={theme.colors.background}
             />
           </Link>
         ),
         tabBarStyle: {
           height: "10%",
-          borderTopColor: colors.gray[50],
-          backgroundColor: colors.gray[100],
+          borderTopColor: theme.colors.surfaceVariant,
+          backgroundColor: theme.colors.background,
         },
         headerTitleStyle: {
           fontWeight: "600",
         },
         headerStyle: {
-          borderBottomColor: colors.gray[50],
-          backgroundColor: colors.gray[100],
+          borderBottomColor: theme.colors.surfaceVariant,
+          backgroundColor: theme.colors.background,
         },
-        tabBarActiveBackgroundColor: colors.gray[100],
+        tabBarActiveBackgroundColor: theme.colors.background,
       })}
     >
-      <Tabs.Screen
-        name="feed"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons
-              color={focused ? colors.green[600] : colors.gray[500]}
-              name="timeline-text-outline"
-              size={24}
-            />
-          ),
-          tabBarLabel: "",
-        }}
-      />
-      <Tabs.Screen
-        name="wiki"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons
-              color={focused ? colors.green[600] : colors.gray[500]}
-              name="bookshelf"
-              size={24}
-            />
-          ),
-          tabBarLabel: "",
-        }}
-      />
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons
-              color={focused ? colors.green[600] : colors.gray[500]}
-              name="leaf-circle"
-              size={36}
-            />
-          ),
-          tabBarLabel: "",
-        }}
-      />
-      <Tabs.Screen
-        name="locations"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons
-              color={focused ? colors.green[600] : colors.gray[500]}
-              name="map-marker-radius"
-              size={24}
-            />
-          ),
-          tabBarLabel: "",
-        }}
-      />
-      <Tabs.Screen
-        name="rewards"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons
-              color={focused ? colors.green[600] : colors.gray[500]}
-              name="gift-outline"
-              size={24}
-            />
-          ),
-          tabBarLabel: "",
-        }}
-      />
-      {/* <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarIcon: () => (
-            <View style={{ width: 0, height: 0, opacity: 0 }}/>
-          ),
-          title: "",
-          tabBarStyle: { display: "none" },
-        }}
-      /> */}
+      {tabScreens.map((screen) => (
+        <Tabs.Screen
+          key={screen.name}
+          name={screen.name}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                color={
+                  focused ? theme.colors.primary : theme.colors.onSurfaceVariant
+                }
+                name={screen.icon}
+                size={screen.size || 24}
+              />
+            ),
+            tabBarLabel: "",
+          }}
+        />
+      ))}
     </Tabs>
   );
 };

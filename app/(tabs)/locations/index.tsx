@@ -1,26 +1,50 @@
-import Button from "@components/Button";
 import { colors } from "@constants/colors.constant";
-import { useAppStore } from "@stores/useAppStore";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+
+const markers = [
+  {
+    latitude: -34.6037,
+    longitude: -58.3816,
+    title: "punto1",
+    description: "punto1",
+  },
+  {
+    latitude: -34.6137,
+    longitude: -58.3916,
+    title: "punto2",
+    description: "punto2",
+  },
+];
 
 const Locations = () => {
-  const increment = useAppStore((state) => state.increment);
-  const decrement = useAppStore((state) => state.decrement);
-  const count = useAppStore((state) => state.count);
-
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Locations</Text>
-        <Text style={styles.subtitle}>
-          This is the Locations page of your app.
-        </Text>
-        <View style={styles.countContainer}>
-          <Button title="-" onPress={decrement} />
-          <Text style={styles.subtitle}>{count}</Text>
-          <Button title="+" onPress={increment} />
-        </View>
-      </View>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: -34.6037,
+          longitude: -58.3816,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421
+        }}
+      >
+        {markers.map((marker) => (
+          <Marker
+            key={`${marker.latitude}-${marker.longitude}`}
+            coordinate={marker}
+            pinColor={colors.red[500]}
+            title="Reciclapp"
+            description="Reciclapp"
+          />
+        ))}
+        {/* <Marker
+          coordinate={{ latitude: -34.6037, longitude: -58.3816 }}
+          pinColor={colors.red[500]}
+          title="Reciclapp"
+          description="Reciclapp"
+        /> */}
+      </MapView>
     </View>
   );
 };
@@ -28,31 +52,10 @@ const Locations = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: colors.gray[50],
   },
-  main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
-  },
-  countContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    gap: 16,
-    marginTop: 16,
+  map: {
+    height: "100%",
+    width: "100%",
   },
 });
 

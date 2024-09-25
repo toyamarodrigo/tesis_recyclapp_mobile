@@ -74,7 +74,7 @@ export const greenPointApi = {
 
       throw new Error("Unknown error");
     }
-  },
+  }
 };
 
 // router.get("/greenPoints", greenPointController.getGreenPoints);

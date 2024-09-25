@@ -1,17 +1,28 @@
-import Button from "@components/Button";
 import { colors } from "@constants/colors.constant";
-import { useAppStore } from "@stores/useAppStore";
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { useCallback, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 const Rewards = () => {
+    // ref
+    const bottomSheetRef = useRef<BottomSheet>(null);
+
+    // callbacks
+    const handleSheetChanges = useCallback((index: number) => {
+      console.log('handleSheetChanges', index);
+    }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Rewards</Text>
-        <Text style={styles.subtitle}>
-          This is the Rewards page of your app.
-        </Text>
-      </View>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={['10%', '50%', '90%']}
+        onChange={handleSheetChanges}
+      >
+        <BottomSheetView>
+          <Text>Hello World</Text>
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 };

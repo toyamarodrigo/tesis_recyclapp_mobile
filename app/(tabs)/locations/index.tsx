@@ -1,5 +1,6 @@
 import { colors } from "@constants/colors.constant";
-import { View, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import greenpointjson from "@api/green-point.json";
 
@@ -12,7 +13,7 @@ const Locations = () => {
   }));
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <MapView
         style={styles.map}
         initialRegion={{
@@ -32,7 +33,7 @@ const Locations = () => {
           />
         ))}
       </MapView>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

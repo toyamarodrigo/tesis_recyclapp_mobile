@@ -2,6 +2,7 @@ import { colors } from "@constants/colors.constant";
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useCallback, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const Rewards = () => {
     // ref
@@ -12,7 +13,7 @@ const Rewards = () => {
       console.log('handleSheetChanges', index);
     }, []);
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <BottomSheet
         ref={bottomSheetRef}
         index={0}
@@ -23,7 +24,7 @@ const Rewards = () => {
           <Text>Hello World</Text>
         </BottomSheetView>
       </BottomSheet>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

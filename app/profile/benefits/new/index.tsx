@@ -14,6 +14,8 @@ import { Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useUserStore } from "@stores/useUserStore";
 import { useBenefitStore } from "@stores/useBenefit";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useState } from "react";
 
 const BenefitSchema = z.object({
   id: z.string(),
@@ -105,15 +107,35 @@ export default function NewBenefits() {
   const { userStore } = useUserStore();
   const { currentBenefit } = useBenefitStore();
   const router = useRouter();
-  function addThreeMonths(date: Date): Date {
-    const nuevaFecha = new Date(date); // Clonar la fecha original
-    nuevaFecha.setMonth(nuevaFecha.getMonth() + 3); // Sumar 3 meses
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  function addMonths(date: Date, months: number): Date {
+    const nuevaFecha = new Date(date);
+    nuevaFecha.setMonth(nuevaFecha.getMonth() + months);
     return nuevaFecha;
   }
+  const currentDate = new Date();
+  const newDate = addMonths(currentDate, 3);
+  const maxDate = addMonths(currentDate, 6);
 
-  const fechaOriginal = new Date("2024-01-15");
-  const nuevaFecha = addThreeMonths(fechaOriginal);
+  console.log(currentDate, newDate);
 
+  const onSubmit = async (data: any) => {
+    console.log("nuevo beneficio", data);
+  };
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date: Date) => {
+    setSelectedDate(date);
+    hideDatePicker();
+  };
   const {
     control,
     reset,
@@ -127,8 +149,8 @@ export default function NewBenefits() {
     defaultValues: {
       id: currentBenefit?.id ?? null,
       name: currentBenefit?.name ?? "",
-      type: currentBenefit?.type ?? BenefitTypeList[0],
-      endDate: currentBenefit?.endDate ?? nuevaFecha, // new Date().toISOString(),
+      type: BenefitTypeList[0],
+      endDate: currentBenefit?.endDate ?? newDate, // new Date().toISOString(),
       quantity: currentBenefit?.quantity ?? 1,
       pointsCost: currentBenefit?.pointsCost ?? 1,
       userStoreId: currentBenefit?.userStoreId ?? "1",
@@ -158,11 +180,50 @@ export default function NewBenefits() {
             />
           )}
         />
+
+        {errors.name && (
+          <Text style={{ color: "red" }}>{errors.name.message}</Text>
+        )}
+        <Controller
+          control={control}
+          name="endDate"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <>
+              <TextInput
+                label="Fecha"
+                onChangeText={(text) => {
+                  onChange(text); // Esto actualizará el valor en el control
+                }}
+                onBlur={onBlur}
+                value={
+                  value
+                    ? isNaN(new Date(value).getTime())
+                      ? ""
+                      : new Date(value).toISOString().split("T")[0]
+                    : ""
+                } // Solo la parte de la fecha
+                error={!!errors.endDate}
+                style={{ marginBottom: 20 }}
+                onFocus={showDatePicker}
+              />
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                date={selectedDate}
+                onConfirm={(date) => {
+                  onChange(date.toISOString()); // Actualiza el valor en el control
+                  handleConfirm(date); // Maneja la confirmación
+                }}
+                onCancel={hideDatePicker}
+              />
+            </>
+          )}
+        />
         <View style={{ gap: 15 }}>
           <Button
             mode="contained"
             // disabled={} //nombre?
-            onPress={() => console.log("crear nuevo beneficio")}
+            onPress={handleSubmit(onSubmit)}
           >
             Crear nuevo beneficio
           </Button>

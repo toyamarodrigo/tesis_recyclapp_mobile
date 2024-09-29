@@ -9,6 +9,7 @@ import {
   Button,
 } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
+import { useRouter } from "expo-router";
 
 export default function CardProfile({
   title,
@@ -17,6 +18,7 @@ export default function CardProfile({
   title: string;
   type: string;
 }) {
+  const router = useRouter();
   const [visible, setVisible] = React.useState(false);
   const theme = useAppTheme();
   const showModal = () => setVisible(true);
@@ -25,6 +27,11 @@ export default function CardProfile({
     console.log("Despedite de todo maquina " + type);
     //TODO verificar la eliminacion y recarga
     hideModal();
+  };
+  const handleEdit = () => {
+    if (type == "beneficio") {
+      router.push("/profile/benefits/new");
+    }
   };
   return (
     <>
@@ -101,7 +108,7 @@ export default function CardProfile({
               {...props}
               icon="pencil"
               onPress={() => {
-                console.log("edit");
+                handleEdit();
               }}
             />
           </>

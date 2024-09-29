@@ -15,6 +15,7 @@ import {
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
+import { useBenefitStore } from "@stores/useBenefit";
 
 type FormValues = {
   name: string;

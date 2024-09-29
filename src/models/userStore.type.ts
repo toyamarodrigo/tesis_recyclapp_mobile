@@ -11,8 +11,8 @@ export const UserStoreSchema = z.object({
   hasBenefits: z.boolean(),
   paymentCompleted: z.boolean(),
   subscriptionId: z.string(),
-  subscription: z.object({ id: z.boolean() }),
-  User: z.object({ id: z.boolean() }),
+  subscription: z.object({ id: z.string() }),
+  User: z.object({ id: z.string() }),
   Benefit: z.array(BenefitSchema),
 });
 
@@ -23,8 +23,8 @@ const UserStorePostSchema = z.object({
   hasBenefits: z.boolean(),
   paymentCompleted: z.boolean(),
   subscriptionId: z.string(),
-  subscription: z.object({ id: z.boolean() }),
-  User: z.object({ id: z.boolean() }),
+  subscription: z.object({ id: z.string() }),
+  User: z.object({ id: z.string() }),
   Benefit: z.array(BenefitSchema),
 });
 
@@ -36,8 +36,8 @@ const UserStorePutSchema = z.object({
   hasBenefits: z.boolean().optional(),
   paymentCompleted: z.boolean().optional(),
   subscriptionId: z.string().optional(),
-  subscription: z.object({ id: z.boolean() }).optional(),
-  User: z.object({ id: z.boolean() }).optional(),
+  subscription: z.object({ id: z.string() }).optional(),
+  User: z.object({ id: z.string() }).optional(),
   Benefit: z.array(BenefitSchema).optional(),
 });
 

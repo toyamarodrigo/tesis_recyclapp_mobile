@@ -1,9 +1,12 @@
 import { useUser } from "@hooks/useUser";
 import { User } from "@models/user.type";
+import { UserStore } from "@models/userStore.type";
 import { create } from "zustand";
+import { userStore } from "./eliminarEsto";
 
 type UserState = {
   user: User;
+  userStore: UserStore | null;
 };
 
 export const useUserStore = create<UserState>(() => ({
@@ -24,4 +27,5 @@ export const useUserStore = create<UserState>(() => ({
     ChatMessageReceived: [],
     ChatMessageSent: [],
   },
+  userStore: userStore[0],
 }));

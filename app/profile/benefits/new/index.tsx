@@ -12,6 +12,8 @@ import { theme } from "src/theme";
 import { useRouter } from "expo-router";
 import { Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
+import { useUserStore } from "@stores/useUserStore";
+import { useBenefitStore } from "@stores/useBenefit";
 
 const BenefitSchema = z.object({
   id: z.string(),
@@ -99,7 +101,9 @@ const resolver: Resolver<FormValues> = async (values) => {
   }
 };
 
-export default function NewBenefits({ currentId }: { currentId: string }) {
+export default function NewBenefits() {
+  const { userStore } = useUserStore();
+  const { currentBenefit } = useBenefitStore();
   const router = useRouter();
   function addThreeMonths(date: Date): Date {
     const nuevaFecha = new Date(date); // Clonar la fecha original
@@ -121,14 +125,14 @@ export default function NewBenefits({ currentId }: { currentId: string }) {
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
-      id: currentId ?? null,
-      name: "",
-      type: BenefitTypeList[0],
-      endDate: nuevaFecha, // new Date().toISOString(),
-      quantity: 1,
-      pointsCost: 1,
-      userStoreId: "1", // TODO de donde sale esto
-      isActive: true,
+      id: currentBenefit?.id ?? null,
+      name: currentBenefit?.name ?? "",
+      type: currentBenefit?.type ?? BenefitTypeList[0],
+      endDate: currentBenefit?.endDate ?? nuevaFecha, // new Date().toISOString(),
+      quantity: currentBenefit?.quantity ?? 1,
+      pointsCost: currentBenefit?.pointsCost ?? 1,
+      userStoreId: currentBenefit?.userStoreId ?? "1",
+      isActive: currentBenefit?.isActive ?? true,
     },
   });
 
@@ -137,7 +141,7 @@ export default function NewBenefits({ currentId }: { currentId: string }) {
       style={{ flex: 1, alignItems: "flex-start", padding: 24, width: "100%" }}
     >
       <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
-        Beneficio {currentId != "" ? "nuevo" : "nombrecito"}
+        Beneficio {currentBenefit ? currentBenefit.name : "nuevo"}
       </Title>
       <View style={{ flex: 1, width: "100%" }}>
         <Controller
@@ -150,7 +154,6 @@ export default function NewBenefits({ currentId }: { currentId: string }) {
               onBlur={onBlur}
               value={value}
               // error={!!errors.name}
-              // disabled={!isEditable}
               style={{ marginBottom: 20 }}
             />
           )}
@@ -158,7 +161,7 @@ export default function NewBenefits({ currentId }: { currentId: string }) {
         <View style={{ gap: 15 }}>
           <Button
             mode="contained"
-            // disabled={}
+            // disabled={} //nombre?
             onPress={() => console.log("crear nuevo beneficio")}
           >
             Crear nuevo beneficio

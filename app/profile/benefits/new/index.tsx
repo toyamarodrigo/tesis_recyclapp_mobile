@@ -1,21 +1,14 @@
-import { View } from "react-native";
-import {
-  Button,
-  Modal,
-  Portal,
-  Surface,
-  Title,
-  Text,
-  TextInput,
-} from "react-native-paper";
+import { ScrollView, View } from "react-native";
+import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
-import { useRouter } from "expo-router";
-import { Resolver, useForm, Controller } from "react-hook-form";
+import { Link, useRouter } from "expo-router";
+import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useUserStore } from "@stores/useUserStore";
 import { useBenefitStore } from "@stores/useBenefit";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const BenefitSchema = z.object({
   id: z.string(),
@@ -119,8 +112,9 @@ export default function NewBenefits() {
 
   console.log(currentDate, newDate);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("nuevo beneficio", data);
+    router.replace("/profile/benefits");
   };
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -159,82 +153,95 @@ export default function NewBenefits() {
   });
 
   return (
-    <View
-      style={{ flex: 1, alignItems: "flex-start", padding: 24, width: "100%" }}
-    >
-      <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
-        Beneficio {currentBenefit ? currentBenefit.name : "nuevo"}
-      </Title>
-      <View style={{ flex: 1, width: "100%" }}>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              label="Nombre"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              // error={!!errors.name}
-              style={{ marginBottom: 20 }}
-            />
-          )}
-        />
-
-        {errors.name && (
-          <Text style={{ color: "red" }}>{errors.name.message}</Text>
-        )}
-        <Controller
-          control={control}
-          name="endDate"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <TextInput
-                label="Fecha"
-                onChangeText={(text) => {
-                  onChange(text); // Esto actualizará el valor en el control
-                }}
-                onBlur={onBlur}
-                value={
-                  value
-                    ? isNaN(new Date(value).getTime())
-                      ? ""
-                      : new Date(value).toISOString().split("T")[0]
-                    : ""
-                } // Solo la parte de la fecha
-                error={!!errors.endDate}
-                style={{ marginBottom: 20 }}
-                onFocus={showDatePicker}
-              />
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                date={selectedDate}
-                onConfirm={(date) => {
-                  onChange(date.toISOString()); // Actualiza el valor en el control
-                  handleConfirm(date); // Maneja la confirmación
-                }}
-                onCancel={hideDatePicker}
-              />
-            </>
-          )}
-        />
-        <View style={{ gap: 15 }}>
-          <Button
-            mode="contained"
-            // disabled={} //nombre?
-            onPress={handleSubmit(onSubmit)}
-          >
-            Crear nuevo beneficio
-          </Button>
-          <Button
-            mode="contained-tonal"
-            onPress={() => router.push("/profile/benefits")}
-          >
-            Cancelar
-          </Button>
-        </View>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+        <Link href="/profile/benefits" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+        <Title style={{ color: theme.colors.primary }}>
+          Beneficio {currentBenefit ? currentBenefit.name : "nuevo"}
+        </Title>
       </View>
-    </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "flex-start",
+            padding: 24,
+            width: "100%",
+          }}
+        >
+          <View style={{ width: "100%" }}>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  label="Nombre"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  // error={!!errors.name}
+                  style={{ marginBottom: 20 }}
+                />
+              )}
+            />
+
+            {errors.name && (
+              <Text style={{ color: "red" }}>{errors.name.message}</Text>
+            )}
+            <Controller
+              control={control}
+              name="endDate"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Fragment>
+                  <TextInput
+                    label="Fecha"
+                    onChangeText={(text) => {
+                      onChange(text); // Esto actualizará el valor en el control
+                    }}
+                    onBlur={onBlur}
+                    value={
+                      value
+                        ? Number.isNaN(new Date(value).getTime())
+                          ? ""
+                          : new Date(value).toISOString().split("T")[0]
+                        : ""
+                    } // Solo la parte de la fecha
+                    error={!!errors.endDate}
+                    style={{ marginBottom: 20 }}
+                    onFocus={showDatePicker}
+                  />
+                  <DateTimePickerModal
+                    isVisible={isDatePickerVisible}
+                    mode="date"
+                    date={selectedDate}
+                    onConfirm={(date) => {
+                      onChange(date.toISOString()); // Actualiza el valor en el control
+                      handleConfirm(date); // Maneja la confirmación
+                    }}
+                    onCancel={hideDatePicker}
+                  />
+                </Fragment>
+              )}
+            />
+          </View>
+        </View>
+      </ScrollView>
+      <View style={{ padding: 16, gap: 15 }}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+        >
+          Crear nuevo beneficio
+        </Button>
+        <Button
+          mode="contained-tonal"
+          onPress={() => router.push("/profile/benefits")}
+        >
+          Cancelar
+        </Button>
+      </View>
+    </SafeAreaView>
   );
 }

@@ -1,21 +1,19 @@
-import { colors } from "@constants/colors.constant";
-import { View } from "react-native";
-import { useUser } from "@hooks/useUser";
-import { Resolver, useForm, Controller } from "react-hook-form";
-import { useWatch } from "react-hook-form";
+import React, { useState } from "react";
+import { View, ScrollView } from "react-native";
+import { type Resolver, useForm, Controller, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
 import {
   TextInput,
   Switch,
   Text,
   Button,
   Title,
-  Surface,
+  IconButton,
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
-import { useBenefitStore } from "@stores/useBenefit";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Link } from "expo-router";
 
 type FormValues = {
   name: string;
@@ -105,7 +103,7 @@ export default function PersonalInfo() {
     defaultValue: false,
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("data", data);
     setIsEditable(false);
   };
@@ -115,19 +113,23 @@ export default function PersonalInfo() {
     reset();
   };
 
-  const handleChangePhone = (text) => {
+  const handleChangePhone = (text: string) => {
     if (text.length > 9) return;
     const numericText = text.replace(/[^0-9]/g, "");
     setValue("phone", numericText);
   };
 
   return (
-    <Surface style={{ flex: 1, padding: 24 }}>
-      <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
-        <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
-          Datos personales
-        </Title>
-        <View style={{ flex: 1, width: "100%" }}>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+        <Link href="/profile" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+        <Title style={{ color: theme.colors.primary }}>Datos personales</Title>
+      </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <View style={{ width: "100%" }}>
+          {/* Name Input */}
           <Controller
             control={control}
             name="name"
@@ -144,9 +146,12 @@ export default function PersonalInfo() {
             )}
           />
           {errors.name && (
-            <Text style={{ color: "red" }}>{errors.name.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errors.name.message}
+            </Text>
           )}
 
+          {/* Surname Input */}
           <Controller
             control={control}
             name="surname"
@@ -163,9 +168,12 @@ export default function PersonalInfo() {
             )}
           />
           {errors.surname && (
-            <Text style={{ color: "red" }}>{errors.surname.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errors.surname.message}
+            </Text>
           )}
 
+          {/* Mail Input */}
           <Controller
             control={control}
             name="mail"
@@ -182,9 +190,12 @@ export default function PersonalInfo() {
             )}
           />
           {errors.mail && (
-            <Text style={{ color: "red" }}>{errors.mail.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errors.mail.message}
+            </Text>
           )}
 
+          {/* Phone Input */}
           <Controller
             control={control}
             name="phone"
@@ -205,9 +216,12 @@ export default function PersonalInfo() {
             )}
           />
           {errors.phone && (
-            <Text style={{ color: "red" }}>{errors.phone.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errors.phone.message}
+            </Text>
           )}
 
+          {/* Is Store Switch */}
           <View
             style={{
               flexDirection: "row",
@@ -228,7 +242,13 @@ export default function PersonalInfo() {
               )}
             />
           </View>
+        </View>
 
+        {/* Spacer to push the button to the bottom */}
+        <View style={{ flex: 1 }} />
+
+        {/* Button Section */}
+        <View style={{ marginTop: 20 }}>
           {isEditable ? (
             <View>
               <Button
@@ -252,7 +272,7 @@ export default function PersonalInfo() {
             </Button>
           )}
         </View>
-      </View>
-    </Surface>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

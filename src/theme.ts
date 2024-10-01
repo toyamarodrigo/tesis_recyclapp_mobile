@@ -1,6 +1,5 @@
 import {
   MD3LightTheme as DefaultTheme,
-  PaperProvider,
   useTheme,
 } from "react-native-paper";
 

@@ -1,8 +1,5 @@
-import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { GestureResponderEvent, Linking } from "react-native";
-import { Link, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { useSegments } from "expo-router";
-import { Drawer } from "expo-router/drawer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import * as Updates from "expo-updates";
@@ -56,9 +53,10 @@ const RootLayout = () => {
             }}
           />
           <Stack.Screen
-            name="profile/index"
+            name="profile"
             options={{
-              title: "Mi perfil",
+              title: "",
+              headerShown: false,
             }}
           />
         </Stack>

@@ -1,11 +1,12 @@
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { z } from "zod";
-import { Resolver, useForm, Controller } from "react-hook-form";
-import { TextInput, Button, Text, Title, Surface } from "react-native-paper";
-import { useRouter } from "expo-router";
+import { type Resolver, useForm, Controller } from "react-hook-form";
+import { TextInput, Button, Text, Title, IconButton } from "react-native-paper";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type FormValues = {
   currentPassword: string;
@@ -52,7 +53,7 @@ export default function ChangePassword() {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("data", data);
   };
 
@@ -62,84 +63,93 @@ export default function ChangePassword() {
   };
 
   return (
-    <Surface style={{ flex: 1, padding: 24 }}>
-      <View style={{ flex: 1, width: "100%" }}>
-        <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+        <Link href="/profile" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+        <Title style={{ color: theme.colors.primary }}>
           Cambiar contraseña
         </Title>
-        <View style={{ flex: 1, width: "100%" }}>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16 }}>Contraseña actual</Text>
-            <Controller
-              control={control}
-              name="currentPassword"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <PasswordInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-            {errors.currentPassword && (
-              <Text style={{ color: "red" }}>
-                {errors.currentPassword.message}
-              </Text>
-            )}
-          </View>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16 }}>Nueva contraseña</Text>
-            <Controller
-              control={control}
-              name="newPassword"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <PasswordInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-            {errors.newPassword && (
-              <Text style={{ color: "red" }}>{errors.newPassword.message}</Text>
-            )}
-          </View>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16 }}>Repetir nueva contraseña</Text>
-            <Controller
-              control={control}
-              name="repeatNewPassword"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <PasswordInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                />
-              )}
-            />
-            {errors.repeatNewPassword && (
-              <Text style={{ color: "red" }}>
-                {errors.repeatNewPassword.message}
-              </Text>
-            )}
-          </View>
-          <Button
-            mode="contained"
-            onPress={handleSubmit(onSubmit)}
-            style={{ marginBottom: 10 }}
-          >
-            Cambiar contraseña
-          </Button>
-          <Button
-            mode="outlined"
-            onPress={onCancel}
-            textColor={theme.colors.error}
-          >
-            Cancelar
-          </Button>
-        </View>
       </View>
-    </Surface>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <View style={{ flex: 1, width: "100%" }}>
+          <View style={{ flex: 1, width: "100%" }}>
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 16 }}>Contraseña actual</Text>
+              <Controller
+                control={control}
+                name="currentPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <PasswordInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.currentPassword && (
+                <Text style={{ color: "red" }}>
+                  {errors.currentPassword.message}
+                </Text>
+              )}
+            </View>
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 16 }}>Nueva contraseña</Text>
+              <Controller
+                control={control}
+                name="newPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <PasswordInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.newPassword && (
+                <Text style={{ color: "red" }}>
+                  {errors.newPassword.message}
+                </Text>
+              )}
+            </View>
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 16 }}>Repetir nueva contraseña</Text>
+              <Controller
+                control={control}
+                name="repeatNewPassword"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <PasswordInput
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.repeatNewPassword && (
+                <Text style={{ color: "red" }}>
+                  {errors.repeatNewPassword.message}
+                </Text>
+              )}
+            </View>
+            <Button
+              mode="contained"
+              onPress={handleSubmit(onSubmit)}
+              style={{ marginBottom: 10 }}
+            >
+              Cambiar contraseña
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={onCancel}
+              textColor={theme.colors.error}
+            >
+              Cancelar
+            </Button>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { useForm, Resolver } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import Constants from "expo-constants";
 import { Button, TextInput, Text } from "react-native-paper";
 import { useUser } from "@hooks/useUser";
@@ -36,7 +36,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({ resolver });
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("data", data);
   };
 

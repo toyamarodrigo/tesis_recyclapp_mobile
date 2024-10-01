@@ -1,37 +1,43 @@
 import CardProfile from "@components/CardProfile";
-import React from "react";
-import { View } from "react-native";
-import { Surface, Title, Button } from "react-native-paper";
+import { Link, useRouter } from "expo-router";
+import { ScrollView, View } from "react-native";
+import { Title, Button, IconButton } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "src/theme";
 
 export default function Address() {
   const theme = useAppTheme();
+  const router = useRouter();
 
   return (
-    <Surface style={{ flex: 1, padding: 24 }}>
-      <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
-        <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
-          Mis direcciones
-        </Title>
-        <View style={{ flex: 1, width: "100%" }}>
-          <View style={{ marginBottom: 20 }}>
-            <CardProfile
-              title={"Direcci asdas asd asd asdasd ads234234"}
-              type={"dirección"}
-            />
-            <CardProfile
-              title={"Direcci asdas asd asd asdasd ads234234"}
-              type={"dirección"}
-            />
-          </View>
-          <Button
-            mode="contained"
-            onPress={() => console.log("Nueva dirección")}
-          >
-            Nueva dirección
-          </Button>
-        </View>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+        <Link href="/profile" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+        <Title style={{ color: theme.colors.primary }}>Mis direcciones</Title>
       </View>
-    </Surface>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
+          <View style={{ flex: 1, width: "100%" }}>
+            <View style={{ marginBottom: 20 }}>
+              <CardProfile
+                title={"Direcci asdas asd asd asdasd ads234234"}
+                type={"dirección"}
+              />
+              <CardProfile
+                title={"Direcci asdas asd asd asdasd ads234234"}
+                type={"dirección"}
+              />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+      <View style={{ padding: 16 }}>
+        <Button mode="contained" onPress={() => router.push("/profile/address/new")}>
+          Nueva dirección
+        </Button>
+      </View>
+    </SafeAreaView>
   );
 }

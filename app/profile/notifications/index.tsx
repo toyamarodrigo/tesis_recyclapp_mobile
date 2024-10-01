@@ -1,14 +1,23 @@
-import { View, StyleSheet } from "react-native";
-import { Avatar, Card, Surface, Title } from "react-native-paper";
+import { Link } from "expo-router";
+import { View, StyleSheet, ScrollView } from "react-native";
+import { Avatar, Card, IconButton, Surface, Title } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 
 export default function Notifications() {
   return (
-    <Surface style={{ flex: 1, padding: 24 }}>
-      <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
-        <Title style={{ color: theme.colors.primary, marginBottom: 20 }}>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center"}}>
+        <Link href="/profile" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+        <Title style={{ color: theme.colors.primary }}>
           Notificaciones
         </Title>
+      </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
+
         <View style={{ flex: 1, width: "100%" }}>
           <View style={{ marginBottom: 20 }}>
             <NotificationCard
@@ -21,8 +30,9 @@ export default function Notifications() {
             />
           </View>
         </View>
-      </View>
-    </Surface>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

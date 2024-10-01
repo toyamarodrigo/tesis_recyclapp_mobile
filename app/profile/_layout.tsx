@@ -1,18 +1,17 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 
 const routes = [
-  { name: "index", title: "Mi perfil" },
-  { name: "personal-info/index", title: "Datos personales" },
+  { name: "index", title: "" },
+  { name: "personal-info/index", title: "" },
   { name: "address/index", title: "Mis direcciones" },
-  { name: "address/new/index" },
+  { name: "address/new", title: "" },
   { name: "notifications/index", title: "Notificaciones" },
   { name: "benefits/index", title: "Mis beneficios" },
-  { name: "benefits/new", title: "Nuevo beneficio" },
+  { name: "benefits/new", title: "" },
   { name: "change-password/index", title: "Cambiar contraseña" },
 ];
 
 export default function ProfileLayout() {
-  const router = useRouter();
   return (
     <Stack
       screenOptions={{
@@ -26,7 +25,10 @@ export default function ProfileLayout() {
         <Stack.Screen
           key={route.name}
           name={route.name}
-          options={{ title: route.title }}
+          options={{
+            title: route.title,
+            headerShown: false,
+          }}
         />
       ))}
     </Stack>

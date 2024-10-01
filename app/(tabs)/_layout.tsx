@@ -1,6 +1,5 @@
 import { Link, Tabs } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { colors } from "@constants/colors.constant";
 import { useTheme } from "react-native-paper";
 
 const tabScreens = [
@@ -16,7 +15,6 @@ const RouterTabs = () => {
 
   return (
     <Tabs
-      initialRouteName="index"
       screenOptions={() => ({
         headerRight: () => (
           <Link asChild href={"/profile"} onPress={() => console.log("boton")}>
@@ -49,6 +47,7 @@ const RouterTabs = () => {
           key={screen.name}
           name={screen.name}
           options={{
+            title: "",
             tabBarIcon: ({ focused }) => (
               <MaterialCommunityIcons
                 color={

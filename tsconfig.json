@@ -29,6 +29,7 @@
       "@models/*": ["src/models/*"],
       "@hooks/*": ["src/hooks/*"],
       "@adapters/*": ["src/adapters/*"],
+      "@features/*": ["src/features/*"]
     }
   },
   "exclude": ["node_modules"],

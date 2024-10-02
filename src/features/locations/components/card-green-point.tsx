@@ -1,21 +1,15 @@
+import type { TransformedGreenPoint } from "@api/api.greenPoint";
 import { colors } from "@constants/colors.constant";
 import type BottomSheet from "@gorhom/bottom-sheet";
 import type { RefObject } from "react";
-import { StyleSheet } from "react-native";
-import { Card, TouchableRipple } from "react-native-paper";
-
-type GreenPoint = {
-  latitude: number;
-  longitude: number;
-  title: string;
-  description: string;
-};
+import { StyleSheet, View } from "react-native";
+import { Card, TouchableRipple, Text, Chip } from "react-native-paper";
 
 type GreenPointProps = {
-  marker: GreenPoint;
-  centerMapOnMarker: (marker: GreenPoint) => void;
+  marker: TransformedGreenPoint;
+  centerMapOnMarker: (marker: TransformedGreenPoint) => void;
   bottomSheetRef: RefObject<BottomSheet>;
-  selectedMarker: GreenPoint | null;
+  selectedMarker: TransformedGreenPoint | null;
 };
 
 export const GreenPoint = ({
@@ -32,13 +26,29 @@ export const GreenPoint = ({
       }}
     >
       <Card style={styles.card}>
-        <Card.Title
-          title={marker.title}
-          subtitle={marker.description}
-          titleStyle={
-            selectedMarker === marker ? styles.selectedCardTitle : undefined
-          }
-        />
+        <Card.Content>
+          <Text
+            variant="titleMedium"
+            style={[
+              styles.title,
+              selectedMarker === marker && styles.selectedCardTitle,
+            ]}
+          >
+            {marker.title}
+          </Text>
+          <Text variant="bodyMedium" style={styles.description}>
+            {marker.description}
+          </Text>
+          <View style={styles.chipContainer}>
+            <Chip
+              icon="clock-outline"
+              style={styles.chip}
+              textStyle={styles.chipText}
+            >
+              {marker.availability}
+            </Chip>
+          </View>
+        </Card.Content>
       </Card>
     </TouchableRipple>
   );
@@ -47,9 +57,26 @@ export const GreenPoint = ({
 const styles = StyleSheet.create({
   card: {
     marginBottom: 8,
+    backgroundColor: colors.green[50],
+  },
+  title: {
+    fontWeight: "bold",
+    marginBottom: 4,
   },
   selectedCardTitle: {
     color: colors.green[500],
-    fontWeight: "bold",
+  },
+  description: {
+    marginBottom: 8,
+  },
+  chipContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  chip: {
+    backgroundColor: colors.green[100],
+  },
+  chipText: {
+    fontSize: 12,
   },
 });

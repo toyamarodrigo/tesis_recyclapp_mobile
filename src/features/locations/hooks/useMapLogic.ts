@@ -1,7 +1,9 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useState, useMemo, useRef, useCallback } from 'react';
+import { greenPointApi, type TransformedGreenPoint } from '@api/api.greenPoint';
 import type MapView from "react-native-maps";
 import { useUserLocation } from "@hooks/useUserLocation";
-import greenpointjson from "@api/green-point.json";
+import { useQuery } from '@tanstack/react-query';
+import type { FlashList } from "@shopify/flash-list";
 
 export type SortOrder = "asc" | "desc";
 
@@ -11,16 +13,10 @@ export const useMapLogic = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const greenPoints = useMemo(
-    () =>
-      greenpointjson.features.map((feature) => ({
-        latitude: feature.geometry.coordinates[1],
-        longitude: feature.geometry.coordinates[0],
-        title: feature.properties.nombre,
-        description: feature.properties.direccion,
-      })),
-    []
-  );
+  const { data: greenPoints = [], isPending, error } = useQuery({
+    queryKey: ['greenPoints'],
+    queryFn: greenPointApi.getGreenPoint,
+  });
 
   const filteredAndSortedGreenPoints = useMemo(() => {
     return [...greenPoints]
@@ -37,11 +33,9 @@ export const useMapLogic = () => {
   }, [greenPoints, sortOrder, searchQuery]);
 
   const mapRef = useRef<MapView>(null);
-  const [selectedMarker, setSelectedMarker] = useState<
-    (typeof greenPoints)[0] | null
-  >(null);
+  const [selectedMarker, setSelectedMarker] = useState<TransformedGreenPoint | null>(null);
 
-  const centerMapOnMarker = useCallback((marker: (typeof greenPoints)[0]) => {
+  const centerMapOnMarker = useCallback((marker: TransformedGreenPoint) => {
     setSelectedMarker(marker);
     mapRef.current?.animateToRegion(
       {
@@ -75,6 +69,18 @@ export const useMapLogic = () => {
     setSearchQuery(query);
   }, []);
 
+  const [showScrollTopButton, setShowScrollTopButton] = useState(false);
+
+  const flashListRef = useRef<FlashList<TransformedGreenPoint>>(null);
+
+  const scrollToTop = useCallback(() => {
+    flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
+
+  const handleScroll = useCallback((offset: number) => {
+    setShowScrollTopButton(offset > 100); // Show button when scrolled more than 100 pixels
+  }, []);
+
   return {
     mapRef,
     filteredAndSortedGreenPoints,
@@ -88,5 +94,11 @@ export const useMapLogic = () => {
     toggleSortOrder,
     searchQuery,
     handleSearch,
+    isPending,
+    error,
+    flashListRef,
+    scrollToTop,
+    showScrollTopButton,
+    handleScroll,
   };
 };

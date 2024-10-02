@@ -1,10 +1,23 @@
 import { colors } from "@constants/colors.constant";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { StyleSheet, View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  type NativeSyntheticEvent,
+  type NativeScrollEvent,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { Text, Button, Searchbar } from "react-native-paper";
+import {
+  Text,
+  Button,
+  Searchbar,
+  ActivityIndicator,
+  FAB,
+} from "react-native-paper";
 import { FlashList } from "@shopify/flash-list";
 import { useMapLogic } from "@features/locations/hooks/useMapLogic";
 import { GreenPoint } from "@features/locations/components/card-green-point";
@@ -25,6 +38,12 @@ const Locations = () => {
     searchQuery,
     handleSearch,
     userLocation,
+    isPending,
+    error,
+    flashListRef,
+    scrollToTop,
+    showScrollTopButton,
+    handleScroll,
   } = useMapLogic();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -43,11 +62,32 @@ const Locations = () => {
     Keyboard.dismiss();
   }, []);
 
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    handleScroll(offsetY);
+  };
+
   useEffect(() => {
     if (userLocation && locationPermission === PermissionStatus.GRANTED) {
       centerMapOnUserLocation();
     }
   }, [userLocation, locationPermission, centerMapOnUserLocation]);
+
+  if (isPending) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>Error loading green points: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -93,7 +133,11 @@ const Locations = () => {
             <View style={styles.bottomSheetHeader}>
               <Text style={styles.bottomSheetTitle}>Puntos Verdes</Text>
               <Button
-                icon={sortOrder === "asc" ? "sort-alphabetical-ascending" : "sort-alphabetical-descending"}
+                icon={
+                  sortOrder === "asc"
+                    ? "sort-alphabetical-ascending"
+                    : "sort-alphabetical-descending"
+                }
                 onPress={toggleSortOrder}
               >
                 {sortOrder === "asc" ? "A-Z" : "Z-A"}
@@ -107,6 +151,7 @@ const Locations = () => {
               onFocus={handleSearchBarFocus}
             />
             <FlashList
+              ref={flashListRef}
               data={filteredAndSortedGreenPoints}
               renderItem={({ item: marker }) => (
                 <View style={styles.greenPointContainer}>
@@ -121,10 +166,19 @@ const Locations = () => {
               estimatedItemSize={100}
               contentContainerStyle={styles.listContainer}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
+              onScroll={onScroll}
+              scrollEventThrottle={16}
             />
           </View>
         </TouchableWithoutFeedback>
       </BottomSheet>
+
+      <FAB
+        icon="chevron-up"
+        style={styles.fab}
+        onPress={scrollToTop}
+        visible={bottomSheetIndex === 1 && showScrollTopButton}
+      />
     </GestureHandlerRootView>
   );
 };
@@ -154,15 +208,26 @@ const styles = StyleSheet.create({
   },
   searchbar: {
     margin: 16,
+    backgroundColor: colors.gray[100],
   },
   listContainer: {
     padding: 16,
   },
   greenPointContainer: {
-    marginBottom: 8, // Add some bottom margin to each item
+    marginBottom: 8,
   },
   separator: {
-    height: 8, // Add a separator between items
+    height: 8,
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });
 

@@ -94,6 +94,7 @@ const Locations = () => {
       <MapView
         ref={mapRef}
         style={styles.map}
+        // TODO: Add Google API key
         initialRegion={{
           latitude: userLocation?.latitude || -34.6037,
           longitude: userLocation?.longitude || -58.3816,

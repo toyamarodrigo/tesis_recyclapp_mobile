@@ -1,61 +1,71 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Dimensions, Modal, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Dimensions, Modal, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Card, Text, Button } from "react-native-paper";
 import Carousel, { type ICarouselInstance } from "react-native-reanimated-carousel";
 import { colors } from "@constants/colors.constant";
-// Remove the Pagination import
-
-// Mock data for ads with real image examples
-const ads = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b",
-    description: "¡Reciclá tus plásticos y salvá el océano!",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09",
-    description: "Aprendé a hacer compost en casa",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1604187351574-c75ca79f5807",
-    description: "Unite a nuestro programa de reciclaje comunitario",
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1528190336454-13cd56b45b5a",
-    description: "Reducí tu huella de carbono con estos consejos",
-  },
-];
-
-// Mock data for news with real image examples
-const news = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9",
-    title: "Nuevo Centro de Reciclaje Abre sus Puertas",
-    description:
-      "Un centro de reciclaje de última generación ha abierto en la ciudad, aumentando la capacidad de reciclaje en un 50%.",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1585058558534-57f2270ff7e4",
-    title: "Taller de Compostaje este Fin de Semana",
-    description:
-      "Aprendé los conceptos básicos del compostaje en nuestro taller gratuito este sábado.",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1610800082176-dcd0a2c609d5",
-    title: "La Ciudad Prohíbe los Plásticos de Un Solo Uso",
-    description:
-      "A partir del próximo mes, los plásticos de un solo uso estarán prohibidos en todos los restaurantes y cafeterías.",
-  },
-];
+import { useQuery } from '@tanstack/react-query';
 
 const { width: screenWidth } = Dimensions.get("window");
 
+// Mock data
+const mockAds = [
+  {
+    id: 1,
+    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09",
+    description: "Aprendé a hacer compost en casa y reducí tus residuos",
+  },
+  {
+    id: 2,
+    image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b",
+    description: "Reciclá tus plásticos. ¡Juntos podemos salvar los océanos!",
+  },
+  {
+    id: 3,
+    image: "https://images.unsplash.com/photo-1618477388954-7852f32655ec",
+    description: "Descubrí los beneficios de la energía solar para tu hogar",
+  },
+  {
+    id: 4,
+    image: "https://images.unsplash.com/photo-1507560461415-95081537e5b5",
+    description: "Participá en nuestra campaña de limpieza de playas",
+  },
+];
+
+const mockNews = [
+  {
+    id: 1,
+    image: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce",
+    title: "Nueva Planta de Reciclaje en Buenos Aires",
+    description: "La ciudad inaugura una planta de reciclaje de última generación que procesará 200 toneladas de residuos diariamente.",
+  },
+  {
+    id: 2,
+    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7",
+    title: "Ley de Energías Renovables Aprobada",
+    description: "El Congreso aprobó una ley que incentiva el uso de energías renovables en todo el país.",
+  },
+  {
+    id: 3,
+    image: "https://images.unsplash.com/photo-1610392734074-02f696fd30fc",
+    title: "Éxito en la Reforestación de la Selva Misionera",
+    description: "Un proyecto de reforestación en Misiones logra plantar más de 1 millón de árboles nativos en dos años.",
+  },
+];
+
+// Fetch functions using axios (simulated with mock data)
+const fetchAds = async () => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return mockAds;
+};
+
+const fetchNews = async () => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return mockNews;
+};
+
+// Component code remains the same
 const AdCard = ({ item }) => (
   <Card style={styles.adCard}>
     <View style={styles.cardContent}>
@@ -83,19 +93,22 @@ const NewsCard = ({ item, onPress }) => (
 );
 
 const Home = () => {
-  const [selectedNews, setSelectedNews] = useState<{
-    id: number;
-    image: string;
-    title: string;
-    description: string;
-  } | null>(null);
+  const [selectedNews, setSelectedNews] = useState<(typeof mockNews)[0] | null>(null);
   const adsRef = React.useRef<ICarouselInstance>(null);
   const newsRef = React.useRef<ICarouselInstance>(null);
-  // Add these state variables
   const [adsIndex, setAdsIndex] = useState(0);
   const [newsIndex, setNewsIndex] = useState(0);
 
-  const scrollToIndex = (carouselRef, index) => {
+  const { data: ads, isPending: adsPending } = useQuery({
+    queryKey: ['ads'],
+    queryFn: fetchAds
+  });
+  const { data: news, isPending: newsPending } = useQuery({
+    queryKey: ['news'],
+    queryFn: fetchNews
+  });
+
+  const scrollToIndex = (carouselRef: React.RefObject<ICarouselInstance>, index: number) => {
     carouselRef.current?.scrollTo({ index, animated: true });
   };
 
@@ -103,57 +116,75 @@ const Home = () => {
     <View style={styles.container}>
       <View style={styles.carouselContainer}>
         <Text style={styles.carouselTitle}>Consejos Ecológicos</Text>
-        <Carousel
-          ref={adsRef}
-          loop
-          autoPlay
-          autoPlayInterval={5000}
-          data={ads}
-          renderItem={({ item }) => <AdCard item={item} />}
-          width={screenWidth}
-          height={250}
-          mode="parallax"
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          modeConfig={{
-            parallaxScrollingScale: 0.9,
-            parallaxScrollingOffset: 50,
-          }}
-          // Add this prop
-          onProgressChange={(_, absoluteProgress) =>
-            setAdsIndex(Math.round(absoluteProgress))
-          }
-        />
-        <Pagination 
-          length={ads.length} 
-          activeIndex={adsIndex} 
-          onPress={(index) => scrollToIndex(adsRef, index)}
-        />
+        {adsPending ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={colors.green[600]} />
+          </View>
+        ) : ads ? (
+          <>
+            <Carousel
+              ref={adsRef}
+              loop
+              autoPlay
+              autoPlayInterval={5000}
+              data={ads}
+              renderItem={({ item }) => <AdCard item={item} />}
+              width={screenWidth}
+              height={250}
+              mode="parallax"
+              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              modeConfig={{
+                parallaxScrollingScale: 0.9,
+                parallaxScrollingOffset: 50,
+              }}
+              onProgressChange={(_, absoluteProgress) =>
+                setAdsIndex(Math.round(absoluteProgress))
+              }
+            />
+            <Pagination 
+              length={ads.length} 
+              activeIndex={adsIndex} 
+              onPress={(index) => scrollToIndex(adsRef, index)}
+            />
+          </>
+        ) : (
+          <Text style={styles.errorText}>No se pudieron cargar los consejos ecológicos.</Text>
+        )}
       </View>
 
       <View style={styles.carouselContainer}>
         <Text style={styles.carouselTitle}>Últimas Noticias</Text>
-        <Carousel
-          ref={newsRef}
-          data={news}
-          renderItem={({ item }) => (
-            <NewsCard item={item} onPress={setSelectedNews} />
-          )}
-          width={screenWidth}
-          mode="parallax"
-          modeConfig={{
-            parallaxScrollingScale: 0.9,
-            parallaxScrollingOffset: 50,
-          }}
-          // Add this prop
-          onProgressChange={(_, absoluteProgress) =>
-            setNewsIndex(Math.round(absoluteProgress))
-          }
-        />
-        <Pagination 
-          length={news.length} 
-          activeIndex={newsIndex} 
-          onPress={(index) => scrollToIndex(newsRef, index)}
-        />
+        {newsPending ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={colors.green[600]} />
+          </View>
+        ) : news ? (
+          <>
+            <Carousel
+              ref={newsRef}
+              data={news}
+              renderItem={({ item }) => (
+                <NewsCard item={item} onPress={setSelectedNews} />
+              )}
+              width={screenWidth}
+              mode="parallax"
+              modeConfig={{
+                parallaxScrollingScale: 0.9,
+                parallaxScrollingOffset: 50,
+              }}
+              onProgressChange={(_, absoluteProgress) =>
+                setNewsIndex(Math.round(absoluteProgress))
+              }
+            />
+            <Pagination 
+              length={news.length} 
+              activeIndex={newsIndex} 
+              onPress={(index) => scrollToIndex(newsRef, index)}
+            />
+          </>
+        ) : (
+          <Text style={styles.errorText}>No se pudieron cargar las noticias.</Text>
+        )}
       </View>
 
       <Modal
@@ -177,7 +208,7 @@ const Home = () => {
                 {selectedNews.description}
               </Text>
               <Text variant="bodyMedium" style={styles.modalExtraDescription}>
-                Esta es información adicional sobre la noticia. Aquí puedes agregar más detalles, contexto o cualquier otra información relevante que quieras compartir con los usuarios.
+                Esta noticia destaca la importancia de las iniciativas ambientales en Argentina. Seguiremos informando sobre los avances y desafíos en la protección del medio ambiente en nuestro país.
               </Text>
               <Button 
                 mode="contained" 
@@ -329,6 +360,21 @@ const styles = StyleSheet.create({
     color: colors.green[700],
     alignSelf: 'flex-start',
     paddingLeft: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderContainer: {
+    height: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: colors.red[500],
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

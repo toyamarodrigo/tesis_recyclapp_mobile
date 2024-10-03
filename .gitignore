@@ -15,6 +15,7 @@ web-build/
 
 yarn-error.log
 .yarn/
+.yarnrc.yml
 
 # OSX
 .DS_Store
@@ -76,3 +77,6 @@ buck-out/
 
 expo-env.d.ts
 # @end expo-cli
+
+ios/
+android/

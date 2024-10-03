@@ -44,15 +44,15 @@ export type GreenPoint = z.infer<typeof GreenPointSchema>;
 export type GreenPointPost = z.infer<typeof GreenPointPostSchema>;
 export type GreenPointPut = z.infer<typeof GreenPointPutSchema>;
 
-// model GreenPoint {
-//   id                String              @id @default(cuid())
-//   idpv              String              @unique @db.Citext
-//   name              String              @db.VarChar(50)
-//   availability      Json                @db.Json
-//   type              String              @db.VarChar(50)
-//   cooperative       String              @db.VarChar(200)
-//   hasOrganic        Boolean             @default(false)
-//   isArchived        Boolean             @default(false)
-//   Address           Address?
-//   materialComponent MaterialComponent[] @relation("GreenPointToMaterialComponent")
-// }
+export interface TransformedGreenPoint {
+  id: string;
+  latitude: number;
+  longitude: number;
+  title: string;
+  description: string;
+  materialComponent: string;
+  availability: string;
+  type: string;
+  cooperative: string;
+  commune: string;
+}

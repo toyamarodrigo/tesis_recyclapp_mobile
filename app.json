@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "tesis_recyclapp_mobile",
-    "slug": "tesis_recyclapp_mobile",
+    "slug": "tesisrecyclappmobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -23,11 +23,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.toyama.rodrigo.tesisrecyclappmobile"
     },
     "extra": {
       "eas": {
-        "projectId": "67c2667d-6254-41da-a5a7-ac8aec93cfd4"
+        "projectId": "57fb8058-86fd-435d-8e3d-29bb73a31aa1"
       }
     },
     "web": {
@@ -38,12 +39,18 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      ["expo-asset", {
-        "assets": ["./assets/images/francella.PNG"]
-      }]
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/images/francella.PNG"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "toyama.rodrigo"
   }
 }

@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import { Text } from "react-native-paper";
 import ReanimatedCarousel, {
@@ -8,6 +8,7 @@ import { colors } from "@constants/colors.constant";
 import { CarouselPagination } from "./carousel-pagination";
 
 const { width: screenWidth } = Dimensions.get("window");
+const { height: screenHeight } = Dimensions.get("window");
 
 interface CarouselProps<T> {
   title: string;
@@ -39,7 +40,7 @@ export function Carousel<T>({
           <ActivityIndicator size="large" color={colors.green[600]} />
         </View>
       ) : data ? (
-        <Fragment>
+        <View style={styles.carouselContainer}>
           <ReanimatedCarousel
             ref={carouselRef}
             loop
@@ -63,7 +64,7 @@ export function Carousel<T>({
             activeIndex={activeIndex}
             onPress={scrollToIndex}
           />
-        </Fragment>
+        </View>
       ) : (
         <Text style={styles.errorText}>No se pudieron cargar los datos.</Text>
       )}
@@ -85,6 +86,11 @@ const styles = StyleSheet.create({
     color: colors.green[700],
     alignSelf: "flex-start",
     paddingLeft: 20,
+  },
+  carouselContainer: {
+    position: "relative",
+    marginBottom: 20,
+    height: screenHeight * 0.3,
   },
   loaderContainer: {
     justifyContent: "center",

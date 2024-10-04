@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
@@ -240,24 +240,26 @@ const Home = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Carousel
-        title="Consejos Ecológicos"
-        data={ads}
-        renderItem={(item) => <AdCard item={item} onPress={handleAdPress} />}
-        isPending={adsPending}
-        height={250}
-      />
-      <Carousel
-        title="Últimas Noticias"
-        data={news}
-        renderItem={(item) => (
-          <NewsCard item={item} onPress={handleNewsPress} />
-        )}
-        isPending={newsPending}
-        height={250}
-      />
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <Carousel
+          title="Consejos Ecológicos"
+          data={ads}
+          renderItem={(item) => <AdCard item={item} onPress={handleAdPress} />}
+          isPending={adsPending}
+          height={250}
+        />
+        <Carousel
+          title="Últimas Noticias"
+          data={news}
+          renderItem={(item) => (
+            <NewsCard item={item} onPress={handleNewsPress} />
+          )}
+          isPending={newsPending}
+          height={250}
+        />
+      </View>
+    </ScrollView>
   );
 };
 

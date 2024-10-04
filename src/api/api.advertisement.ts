@@ -1,4 +1,4 @@
-import {
+import type {
   Advertisement,
   AdvertisementPost,
   AdvertisementPut,
@@ -7,7 +7,7 @@ import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
 export const advertisementApi = {
-  getAdvertisement: async () => {
+  getAdvertisements: async () => {
     const result = await axios.get<Advertisement[]>(
       `${backendApiConfig.baseURL}/advertisements`
     );

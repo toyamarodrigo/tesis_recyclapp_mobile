@@ -51,6 +51,28 @@ export type Advertisement = z.infer<typeof AdvertisementSchema>;
 export type AdvertisementPost = z.infer<typeof AdvertisementPostSchema>;
 export type AdvertisementPut = z.infer<typeof AdvertisementPutSchema>;
 
+export interface ExtraDescriptionElement {
+  type: "paragraph" | "list" | "image";
+  content: string | string[];
+}
+
+export interface Ad {
+  id: number;
+  image: string;
+  description: string;
+  extraDescription: ExtraDescriptionElement[];
+  source: string;
+}
+
+export interface News {
+  id: number;
+  image: string;
+  title: string;
+  description: string;
+  extraDescription: ExtraDescriptionElement[];
+  source: string;
+}
+
 // model Advertisement {
 //   id               String       @id @default(cuid())
 //   durationStart    DateTime?    @db.Date

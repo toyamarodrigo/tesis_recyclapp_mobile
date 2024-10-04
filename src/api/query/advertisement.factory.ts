@@ -5,7 +5,7 @@ export const advertisementKeys = createQueryKeyStore({
   advertisement: {
     list: () => ({
       queryKey: ["advertisementList"],
-      queryFn: () => advertisementApi.getAdvertisement(),
+      queryFn: () => advertisementApi.getAdvertisements(),
     }),
     detail: (id: string) => ({
       queryKey: [id],

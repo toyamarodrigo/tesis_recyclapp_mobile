@@ -100,7 +100,7 @@ export default function NewBenefits() {
   const { userStore } = useUserStore();
   const { currentBenefit } = useBenefitStore();
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+
   function addMonths(date: Date, months: number): Date {
     const nuevaFecha = new Date(date);
     nuevaFecha.setMonth(nuevaFecha.getMonth() + months);
@@ -108,7 +108,9 @@ export default function NewBenefits() {
   }
   const currentDate = new Date();
   const newDate = addMonths(currentDate, 3);
+  const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
+  const [selectedDate, setSelectedDate] = useState(newDate);
 
   console.log(currentDate, newDate);
 
@@ -144,7 +146,7 @@ export default function NewBenefits() {
       id: currentBenefit?.id ?? null,
       name: currentBenefit?.name ?? "",
       type: BenefitTypeList[0],
-      endDate: currentBenefit?.endDate ?? newDate, // new Date().toISOString(),
+      endDate: newDate, // new Date().toISOString(), //currentBenefit?.endDate ??
       quantity: currentBenefit?.quantity ?? 1,
       pointsCost: currentBenefit?.pointsCost ?? 1,
       userStoreId: currentBenefit?.userStoreId ?? "1",
@@ -205,9 +207,9 @@ export default function NewBenefits() {
                       value
                         ? Number.isNaN(new Date(value).getTime())
                           ? ""
-                          : new Date(value).toISOString().split("T")[0]
+                          : `${("0" + new Date(value).getDate()).slice(-2)}-${("0" + (new Date(value).getMonth() + 1)).slice(-2)}-${new Date(value).getFullYear()}`
                         : ""
-                    } // Solo la parte de la fecha
+                    } // Formato dd-mm-yyyy
                     error={!!errors.endDate}
                     style={{ marginBottom: 20 }}
                     onFocus={showDatePicker}
@@ -216,8 +218,11 @@ export default function NewBenefits() {
                     isVisible={isDatePickerVisible}
                     mode="date"
                     date={selectedDate}
+                minimumDate={minDate}
+                maximumDate={maxDate}
                     onConfirm={(date) => {
-                      onChange(date.toISOString()); // Actualiza el valor en el control
+                  const isoString = date.toISOString(); // Convierte la fecha a string ISO
+                      onChange(isoString); // Actualiza el valor en el control
                       handleConfirm(date); // Maneja la confirmación
                     }}
                     onCancel={hideDatePicker}

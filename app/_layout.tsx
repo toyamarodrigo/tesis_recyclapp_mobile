@@ -53,6 +53,14 @@ const RootLayout = () => {
             }}
           />
           <Stack.Screen
+            name="news-detail"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="ads-detail"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+          <Stack.Screen
             name="profile"
             options={{
               title: "",

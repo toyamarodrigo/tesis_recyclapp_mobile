@@ -10,6 +10,12 @@ export default function FeedLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="compost" options={{
+        title: "Compost",
+      }} />
+      <Stack.Screen name="how-to-recycle" options={{
+        title: "How to Recycle",
+      }} />
     </Stack>
   )
 }

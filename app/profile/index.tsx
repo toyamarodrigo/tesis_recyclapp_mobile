@@ -118,12 +118,21 @@ const Profile = () => {
             <Link href="/profile/personal-info" asChild>
               <List.Item
                 title="Datos personales"
+                left={() => (
+                  <List.Icon
+                    icon="account-circle"
+                    color={theme.colors.tertiary}
+                  />
+                )}
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
             <Link href="/profile/address" asChild>
               <List.Item
                 title="Mis direcciones"
+                left={() => (
+                  <List.Icon icon="map-marker" color={theme.colors.tertiary} />
+                )}
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>

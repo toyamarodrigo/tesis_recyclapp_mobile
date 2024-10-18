@@ -20,7 +20,7 @@ export const benefits: Benefit[] = [
 
 export const userStore: UserStore[] = [
   {
-    id: "aksjdkasjkasd",
+    id: "cm2c0xumf0000v8mgt430n5dz",
     displayName: "TremendaTienditta",
     userId: "cleuipzo60002v8fcwfmyp9xk",
     expiryDate: new Date("24-12-2024"),

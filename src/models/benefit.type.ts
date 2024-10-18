@@ -24,11 +24,11 @@ const BenefitPostSchema = z.object({
   quantity: z.number(),
   pointsCost: z.number(),
   userStoreId: z.string(),
-  isActive: z.boolean(),
-  isArchived: z.boolean(),
-  userStore: z.object({ id: z.string() }),
-  userCustomerActive: z.array(UserCustomerSchema),
-  userCustomerHistory: z.array(UserCustomerSchema),
+  isActive: z.boolean().optional(),
+  isArchived: z.boolean().optional(),
+  userStore: z.object({ id: z.string() }).optional(),
+  userCustomerActive: z.array(UserCustomerSchema).optional(),
+  userCustomerHistory: z.array(UserCustomerSchema).optional(),
 });
 
 const BenefitPutSchema = z.object({

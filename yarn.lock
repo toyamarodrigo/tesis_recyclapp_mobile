@@ -2032,6 +2032,7 @@ __metadata:
     "@lukemorales/query-key-factory": "npm:^1.3.4"
     "@react-native-community/datetimepicker": "npm:8.0.1"
     "@react-native-community/netinfo": "npm:11.3.1"
+    "@react-native-picker/picker": "npm:^2.8.1"
     "@react-navigation/drawer": "npm:^6.6.15"
     "@shopify/flash-list": "npm:1.6.4"
     "@tanstack/eslint-plugin-query": "npm:^5.32.1"
@@ -2382,6 +2383,16 @@ __metadata:
   peerDependencies:
     react-native: ">=0.59"
   checksum: 10c0/a74348321b262e6a99d01e5fa71473b34c12319845139cdf8e95fcd474b4022f9a3f50e506acecd7538ca44afbd75df09fce048184b1ea322edf45ed21ab134a
+  languageName: node
+  linkType: hard
+
+"@react-native-picker/picker@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "@react-native-picker/picker@npm:2.8.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/f212a1cbd951e81a983fba1eb6171cf4db05590cba86522489ad14f137c7faec1ed4d73fde61613ba0a93394370f7b1294218bb9e5eae2a5a0cd7c6de955af3c
   languageName: node
   linkType: hard
 

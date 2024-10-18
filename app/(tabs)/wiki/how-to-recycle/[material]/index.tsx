@@ -6,7 +6,7 @@ export default function HowToRecycleMaterialLayout() {
   const { material } = useLocalSearchParams();
   const formatedMaterial =
     typeof material === "string"
-      ? material.charAt(0).toUpperCase() + material.slice(1)
+      ? material.charAt(0).toUpperCase() + material.slice(1).replace(/-/g, " ")
       : "";
   const router = useRouter();
 
@@ -14,7 +14,7 @@ export default function HowToRecycleMaterialLayout() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <IconButton icon="chevron-left" size={32} />
+          <IconButton icon="chevron-left" size={32} iconColor="#1B5E20" />
         </TouchableOpacity>
         <Text variant="titleLarge" style={styles.title}>
           {formatedMaterial}

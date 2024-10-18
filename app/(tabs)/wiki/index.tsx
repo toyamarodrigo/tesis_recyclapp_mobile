@@ -1,61 +1,47 @@
-import React, { useState, useMemo, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
-import { Link } from "expo-router";
+import { useState, useMemo } from "react";
+import { View, StyleSheet, TextInput } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-
-const useDeferredValue = (value: string, delay: number) => {
-  const [deferredValue, setDeferredValue] = useState(value);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDeferredValue(value);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return deferredValue;
-};
-
-const normalizeText = (text: string): string => {
-  return text
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-};
-
-type IconName = "bottle-wine" | "bottle-soda" | "battery" | "file-multiple" | "package-variant-closed";
-
-interface Item {
-  name: string;
-  icon: IconName;
-}
-
-interface Section {
-  title: string;
-  data: Item[];
-}
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { CircleLink } from "@features/wiki/components/circle-link";
+import type { MaterialSection } from "@features/wiki/models/card-material.type";
+import { MaterialsSection } from "@features/wiki/components/materials-section";
+import { useDeferredValue } from "@features/wiki/hooks/useDeferredValue";
+import { normalizeText } from "@features/wiki/utils/normalize-text";
 
 export default function Wiki() {
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery, 300);
 
-  // TODO: add all recyclable items and special waste items from the database
-  const allItems: Section[] = useMemo(
+  const allItems: MaterialSection[] = useMemo(
     () => [
       {
         title: "Materiales reciclables",
         data: [
+          { name: "Papel y cartón", icon: "package-variant-closed" },
+          { name: "Plásticos", icon: "bottle-soda" },
+          { name: "Metales", icon: "trash-can" },
           { name: "Vidrio", icon: "bottle-wine" },
-          { name: "Cartón y Papel", icon: "package-variant-closed" },
-          { name: "Plástico", icon: "bottle-soda" },
+          { name: "Cajas", icon: "package-variant-closed" },
+          { name: "Sobres", icon: "file-multiple" },
+          { name: "Revistas", icon: "book-open-page-variant" },
+          { name: "Diarios", icon: "newspaper" },
+          { name: "Folletos", icon: "file-multiple" },
+          { name: "Tetra brick", icon: "food-takeout-box" },
+          { name: "Botellas", icon: "bottle-soda-classic" },
+          { name: "Tapas", icon: "bottle-tonic" },
+          { name: "Papel film", icon: "file-multiple" },
+          { name: "Sachets", icon: "food-takeout-box" },
+          { name: "Bidones", icon: "bottle-soda" },
+          { name: "Potes", icon: "cup" },
+          { name: "Vajilla descartable", icon: "silverware-fork-knife" },
+          { name: "Latas", icon: "bottle-soda" },
+          { name: "Desodorantes", icon: "spray" },
+          { name: "Llaves", icon: "key" },
+          { name: "Frascos", icon: "glass-fragile" },
         ],
       },
       {
@@ -63,6 +49,26 @@ export default function Wiki() {
         data: [
           { name: "Pilas", icon: "battery" },
           { name: "Papel carbónico", icon: "file-multiple" },
+          { name: "Aceites Vegetales Usados", icon: "oil" },
+          { name: "Aceites Minerales Usados", icon: "oil" },
+          { name: "RAEEs", icon: "television-classic" },
+          { name: "Pilas, baterías portátiles", icon: "battery" },
+          {
+            name: "Lámparas de bajo consumo conteniendo mercurio",
+            icon: "lightbulb-fluorescent-tube",
+          },
+          { name: "Cartuchos y tonners", icon: "printer" },
+          {
+            name: "Envases de sustancias peligrosas",
+            icon: "bottle-tonic-skull",
+          },
+          { name: "Envases vacíos de fitosanitarios", icon: "spray" },
+          { name: "Neumáticos de desecho", icon: "tire" },
+          { name: "Termómetros, esfigmomanómetros", icon: "thermometer" },
+          { name: "Acumuladores de ácido plomo", icon: "car-battery" },
+          { name: "Pinturas y solventes", icon: "brush" },
+          { name: "Medicamentos", icon: "pill" },
+          { name: "Membranas asfálticas", icon: "road-variant" },
         ],
       },
     ],
@@ -84,50 +90,23 @@ export default function Wiki() {
       .filter((section) => section.data.length > 0);
   }, [allItems, deferredSearchQuery]);
 
-  const renderItem = useCallback(
-    ({ item, section }: { item: Item; section: Section }) => (
-      <View style={[
-        styles.card,
-        section.title === "Materiales reciclables" ? styles.recyclableCard : styles.specialWasteCard
-      ]}>
-        <MaterialCommunityIcons 
-          name={item.icon} 
-          size={24} 
-          color="#1B5E20"
-          style={styles.cardIcon} 
-        />
-        <Text style={styles.cardText}>{item.name}</Text>
-      </View>
-    ),
-    []
-  );
-
-  const renderSectionHeader = useCallback(
-    ({ section: { title } }: { section: Section }) => (
-      <Text style={styles.listTitle}>{title}</Text>
-    ),
-    []
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.circleLinksContainer}>
-        <Link href="/wiki/compost" asChild>
-          <TouchableOpacity style={styles.circleLinkWrapper}>
-            <View style={[styles.circleLink, { backgroundColor: '#8BC34A' }]}>
-              <MaterialIcons name="compost" size={40} color="white" />
-            </View>
-            <Text style={styles.circleLinkText}>Compostaje</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link href="/wiki/how-to-recycle" asChild>
-          <TouchableOpacity style={styles.circleLinkWrapper}>
-            <View style={[styles.circleLink, { backgroundColor: '#4CAF50' }]}>
-              <MaterialCommunityIcons name="recycle" size={40} color="white" />
-            </View>
-            <Text style={styles.circleLinkText}>Cómo Reciclar</Text>
-          </TouchableOpacity>
-        </Link>
+        <CircleLink
+          href="/wiki/compost"
+          icon={<MaterialIcons name="compost" size={40} color="white" />}
+          text="Compostaje"
+          color="#8BC34A"
+        />
+        <CircleLink
+          href="/wiki/how-to-recycle"
+          icon={
+            <MaterialCommunityIcons name="recycle" size={40} color="white" />
+          }
+          text="Cómo Reciclar"
+          color="#4CAF50"
+        />
       </View>
 
       <View style={styles.contentContainer}>
@@ -150,15 +129,7 @@ export default function Wiki() {
 
           <FlashList
             data={filteredItems}
-            renderItem={({ item }) => (
-              <FlashList
-                data={item.data}
-                renderItem={({ item: subItem }) => renderItem({ item: subItem, section: item })}
-                estimatedItemSize={50}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
-                ListHeaderComponent={() => renderSectionHeader({ section: item })}
-              />
-            )}
+            renderItem={({ item }) => <MaterialsSection section={item} />}
             estimatedItemSize={200}
           />
         </View>
@@ -170,72 +141,25 @@ export default function Wiki() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: "#E8F5E9",
   },
   circleLinksContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginVertical: 16,
   },
-  circleLinkWrapper: {
-    alignItems: "center",
-    width: 80,
-  },
-  circleLink: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleLinkText: {
-    color: "#1B5E20",
-    textAlign: "center",
-    fontSize: 12,
-    marginTop: 8,
-    flexWrap: "wrap",
-    width: 80,
-  },
   contentContainer: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    overflow: 'hidden',
-    width: '100%',
+    overflow: "hidden",
+    width: "100%",
   },
   innerContainer: {
     flex: 1,
     padding: 16,
     paddingTop: 24,
-  },
-  listTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 16,
-    marginBottom: 10,
-    color: "#2E7D32",
-  },
-  card: {
-    borderRadius: 8,
-    padding: 16,
-    width: "100%",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  recyclableCard: {
-    backgroundColor: "#C8E6C9",
-  },
-  specialWasteCard: {
-    backgroundColor: "#FFECB3",
-  },
-  cardIcon: {
-    marginRight: 16,
-  },
-  cardText: {
-    fontSize: 14,
-    color: "#1B5E20",
-    flex: 1,
   },
   searchBarContainer: {
     flexDirection: "row",
@@ -253,8 +177,5 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     color: "#1B5E20",
-  },
-  separator: {
-    height: 8,
   },
 });

@@ -191,24 +191,4 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 16,
   },
-  newsContainer: {
-    padding: 16,
-  },
-  newsCard: {
-    marginBottom: 16,
-    backgroundColor: "#F1F8E9",
-  },
-  newsTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#1B5E20",
-    marginBottom: 8,
-  },
-  newsDescription: {
-    fontSize: 14,
-    color: "#333",
-  },
-  newsButton: {
-    marginTop: 8,
-  },
 });

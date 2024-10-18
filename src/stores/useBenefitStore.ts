@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { Benefit } from "@models/benefit.type";
 
 type BenefitState = {
-  benefitList: Benefit[] | undefined;
+  benefitList: Benefit[];
   currentBenefit: Benefit | null;
   setCurrentBenefit: (benefit: Benefit) => void;
   clearCurrentBenefit: () => void;
@@ -10,7 +10,7 @@ type BenefitState = {
 };
 
 export const useBenefitStore = create<BenefitState>((set) => ({
-  benefitList: undefined,
+  benefitList: [],
   currentBenefit: null,
   setCurrentBenefit: (benefit) => set({ currentBenefit: benefit }),
   clearCurrentBenefit: () => set({ currentBenefit: null }),

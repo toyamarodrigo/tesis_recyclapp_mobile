@@ -14,13 +14,10 @@ import {
 } from "react-native-paper";
 import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useBenefitList,
-  useDeleteBenefit,
-  useUpdateBenefit,
-} from "@hooks/useBenefit";
+import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
 import { useBenefitStore } from "@stores/useBenefitStore";
 import { Benefit, BenefitPut } from "@models/benefit.type";
+import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
   const { isLoading } = useBenefitList();
@@ -37,7 +34,6 @@ export default function Benefits() {
       isActive: false,
       isArchived: true,
     };
-    console.log("removeBenefit", removeBenefit);
     updateBenefit(removeBenefit);
   };
 
@@ -59,10 +55,6 @@ export default function Benefits() {
     //TODO validar el funcionamiento del codigo
     hideModal();
   };
-
-  console.log(isLoading);
-  if (isLoading)
-    return <ActivityIndicator animating={true} color={theme.colors.primary} />;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -122,6 +114,15 @@ export default function Benefits() {
           <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
             <View style={{ width: "100%" }}>
               <View style={{ marginBottom: 20 }}>
+                {isLoading && (
+                  <ActivityIndicator
+                    color={theme.colors.primary}
+                    size={"large"}
+                  />
+                )}
+                {!isLoading && benefitList.length === 0 && (
+                  <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
+                )}
                 {benefitList &&
                   benefitList.map((benefit) => (
                     <CardProfile

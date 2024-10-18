@@ -17,13 +17,6 @@ export default function HowToRecycleLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="first-steps"
-        options={{
-          title: "Primeros Pasos",
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

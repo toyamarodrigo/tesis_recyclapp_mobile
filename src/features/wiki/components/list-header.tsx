@@ -3,72 +3,80 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, Card, SegmentedButtons, IconButton } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { materialColors, materials } from "../models/materials";
+import * as WebBrowser from "expo-web-browser";
+import { useSelectedMaterialStore } from "../hooks/useSelectedMaterial";
 
-export const ListHeader = ({ selectedMaterial, setSelectedMaterial, router }) => (
-  <Fragment>
-    <View style={styles.header}>
-      <IconButton
-        icon="chevron-left"
-        iconColor="#1B5E20"
-        style={styles.backButton}
-        size={32}
-        onPress={() => router.back()}
+export const ListHeader = ({ selectedMaterial, router }) => {
+  const setSelectedMaterial = useSelectedMaterialStore(
+    (state) => state.setSelectedMaterial
+  );
+
+  const handlePress = async () => {
+    await WebBrowser.openBrowserAsync(
+      "https://buenosaires.gob.ar/espaciopublicoehigieneurbana/noticias/como-separar-tus-residuos"
+    );
+  };
+
+  return (
+    <Fragment>
+      <View style={styles.header}>
+        <IconButton
+          icon="chevron-left"
+          iconColor="#1B5E20"
+          style={styles.backButton}
+          size={32}
+          onPress={() => router.back()}
+        />
+        <Text style={styles.title}>¿Cómo reciclo?</Text>
+      </View>
+
+      <Card style={styles.card} onPress={() => handlePress()}>
+        <Card.Content>
+          <Text variant="titleLarge" style={styles.cardTitle}>
+            Primeros pasos
+          </Text>
+          <Text variant="bodyMedium" style={styles.cardDescription}>
+            Aprende los conceptos básicos del reciclaje
+          </Text>
+        </Card.Content>
+        <Card.Actions style={styles.cardActions}>
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={styles.link}>Ver más</Text>
+          </TouchableOpacity>
+        </Card.Actions>
+      </Card>
+
+      <AntDesign
+        name="arrowdown"
+        size={24}
+        color="#1B5E20"
+        style={styles.arrow}
       />
-      <Text style={styles.title}>¿Cómo reciclo?</Text>
-    </View>
 
-    <Card
-      style={styles.card}
-      onPress={() => router.push("/wiki/how-to-recycle/first-steps")}
-    >
-      <Card.Content>
-        <Text variant="titleLarge" style={styles.cardTitle}>
-          Primeros pasos
-        </Text>
-        <Text variant="bodyMedium" style={styles.cardDescription}>
-          Aprende los conceptos básicos del reciclaje
-        </Text>
-      </Card.Content>
-      <Card.Actions style={styles.cardActions}>
-        <TouchableOpacity
-          onPress={() => router.push("/wiki/how-to-recycle/first-steps")}
-        >
-          <Text style={styles.link}>Ver más</Text>
-        </TouchableOpacity>
-      </Card.Actions>
-    </Card>
-
-    <AntDesign
-      name="arrowdown"
-      size={24}
-      color="#1B5E20"
-      style={styles.arrow}
-    />
-
-    <SegmentedButtons
-      value={selectedMaterial}
-      onValueChange={setSelectedMaterial}
-      buttons={materials.map((material) => ({
-        value: material,
-        label: material,
-        style: {
-          backgroundColor:
-            selectedMaterial === material
-              ? materialColors[material]
-              : "transparent",
-        },
-        labelStyle: {
-          color:
-            selectedMaterial === material
-              ? "#FFFFFF"
-              : materialColors[material],
-        },
-      }))}
-      style={styles.segmentedButtons}
-    />
-  </Fragment>
-);
-
+      <SegmentedButtons
+        value={selectedMaterial}
+        onValueChange={(value) => setSelectedMaterial(value)}
+        buttons={materials.map((material) => ({
+          value: material.id,
+          label: material.name,
+          style: {
+            backgroundColor:
+              selectedMaterial === material.id
+                ? materialColors[material.id]
+                : "transparent",
+          },
+          labelStyle: {
+            color:
+              selectedMaterial === material.id
+                ? "#FFFFFF"
+                : materialColors[material.id],
+          },
+        }))}
+        style={styles.segmentedButtons}
+      />
+    </Fragment>
+  );
+};
 
 const styles = StyleSheet.create({
   header: {

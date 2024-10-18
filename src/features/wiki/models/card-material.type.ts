@@ -3,9 +3,19 @@ export interface MaterialSection {
   data: CardItem[];
 }
 
-export interface CardItem {
+export type CardItem = RecyclableCardItem | SpecialWasteCardItem;
+
+export interface BaseCardItem {
   name: string;
   icon: IconName;
+}
+
+export interface RecyclableCardItem extends BaseCardItem {
+  material: string[];
+}
+
+export interface SpecialWasteCardItem extends BaseCardItem {
+  material?: never;
 }
 
 export type IconName =

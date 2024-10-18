@@ -2,36 +2,46 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Card, Text, Chip } from "react-native-paper";
 import { materialColors } from "../models/materials";
 
-export const CardRecyclingItem = ({ item, onPress }) => (
-  <Card style={[styles.card, styles.materialCard]}>
-    <Card.Content>
-      <Text variant="titleMedium" style={styles.cardTitle}>
-        {item.title}
-      </Text>
-      <View style={styles.chipContainer}>
-        {item.materials.map((material) => (
-          <Chip
-            key={material}
-            compact
-            style={[
-              styles.chip,
-              { backgroundColor: materialColors[material] },
-            ]}
-            textStyle={styles.chipText}
-          >
-            {material}
-          </Chip>
-        ))}
-      </View>
-    </Card.Content>
-    <Card.Actions style={styles.cardActions}>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.link}>Ver más</Text>
-      </TouchableOpacity>
-    </Card.Actions>
-  </Card>
-);
+export const CardRecyclingItem = ({ item, onPress }) => {
+  const formatMaterial = (material) => {
+    if (material === "paper") return "Papel y cartón";
+    if (material === "plastic") return "Plásticos";
+    if (material === "metal") return "Metales";
+    if (material === "glass") return "Vidrio";
 
+    return material;
+  };
+
+  return (
+    <Card style={[styles.card, styles.materialCard]} onPress={onPress}>
+      <Card.Content>
+        <Text variant="titleMedium" style={styles.cardTitle}>
+          {item.title}
+        </Text>
+        <View style={styles.chipContainer}>
+          {item.materials.map((material) => (
+            <Chip
+              key={material}
+              compact
+              style={[
+                styles.chip,
+                { backgroundColor: materialColors[material] },
+              ]}
+              textStyle={styles.chipText}
+            >
+              {formatMaterial(material)}
+            </Chip>
+          ))}
+        </View>
+      </Card.Content>
+      <Card.Actions style={styles.cardActions}>
+        <TouchableOpacity onPress={onPress}>
+          <Text style={styles.link}>Ver más</Text>
+        </TouchableOpacity>
+      </Card.Actions>
+    </Card>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {

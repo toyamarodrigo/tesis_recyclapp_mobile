@@ -14,6 +14,7 @@ import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
+import { USER_TYPE } from "@constants/enum.constant";
 
 type FormValues = {
   name: string;
@@ -100,7 +101,7 @@ export default function PersonalInfo() {
   const watchIsStore = useWatch({
     control,
     name: "isStore",
-    defaultValue: false,
+    defaultValue: user?.userType == USER_TYPE.STORE,
   });
 
   const onSubmit = async (data: FormValues) => {

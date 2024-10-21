@@ -1,7 +1,6 @@
 import React from "react";
 import { View } from "react-native";
 import { Link } from "expo-router";
-import { useImageById } from "@hooks/useImage";
 import {
   Button,
   Text,
@@ -10,24 +9,27 @@ import {
   Portal,
   Modal,
   IconButton,
+  ActivityIndicator,
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserList } from "@hooks/useUser";
+import DataEmpty from "@components/DataEmpty";
+import { IMAGE } from "@constants/image.constant";
 
 const Profile = () => {
+  const { userError, userLoading, imageLoading } = useUserList();
+  const { user, profileImage } = useUserStore();
   const [visible, setVisible] = React.useState(false);
-  const user = useUserStore((state) => state.user);
-  const { data: userImages, isLoading: userImageLoading } = useImageById(
-    "cleuipzo60002v8fcwfmyp9xk"
-  );
   const theme = useAppTheme();
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
   if (!user) return null;
+
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <View style={{ flexDirection: "row", zIndex: 1 }}>
@@ -99,19 +101,32 @@ const Profile = () => {
           </Modal>
         </Portal>
         <View style={{ flex: 1, width: "100%" }}>
+          {(userLoading || userError) && (
+            <View style={{ alignItems: "center", marginVertical: 20 }}>
+              {userLoading && (
+                <ActivityIndicator
+                  color={theme.colors.primary}
+                  size={"large"}
+                />
+              )}
+              {userError && (
+                <DataEmpty displayText="Ocurrió un problema al mostrar sus datos. Intente nuevamente." />
+              )}
+            </View>
+          )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
-            {!userImageLoading && (
+            {!imageLoading && (
               <Avatar.Image
                 size={100}
                 source={{
                   uri:
-                    userImages && userImages.url !== ""
-                      ? userImages.url
-                      : "https://res.cloudinary.com/dakunjike/image/upload/v1724803574/RecyclApp/Utils/userGeneric.png",
+                    profileImage && profileImage !== ""
+                      ? profileImage
+                      : IMAGE.USER_GENERIC,
                 }}
               />
             )}
-            <Text style={{ marginTop: 10 }}>@{user?.name}</Text>
+            <Text style={{ marginTop: 10 }}>@{user.name}</Text>
           </View>
 
           <List.Section style={{ width: "100%" }}>
@@ -145,18 +160,22 @@ const Profile = () => {
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
-            <Link href="/profile/benefits" asChild>
-              <List.Item
-                title="Mis beneficios"
-                left={() => (
-                  <List.Icon
-                    icon="tag-multiple"
-                    color={theme.colors.tertiary}
-                  />
-                )}
-                right={(props) => <List.Icon {...props} icon="chevron-right" />}
-              />
-            </Link>
+            {user.UserStore != null && (
+              <Link href="/profile/benefits" asChild>
+                <List.Item
+                  title="Mis beneficios"
+                  left={() => (
+                    <List.Icon
+                      icon="tag-multiple"
+                      color={theme.colors.tertiary}
+                    />
+                  )}
+                  right={(props) => (
+                    <List.Icon {...props} icon="chevron-right" />
+                  )}
+                />
+              </Link>
+            )}
             <Link href="/profile/change-password" asChild>
               <List.Item
                 title="Cambiar contraseña"
@@ -168,12 +187,12 @@ const Profile = () => {
             </Link>
           </List.Section>
         </View>
+
         <View
           style={{
             flexDirection: "row",
             justifyContent: "center",
-            marginTop: 20,
-            marginBottom: 10,
+            marginBottom: 20,
           }}
         >
           <Button

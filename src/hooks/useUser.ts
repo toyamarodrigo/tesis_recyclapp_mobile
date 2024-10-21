@@ -1,10 +1,58 @@
 import { userKeys } from "@api/query/user.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
 import { UserPost, UserPut } from "@models/user.type";
+import { useUserStore } from "@stores/useUserStore";
+import { useEffect, useState } from "react";
+import { useImageById } from "./useImage";
 
 const useUserList = () => {
-  const { data, isLoading, isError, error } = useQuery(userKeys.user.list());
+  const { initializeUser, setProfileImage } = useUserStore();
+  const {
+    data: userData,
+    isSuccess: userSuccess,
+    error: userError,
+    isLoading: userLoading,
+  } = useQuery({
+    queryKey: userKeys.user.list().queryKey,
+    queryFn: userKeys.user.list().queryFn,
+  });
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (userSuccess && userData) {
+      initializeUser(userData[6]);
+      setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+    }
+  }, [userSuccess, userData, initializeUser]);
+
+  const {
+    data: imageData,
+    isLoading: imageLoading,
+    error: imageError,
+  } = useImageById(userId as string);
+
+  useEffect(() => {
+    if (imageData?.url) {
+      setProfileImage(imageData.url);
+    }
+  }, [imageData, setProfileImage]);
+
+  return {
+    userData,
+    userLoading,
+    userSuccess,
+    userError,
+    imageData,
+    imageLoading,
+    imageError,
+  };
+};
+
+const useUser = (id: string) => {
+  const { data, isLoading, isError, error } = useQuery(
+    userKeys.user.detail(id)
+  );
 
   return {
     data,
@@ -14,23 +62,34 @@ const useUserList = () => {
   };
 };
 
-const useUser = (id: string) => {
-  const { data, isPending, isError, error } = useQuery(
-    userKeys.user.detail(id)
-  );
+const useCreateUser = () => {
+  const queryClient = useQueryClient();
+  const { mutate, isPending, isSuccess, error } = useMutation({
+    mutationFn: (user: UserPost) => userApi.createUser(user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: userKeys.user.list().queryKey, //TODO revisar si loguea directo o ingresa credenciales
+      });
+    },
+  });
 
   return {
-    data,
-    isLoading: isPending,
-    isError,
+    mutate,
+    isPending,
+    isSuccess,
     error,
   };
 };
 
-const useCreateUser = (user: UserPost) => {
+const useUpdateUser = () => {
+  const queryClient = useQueryClient();
   const { mutate, isPending, isError, error } = useMutation({
-    mutationKey: [user],
-    mutationFn: () => userApi.createUser(user),
+    mutationFn: (user: UserPut) => userApi.updateUser(user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: userKeys.user.list().queryKey, //TODO revisar si actualiza todo o los datos
+      });
+    },
   });
 
   return {
@@ -41,24 +100,13 @@ const useCreateUser = (user: UserPost) => {
   };
 };
 
-const useUpdateUser = (user: UserPut) => {
+const useDeleteUser = () => {
+  const { removeUsers } = useUserStore();
   const { mutate, isPending, isError, error } = useMutation({
-    mutationKey: [user],
-    mutationFn: () => userApi.updateUser(user),
-  });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
-};
-
-const useDeleteUser = (id: string) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationKey: [id],
-    mutationFn: () => userApi.deleteUser(id),
+    mutationFn: (id: string) => userApi.deleteUser(id),
+    onSuccess: () => {
+      removeUsers(); //TODO revisar si elimina al usuario del store
+    },
   });
 
   return {

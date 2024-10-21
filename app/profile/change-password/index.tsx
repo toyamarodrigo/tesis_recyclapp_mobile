@@ -132,6 +132,7 @@ export default function ChangePassword() {
                 </Text>
               )}
             </View>
+            <View style={{ flex: 1 }} />
             <View style={{ marginBottom: 20 }}>
               <Button
                 mode="contained"

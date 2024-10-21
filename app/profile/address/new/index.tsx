@@ -11,7 +11,6 @@ export default function NewAddress() {
     console.log("nueva direccion", data);
     router.replace("/profile/address");
   };
-  
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -19,9 +18,7 @@ export default function NewAddress() {
         <Link href="/profile/address" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>
-          Nueva dirección
-        </Title>
+        <Title style={{ color: theme.colors.primary }}>Nueva dirección</Title>
       </View>
       <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
         <View
@@ -36,15 +33,14 @@ export default function NewAddress() {
         </View>
       </ScrollView>
       <View style={{ padding: 16, gap: 15 }}>
-        <Button
-          mode="contained"
-          onPress={onSubmit}
-        >
+        <Button mode="contained" onPress={onSubmit}>
           Agregar nueva dirección
         </Button>
         <Button
           mode="contained-tonal"
           onPress={() => router.push("/profile/address")}
+          buttonColor={theme.colors.errorContainer}
+          textColor={theme.colors.onErrorContainer}
         >
           Cancelar
         </Button>

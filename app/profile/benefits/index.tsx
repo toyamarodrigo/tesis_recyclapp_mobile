@@ -20,7 +20,7 @@ import { Benefit, BenefitPut } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
-  const { isLoading } = useBenefitList();
+  const { isLoading, error } = useBenefitList();
   const { benefitList, setCurrentBenefit } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
@@ -120,7 +120,10 @@ export default function Benefits() {
                     size={"large"}
                   />
                 )}
-                {!isLoading && benefitList.length === 0 && (
+                {error && (
+                  <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
+                )}
+                {!isLoading && !error && benefitList.length === 0 && (
                   <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
                 )}
                 {benefitList &&

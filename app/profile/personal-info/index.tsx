@@ -259,9 +259,10 @@ export default function PersonalInfo() {
                 Confirmar cambios
               </Button>
               <Button
-                mode="outlined"
+                mode="contained"
                 onPress={onCancel}
-                textColor={theme.colors.error}
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
               >
                 Cancelar
               </Button>

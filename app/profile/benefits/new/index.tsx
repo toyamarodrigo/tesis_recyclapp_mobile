@@ -10,7 +10,7 @@ import { useBenefitStore } from "@stores/useBenefitStore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Fragment, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Benefit, BenefitPost, BenefitPut } from "@models/benefit.type";
+import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
 
 const BenefitSchema = z.object({

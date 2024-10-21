@@ -132,20 +132,23 @@ export default function ChangePassword() {
                 </Text>
               )}
             </View>
-            <Button
-              mode="contained"
-              onPress={handleSubmit(onSubmit)}
-              style={{ marginBottom: 10 }}
-            >
-              Cambiar contraseña
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={onCancel}
-              textColor={theme.colors.error}
-            >
-              Cancelar
-            </Button>
+            <View style={{ marginBottom: 20 }}>
+              <Button
+                mode="contained"
+                onPress={handleSubmit(onSubmit)}
+                style={{ marginBottom: 10 }}
+              >
+                Cambiar contraseña
+              </Button>
+              <Button
+                mode="contained"
+                onPress={onCancel}
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
+              >
+                Cancelar
+              </Button>
+            </View>
           </View>
         </View>
       </ScrollView>

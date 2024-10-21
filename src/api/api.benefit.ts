@@ -1,21 +1,39 @@
 import type { Benefit, BenefitPost, BenefitPut } from "@models/benefit.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
+import { Alert } from "react-native";
 
 export const benefitApi = {
   getBenefits: async () => {
-    const result = await axios.get<Benefit[]>(
-      `${backendApiConfig.baseURL}/benefits`
-    );
+    try {
+      const result = await axios.get<Benefit[]>(
+        `${backendApiConfig.baseURL}/benefits`
+      );
 
-    return result.data;
+      console.log(result.data);
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
   },
   getBenefitById: async (id: string) => {
-    const result = await axios.get<Benefit>(
-      `${backendApiConfig.baseURL}/benefit/${id}`
-    );
+    try {
+      const result = await axios.get<Benefit>(
+        `${backendApiConfig.baseURL}/benefit/${id}`
+      );
 
-    return result.data;
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
   },
   createBenefit: async (benefit: BenefitPost) => {
     try {
@@ -24,13 +42,21 @@ export const benefitApi = {
         benefit
       );
 
-      console.log(result);
+      Alert.alert("Éxito", "Se creó el nuevo beneficio con éxito.");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al crear el beneficio. Intente nuevamente."
+        );
         throw new Error(e.message);
       }
 
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al crear el beneficio. Intente nuevamente."
+      );
       throw new Error("Unknown error");
     }
   },
@@ -41,13 +67,21 @@ export const benefitApi = {
         benefit
       );
 
-      console.log(result);
+      Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al actualizar el beneficio. Intente nuevamente."
+        );
         throw new Error(e.message);
       }
 
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al actualizar el beneficio. Intente nuevamente."
+      );
       throw new Error("Unknown error");
     }
   },
@@ -57,13 +91,21 @@ export const benefitApi = {
         `${backendApiConfig.baseURL}/benefit/${id}`
       );
 
-      console.log(result);
+      Alert.alert("Éxito", "Se eliminó el beneficio con éxito.");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al eliminar el beneficio. Intente nuevamente."
+        );
         throw new Error(e.message);
       }
 
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al eliminar el beneficio. Intente nuevamente."
+      );
       throw new Error("Unknown error");
     }
   },

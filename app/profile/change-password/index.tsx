@@ -3,10 +3,14 @@ import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { TextInput, Button, Text, Title, IconButton } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserStore } from "@stores/useUserStore";
+import bcrypt from "bcryptjs";
+import { useUpdateUser } from "@hooks/useUser";
+import { UserPut } from "@models/user.type";
 
 type FormValues = {
   currentPassword: string;
@@ -31,6 +35,10 @@ const formSchema = z
       ),
     repeatNewPassword: z.string(),
   })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: "La nueva contraseña no puede ser la misma que la actual",
+    path: ["newPassword"],
+  })
   .refine((data) => data.newPassword === data.repeatNewPassword, {
     message: "La nueva contraseña no coincide",
     path: ["repeatNewPassword"],
@@ -39,11 +47,19 @@ const formSchema = z
 export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
+  const { user } = useUserStore();
+  const {
+    mutate: updatePassword,
+    isPending: updatePending,
+    isSuccess: updateSuccess,
+    error: updateError,
+  } = useUpdateUser();
   const {
     control,
     reset,
     formState: { errors },
     handleSubmit,
+    setError,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,13 +70,50 @@ export default function ChangePassword() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
+    //As123!1234
+    const storedPassword = user?.password || "";
+
+    const isPasswordCorrect = await bcrypt.compare(
+      data.currentPassword,
+      storedPassword
+    );
+
+    if (!isPasswordCorrect) {
+      setError("currentPassword", {
+        type: "manual",
+        message: "La contraseña actual no es correcta",
+      });
+      return;
+    }
+
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(data.newPassword, saltRounds);
+
+    console.log("Nueva contraseña cifrada:", hashedNewPassword);
+
+    if (user) {
+      const userData: UserPut = {
+        id: user.id,
+        password: hashedNewPassword,
+      };
+
+      updatePassword(userData, {
+        onSuccess: () => {
+          reset();
+          router.push("/profile");
+        },
+      });
+    }
   };
 
   const onCancel = () => {
     reset();
     router.push("/profile");
   };
+
+  if (!user) {
+    onCancel();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -131,6 +184,26 @@ export default function ChangePassword() {
                   {errors.repeatNewPassword.message}
                 </Text>
               )}
+            </View>
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                La contraseña debe tener:{" "}
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos 8 caracteres.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos una letra mayúscula.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos una letra minúscula.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos un número.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos un caracter especial.
+              </Text>
             </View>
             <View style={{ flex: 1 }} />
             <View style={{ marginBottom: 20 }}>

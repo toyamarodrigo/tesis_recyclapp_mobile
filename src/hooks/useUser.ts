@@ -83,7 +83,7 @@ const useCreateUser = () => {
 
 const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, isPending, isSuccess, error } = useMutation({
     mutationFn: (user: UserPut) => userApi.updateUser(user),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -95,7 +95,7 @@ const useUpdateUser = () => {
   return {
     mutate,
     isPending,
-    isError,
+    isSuccess,
     error,
   };
 };

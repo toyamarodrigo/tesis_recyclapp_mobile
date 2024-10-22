@@ -4,32 +4,32 @@ import { UserStore } from "@models/userStore.type";
 import { create } from "zustand";
 
 type UserState = {
-  user: User | null;
-  userStore: UserStore | null;
-  userCustomer: UserCustomer | null;
-  profileImage: string | null;
+  user: User | undefined;
+  userStore: UserStore | undefined;
+  userCustomer: UserCustomer | undefined;
+  profileImage: string | undefined;
   initializeUser: (user: User) => void;
   removeUsers: () => void;
   setProfileImage: (url: string) => void;
 };
 
 export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  userStore: null,
-  userCustomer: null,
-  profileImage: null,
+  user: undefined,
+  userStore: undefined,
+  userCustomer: undefined,
+  profileImage: undefined,
   initializeUser: (user: User) =>
     set({
       user: user,
-      userStore: user.UserStore || null,
-      userCustomer: user.UserCustomer || null,
+      userStore: user.UserStore || undefined,
+      userCustomer: user.UserCustomer || undefined,
     }),
   removeUsers: () =>
     set({
-      user: null,
-      userStore: null,
-      userCustomer: null,
-      profileImage: null,
+      user: undefined,
+      userStore: undefined,
+      userCustomer: undefined,
+      profileImage: undefined,
     }),
   setProfileImage: (url: string) => set({ profileImage: url }),
 }));

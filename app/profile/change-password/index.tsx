@@ -3,7 +3,7 @@ import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { TextInput, Button, Text, Title, IconButton } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,7 +25,7 @@ const formSchema = z
       .min(1, { message: "Este campo no puede estar vacio" }),
     newPassword: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .min(8, "La contraseña debe tener 8 caracteres")
       .regex(/[A-Z]/, "Debe contener al menos una letra mayúscula")
       .regex(/[a-z]/, "Debe contener al menos una letra minúscula")
       .regex(/\d/, "Debe contener al menos un número")
@@ -48,12 +48,7 @@ export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
   const { user } = useUserStore();
-  const {
-    mutate: updatePassword,
-    isPending: updatePending,
-    isSuccess: updateSuccess,
-    error: updateError,
-  } = useUpdateUser();
+  const { mutate: updatePassword } = useUpdateUser();
   const {
     control,
     reset,
@@ -70,7 +65,7 @@ export default function ChangePassword() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    //As123!1234
+    //As123!1235
     const storedPassword = user?.password || "";
 
     const isPasswordCorrect = await bcrypt.compare(
@@ -89,15 +84,15 @@ export default function ChangePassword() {
     const saltRounds = 10;
     const hashedNewPassword = await bcrypt.hash(data.newPassword, saltRounds);
 
-    console.log("Nueva contraseña cifrada:", hashedNewPassword);
-
     if (user) {
       const userData: UserPut = {
         id: user.id,
         password: hashedNewPassword,
       };
 
-      updatePassword(userData, {
+      const data = { userData };
+
+      updatePassword(data, {
         onSuccess: () => {
           reset();
           router.push("/profile");
@@ -190,7 +185,7 @@ export default function ChangePassword() {
                 La contraseña debe tener:{" "}
               </Text>
               <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
-                Al menos 8 caracteres.
+                8 caracteres.
               </Text>
               <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
                 Al menos una letra mayúscula.

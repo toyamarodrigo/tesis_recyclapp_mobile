@@ -84,7 +84,7 @@ const useCreateUser = () => {
 const useUpdateUser = () => {
   const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess, error } = useMutation({
-    mutationFn: (user: UserPut) => userApi.updateUser(user),
+    mutationFn: (data: any) => userApi.updateUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: userKeys.user.list().queryKey, //TODO revisar si actualiza todo o los datos

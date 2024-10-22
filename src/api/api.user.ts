@@ -63,11 +63,11 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-  updateUser: async (user: UserPut) => {
+  updateUser: async (data: any) => {
     try {
       const result = await axios.put<User>(
-        `${backendApiConfig.baseURL}/user/${user.id}`,
-        user
+        `${backendApiConfig.baseURL}/user/${data.userData.id}`,
+        data
       );
 
       Alert.alert("Éxito", "Se actualizaron sus datos con éxito.");

@@ -32,12 +32,17 @@ export default function Address() {
             </View>
           </View>
         </View>
+
+        <View style={{ flex: 1 }} />
+        <View style={{ marginBottom: 20 }}>
+          <Button
+            mode="contained"
+            onPress={() => router.push("/profile/address/new")}
+          >
+            Nueva dirección
+          </Button>
+        </View>
       </ScrollView>
-      <View style={{ padding: 16 }}>
-        <Button mode="contained" onPress={() => router.push("/profile/address/new")}>
-          Nueva dirección
-        </Button>
-      </View>
     </SafeAreaView>
   );
 }

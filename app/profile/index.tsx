@@ -18,6 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserList } from "@hooks/useUser";
 import DataEmpty from "@components/DataEmpty";
 import { IMAGE } from "@constants/image.constant";
+import { USER_TYPE } from "@constants/enum.constant";
 
 const Profile = () => {
   const { userError, userLoading, imageLoading } = useUserList();
@@ -126,7 +127,12 @@ const Profile = () => {
                 }}
               />
             )}
-            <Text style={{ marginTop: 10 }}>@{user.name}</Text>
+            <Text style={{ marginTop: 10 }}>
+              @
+              {user.userType == USER_TYPE.STORE
+                ? user.UserStore?.displayName
+                : user.name}
+            </Text>
           </View>
 
           <List.Section style={{ width: "100%" }}>
@@ -160,7 +166,7 @@ const Profile = () => {
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
-            {user.UserStore != null && (
+            {user?.userType == USER_TYPE.STORE && (
               <Link href="/profile/benefits" asChild>
                 <List.Item
                   title="Mis beneficios"

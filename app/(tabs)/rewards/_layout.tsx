@@ -1,15 +1,29 @@
 import { Stack } from "expo-router";
 
-
-export default function FeedLayout() { 
+export default function FeedLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index"
+      <Stack.Screen
+        name="index"
         options={{
-          title: "Rewards",
+          title: "Recompensas",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="benefits"
+        options={{
+          title: "Beneficios",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="active-benefits"
+        options={{
+          title: "Beneficios activos",
           headerShown: false,
         }}
       />
     </Stack>
-  )
+  );
 }

@@ -20,8 +20,8 @@ import { Benefit, BenefitPut } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
-  const { isLoading, error } = useBenefitList();
-  const { benefitList, setCurrentBenefit } = useBenefitStore();
+  const { isLoading, error, data: benefitList } = useBenefitList();
+  const { setCurrentBenefit } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const router = useRouter();
@@ -123,9 +123,12 @@ export default function Benefits() {
                 {error && (
                   <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
                 )}
-                {!isLoading && !error && benefitList.length === 0 && (
-                  <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
-                )}
+                {!isLoading &&
+                  !error &&
+                  benefitList &&
+                  benefitList.length === 0 && (
+                    <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
+                  )}
                 {benefitList &&
                   benefitList.map((benefit) => (
                     <CardProfile

@@ -1,26 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { benefitKeys } from "@api/query/benefit.factory";
-import { useBenefitStore } from "@stores/useBenefitStore";
 import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { benefitApi } from "@api/api.benefit";
-import { useEffect } from "react";
 
 const useBenefitList = () => {
-  const { initializeBenefitList } = useBenefitStore();
   const { data, isSuccess, error, isLoading } = useQuery({
     queryKey: benefitKeys.benefit.list().queryKey,
     queryFn: benefitKeys.benefit.list().queryFn,
   });
 
-  useEffect(() => {
-    if (isSuccess && data) {
-      initializeBenefitList(data);
-    }
-  }, [isSuccess, data, initializeBenefitList]);
-
   return {
     data,
     error,
+    isSuccess,
     isLoading,
   };
 };

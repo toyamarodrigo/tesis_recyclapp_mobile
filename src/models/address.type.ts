@@ -20,15 +20,15 @@ export const AddressSchema = z.object({
 
 const AddressPostSchema = z.object({
   street: z.string(),
-  flat: z.string(),
+  flat: z.string().optional(),
   city: z.string(),
   state: z.string(),
   postalCode: z.string(),
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
-  isArchived: z.string(),
+  isArchived: z.boolean().optional(),
   GreenPoint: GreenPointSchema.pick({ id: true }).optional(),
   User: UserSchema.pick({ id: true }).optional(),
 });
@@ -44,7 +44,7 @@ const AddressPutSchema = z.object({
   longitude: z.number().optional(),
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
-  isArchived: z.string().optional(),
+  isArchived: z.boolean().optional(),
   GreenPoint: GreenPointSchema.pick({ id: true }).optional(),
   User: UserSchema.pick({ id: true }).optional(),
 });

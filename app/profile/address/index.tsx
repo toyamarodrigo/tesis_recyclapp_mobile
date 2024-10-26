@@ -1,13 +1,38 @@
 import CardProfile from "@components/CardProfile";
+import DataEmpty from "@components/DataEmpty";
+import { useAddressList, useUpdateAddress } from "@hooks/useAddress";
+import { useAddressStore } from "@stores/useAddressStore";
 import { Link, useRouter } from "expo-router";
 import { ScrollView, View } from "react-native";
-import { Title, Button, IconButton } from "react-native-paper";
+import {
+  Title,
+  Button,
+  IconButton,
+  ActivityIndicator,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "src/theme";
+import { Address, AddressPut } from "@models/address.type";
 
-export default function Address() {
+export default function Addresses() {
   const theme = useAppTheme();
   const router = useRouter();
+  const { data: addressList, error, isLoading } = useAddressList();
+  const { setCurrentAddress } = useAddressStore();
+  const { mutate: updateAddress } = useUpdateAddress();
+
+  const handleDelete = (address: Address) => {
+    const removeAddress: AddressPut = {
+      id: address.id,
+      isArchived: true,
+    };
+    updateAddress(removeAddress);
+  };
+
+  const handleEdit = (address: Address) => {
+    setCurrentAddress(address);
+    router.push("/profile/address/new");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -17,32 +42,49 @@ export default function Address() {
         </Link>
         <Title style={{ color: theme.colors.primary }}>Mis direcciones</Title>
       </View>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
-        <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
-          <View style={{ flex: 1, width: "100%" }}>
-            <View style={{ marginBottom: 20 }}>
-              <CardProfile
-                title={"Direcci asdas asd asd asdasd ads234234"}
-                type={"dirección"}
-              />
-              <CardProfile
-                title={"Direcci asdas asd asd asdasd ads234234"}
-                type={"dirección"}
-              />
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+          <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
+            <View style={{ width: "100%" }}>
+              <View style={{ marginBottom: 20 }}>
+                {isLoading && (
+                  <ActivityIndicator
+                    color={theme.colors.primary}
+                    size={"large"}
+                  />
+                )}
+                {error && (
+                  <DataEmpty displayText="Ocurrió un problema al mostrar las direcciones. Intente nuevamente." />
+                )}
+                {!isLoading &&
+                  !error &&
+                  addressList &&
+                  addressList.length === 0 && (
+                    <DataEmpty displayText="Aún no tienes direcciones creadas. Puedes agregar una a continuación." />
+                  )}
+                {addressList &&
+                  addressList.map((address) => (
+                    <CardProfile
+                      key={address.id}
+                      title={address.street}
+                      type={"dirección"}
+                      onDelete={() => handleDelete(address)}
+                      onEdit={() => handleEdit(address)}
+                    />
+                  ))}
+              </View>
             </View>
           </View>
-        </View>
-
-        <View style={{ flex: 1 }} />
-        <View style={{ marginBottom: 20 }}>
+        </ScrollView>
+        <View style={{ padding: 16, gap: 15 }}>
           <Button
             mode="contained"
             onPress={() => router.push("/profile/address/new")}
           >
-            Nueva dirección
+            Agregar dirección
           </Button>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

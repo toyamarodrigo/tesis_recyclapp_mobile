@@ -22,21 +22,18 @@ export default function CardProfile({
   onDelete: () => void;
   onEdit: () => void;
 }) {
-  const router = useRouter();
   const [visible, setVisible] = React.useState(false);
   const theme = useAppTheme();
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
   const confirmDelete = () => {
-    //TODO benefit ok pendiente el resto
     onDelete();
     hideModal();
   };
 
   const handleEdit = () => {
     onEdit();
-    //TODO benefit ok pendiente el resto
   };
 
   return (

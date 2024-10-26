@@ -10,7 +10,6 @@ export const benefitApi = {
         `${backendApiConfig.baseURL}/benefits`
       );
 
-      console.log(result.data);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {

@@ -140,7 +140,6 @@ export default function NewBenefits() {
     editBenefit(benefit);
   };
 
-  console.log("userStore", userStore);
   const onSubmit = (data: FormValues) => {
     const benefitData: BenefitPost = {
       name: data.name,
@@ -152,8 +151,6 @@ export default function NewBenefits() {
       isActive: true,
       isArchived: false,
     };
-
-    console.log("benefitData", benefitData);
 
     if (currentBenefit) {
       const benefitEdit: BenefitPut = {

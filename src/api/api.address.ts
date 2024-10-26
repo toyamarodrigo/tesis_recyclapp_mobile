@@ -10,6 +10,7 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/addresses`
       );
 
+      console.log(result.data);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {

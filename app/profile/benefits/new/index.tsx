@@ -1,14 +1,17 @@
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, StyleSheet } from "react-native";
 import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 import { theme } from "src/theme";
 import { Link, useRouter } from "expo-router";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useUserStore } from "@stores/useUserStore";
-import { useBenefitStore } from "@stores/useBenefit";
+import { useBenefitStore } from "@stores/useBenefitStore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Fragment, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BenefitPost, BenefitPut } from "@models/benefit.type";
+import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
 
 const BenefitSchema = z.object({
   id: z.string(),
@@ -22,40 +25,36 @@ const BenefitTypeList = [
   },
   {
     id: "PRODUCT",
-    name: "PRODUCTO",
+    name: "PRODUCTO GRATIS",
   },
   {
     id: "DOUBLEPRODUCT",
-    name: "PRODUCTO_DOBLE",
+    name: "2 * 1",
   },
 ];
 
-// enum BenefitType {
-//   DISCOUNT
-//   PRODUCT
-//   DOUBLEPRODUCT
-// }
-
-type BenefitType = z.infer<typeof BenefitSchema>;
+enum BenefitType {
+  DISCOUNT = "DISCOUNT",
+  PRODUCT = "PRODUCT",
+  DOUBLEPRODUCT = "DOUBLEPRODUCT",
+}
 
 type FormValues = {
   id: string | null;
   name: string;
-  type: BenefitType;
-  endDate: Date; // new Date().toISOString(),
+  type: BenefitType | string;
+  endDate: Date;
   quantity: number;
   pointsCost: number;
   userStoreId: string;
-  isActive: boolean;
 };
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "El nombre es obligatorio." }),
   type: z.enum(["DISCOUNT", "PRODUCT", "DOUBLEPRODUCT"]),
-  endDate: z.coerce.date(), // new Date().toISOString(),
-  quantity: z.number().min(1).max(100),
-  pointsCost: z.number().min(1).max(100),
-  isActive: z.boolean(),
+  endDate: z.coerce.date(),
+  quantity: z.coerce.number().min(1).max(100),
+  pointsCost: z.coerce.number().min(100).max(1000),
 });
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -98,9 +97,8 @@ const resolver: Resolver<FormValues> = async (values) => {
 
 export default function NewBenefits() {
   const { userStore } = useUserStore();
-  const { currentBenefit } = useBenefitStore();
+  const { currentBenefit, clearCurrentBenefit } = useBenefitStore();
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState(new Date());
   function addMonths(date: Date, months: number): Date {
     const nuevaFecha = new Date(date);
     nuevaFecha.setMonth(nuevaFecha.getMonth() + months);
@@ -108,14 +106,11 @@ export default function NewBenefits() {
   }
   const currentDate = new Date();
   const newDate = addMonths(currentDate, 3);
+  const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
-
-  console.log(currentDate, newDate);
-
-  const onSubmit = async (data: FormValues) => {
-    console.log("nuevo beneficio", data);
-    router.replace("/profile/benefits");
-  };
+  const [selectedDate, setSelectedDate] = useState(newDate);
+  const { mutate: createBenefit } = useCreateBenefit();
+  const { mutate: editBenefit } = useUpdateBenefit();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
@@ -130,6 +125,46 @@ export default function NewBenefits() {
     setSelectedDate(date);
     hideDatePicker();
   };
+
+  const handleCancel = () => {
+    reset();
+    clearCurrentBenefit();
+    router.push("/profile/benefits");
+  };
+
+  const handleCreate = (benefit: BenefitPost) => {
+    createBenefit(benefit);
+  };
+
+  const handleEdit = (benefit: BenefitPut) => {
+    editBenefit(benefit);
+  };
+
+  const onSubmit = (data: FormValues) => {
+    const benefitData: BenefitPost = {
+      name: data.name,
+      type: data.type,
+      endDate: data.endDate,
+      quantity: data.quantity,
+      pointsCost: data.pointsCost,
+      userStoreId: userStore?.id ?? "",
+      isActive: true,
+      isArchived: false,
+    };
+
+    if (currentBenefit) {
+      const benefitEdit: BenefitPut = {
+        ...benefitData,
+        id: currentBenefit.id,
+      };
+      handleEdit(benefitEdit);
+    } else {
+      handleCreate(benefitData);
+    }
+
+    handleCancel();
+  };
+
   const {
     control,
     reset,
@@ -141,14 +176,11 @@ export default function NewBenefits() {
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
-      id: currentBenefit?.id ?? null,
-      name: currentBenefit?.name ?? "",
-      type: BenefitTypeList[0],
-      endDate: currentBenefit?.endDate ?? newDate, // new Date().toISOString(),
-      quantity: currentBenefit?.quantity ?? 1,
-      pointsCost: currentBenefit?.pointsCost ?? 1,
-      userStoreId: currentBenefit?.userStoreId ?? "1",
-      isActive: currentBenefit?.isActive ?? true,
+      name: currentBenefit ? currentBenefit.name : "",
+      type: currentBenefit ? currentBenefit.type : BenefitType.DISCOUNT,
+      endDate: currentBenefit ? currentBenefit.endDate : newDate,
+      quantity: currentBenefit ? currentBenefit.quantity : 1,
+      pointsCost: currentBenefit ? currentBenefit.pointsCost : 100,
     },
   });
 
@@ -181,8 +213,12 @@ export default function NewBenefits() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
-                  // error={!!errors.name}
-                  style={{ marginBottom: 20 }}
+                  error={!!errors.name}
+                  style={{
+                    marginBottom: 20,
+                    color: theme.colors.primary,
+                    backgroundColor: theme.colors.background,
+                  }}
                 />
               )}
             />
@@ -190,6 +226,136 @@ export default function NewBenefits() {
             {errors.name && (
               <Text style={{ color: "red" }}>{errors.name.message}</Text>
             )}
+
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { onChange, value } }) => (
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={(itemValue) => onChange(itemValue)}
+                    style={styles.picker}
+                  >
+                    {BenefitTypeList.map((item) => (
+                      <Picker.Item
+                        key={item.id}
+                        label={item.name}
+                        value={item.id}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+            />
+            {errors.type && (
+              <Text style={{ color: "red" }}>{errors.type.message}</Text>
+            )}
+
+            <Controller
+              control={control}
+              name="quantity"
+              rules={{
+                required: "La cantidad es obligatoria",
+                min: { value: 1, message: "Debe ser al menos 1" },
+                max: { value: 100, message: "No debe superar 100" },
+                validate: (value) =>
+                  !isNaN(Number(value)) || "Debe ser un número",
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  label="Cantidad"
+                  onChangeText={(text) => {
+                    let numericValue = text.replace(/[^0-9]/g, "");
+
+                    if (numericValue && Number(numericValue) > 100) {
+                      numericValue = "100";
+                    }
+
+                    onChange(numericValue);
+                  }}
+                  onBlur={() => {
+                    let numericValue = Number(value);
+
+                    if (!numericValue || numericValue < 1) {
+                      numericValue = 1;
+                    }
+
+                    if (numericValue > 100) {
+                      numericValue = 100;
+                    }
+
+                    onChange(numericValue);
+                    onBlur();
+                  }}
+                  value={value ? value.toString() : ""}
+                  keyboardType="numeric"
+                  style={{
+                    marginBottom: 20,
+                    color: theme.colors.primary,
+                    backgroundColor: theme.colors.background,
+                  }}
+                  error={!!errors.quantity}
+                />
+              )}
+            />
+
+            {errors.quantity && (
+              <Text style={{ color: "red" }}>{errors.quantity.message}</Text>
+            )}
+
+            <Controller
+              control={control}
+              name="pointsCost"
+              rules={{
+                required: "El costo de puntos es obligatorio",
+                min: { value: 100, message: "Debe ser al menos 100" },
+                max: { value: 1000, message: "No debe superar 1000" },
+                validate: (value) =>
+                  !isNaN(Number(value)) || "Debe ser un número",
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  label="Costo de Puntos"
+                  onChangeText={(text) => {
+                    let numericValue = text.replace(/[^0-9]/g, "");
+
+                    if (numericValue && Number(numericValue) > 1000) {
+                      numericValue = "1000";
+                    }
+
+                    onChange(numericValue);
+                  }}
+                  onBlur={() => {
+                    let numericValue = Number(value);
+
+                    if (!numericValue || numericValue < 100) {
+                      numericValue = 100;
+                    }
+
+                    if (numericValue > 1000) {
+                      numericValue = 1000;
+                    }
+
+                    onChange(numericValue);
+                    onBlur();
+                  }}
+                  value={value ? value.toString() : ""}
+                  keyboardType="numeric"
+                  style={{
+                    marginBottom: 20,
+                    color: theme.colors.primary,
+                    backgroundColor: theme.colors.background,
+                  }}
+                  error={!!errors.pointsCost}
+                />
+              )}
+            />
+
+            {errors.pointsCost && (
+              <Text style={{ color: "red" }}>{errors.pointsCost.message}</Text>
+            )}
+
             <Controller
               control={control}
               name="endDate"
@@ -198,27 +364,34 @@ export default function NewBenefits() {
                   <TextInput
                     label="Fecha"
                     onChangeText={(text) => {
-                      onChange(text); // Esto actualizará el valor en el control
+                      onChange(text);
                     }}
                     onBlur={onBlur}
                     value={
                       value
                         ? Number.isNaN(new Date(value).getTime())
                           ? ""
-                          : new Date(value).toISOString().split("T")[0]
+                          : `${("0" + new Date(value).getDate()).slice(-2)}-${("0" + (new Date(value).getMonth() + 1)).slice(-2)}-${new Date(value).getFullYear()}`
                         : ""
-                    } // Solo la parte de la fecha
+                    }
                     error={!!errors.endDate}
-                    style={{ marginBottom: 20 }}
+                    style={{
+                      marginBottom: 20,
+                      color: theme.colors.primary,
+                      backgroundColor: theme.colors.background,
+                    }}
                     onFocus={showDatePicker}
                   />
                   <DateTimePickerModal
                     isVisible={isDatePickerVisible}
                     mode="date"
                     date={selectedDate}
+                    minimumDate={minDate}
+                    maximumDate={maxDate}
                     onConfirm={(date) => {
-                      onChange(date.toISOString()); // Actualiza el valor en el control
-                      handleConfirm(date); // Maneja la confirmación
+                      const isoString = date.toISOString();
+                      onChange(isoString);
+                      handleConfirm(date);
                     }}
                     onCancel={hideDatePicker}
                   />
@@ -229,15 +402,14 @@ export default function NewBenefits() {
         </View>
       </ScrollView>
       <View style={{ padding: 16, gap: 15 }}>
-        <Button
-          mode="contained"
-          onPress={handleSubmit(onSubmit)}
-        >
-          Crear nuevo beneficio
+        <Button mode="contained" onPress={handleSubmit(onSubmit)}>
+          {currentBenefit ? "Editar beneficio" : "Crear nuevo beneficio"}
         </Button>
         <Button
           mode="contained-tonal"
-          onPress={() => router.push("/profile/benefits")}
+          onPress={() => handleCancel()}
+          buttonColor={theme.colors.errorContainer}
+          textColor={theme.colors.onErrorContainer}
         >
           Cancelar
         </Button>
@@ -245,3 +417,19 @@ export default function NewBenefits() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  pickerContainer: {
+    marginBottom: 20,
+    borderColor: theme.colors.primary,
+    borderWidth: 1,
+    borderRadius: 4,
+    backgroundColor: theme.colors.background,
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    color: theme.colors.primary,
+  },
+});

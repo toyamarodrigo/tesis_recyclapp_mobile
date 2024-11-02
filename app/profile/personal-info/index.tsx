@@ -1,26 +1,30 @@
 import React, { useState } from "react";
 import { View, ScrollView } from "react-native";
-import { type Resolver, useForm, Controller, useWatch } from "react-hook-form";
+import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
   TextInput,
-  Switch,
   Text,
   Button,
   Title,
   IconButton,
+  Icon,
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { USER_TYPE } from "@constants/enum.constant";
+import { useUpdateUser } from "@hooks/useUser";
+import { UserPut } from "@models/user.type";
+import { UserStorePut } from "@models/userStore.type";
 
 type FormValues = {
   name: string;
   surname: string;
   mail: string;
   phone: string;
-  isStore: boolean;
+  displayName: string;
 };
 
 const formSchema = z.object({
@@ -33,7 +37,7 @@ const formSchema = z.object({
       message: "Debe ingresar los 10 números luego del + 54 9",
     })
     .max(10, { message: "Debe ingresar los 10 números luego del + 54 9" }),
-  isStore: z.boolean().optional(),
+  displayName: z.string().min(3).max(20),
 });
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -75,9 +79,11 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function PersonalInfo() {
-  const { user } = useUserStore();
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
+  const router = useRouter();
+  const { user, userStore } = useUserStore();
+  const { mutate: updateUser } = useUpdateUser();
 
   const {
     control,
@@ -94,18 +100,43 @@ export default function PersonalInfo() {
       surname: user?.surname ?? "",
       mail: user?.mail ?? "",
       phone: user?.phone ?? "",
+      displayName:
+        user?.userType == USER_TYPE.STORE
+          ? user.UserStore?.displayName
+          : "null",
     },
   });
 
-  const watchIsStore = useWatch({
-    control,
-    name: "isStore",
-    defaultValue: false,
-  });
+  const onSubmit = async (formData: FormValues) => {
+    let userStoreData;
 
-  const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
-    setIsEditable(false);
+    if (user) {
+      const userData: UserPut = {
+        id: user.id,
+        name: formData.name,
+        surname: formData.surname,
+        mail: formData.mail,
+        phone: formData.phone,
+      };
+
+      if (userStore) {
+        userStoreData = {
+          id: userStore.id,
+          displayName: formData.displayName,
+        };
+      } else {
+        userStoreData = undefined;
+      }
+
+      const data = { userData, userStoreData };
+
+      updateUser(data, {
+        onSuccess: () => {
+          onCancel();
+          router.push("/profile");
+        },
+      });
+    }
   };
 
   const onCancel = () => {
@@ -118,6 +149,11 @@ export default function PersonalInfo() {
     const numericText = text.replace(/[^0-9]/g, "");
     setValue("phone", numericText);
   };
+
+  if (!user) {
+    onCancel();
+    router.push("/profile");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -221,34 +257,54 @@ export default function PersonalInfo() {
             </Text>
           )}
 
-          {/* Is Store Switch */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 20,
-            }}
-          >
-            <Text>Soy tienda</Text>
-            <Controller
-              control={control}
-              name="isStore"
-              render={({ field: { onChange, value } }) => (
-                <Switch
-                  value={value}
-                  onValueChange={onChange}
-                  disabled={!isEditable}
-                />
+          {user?.userType == USER_TYPE.STORE && (
+            <View>
+              {/* displayName Input */}
+              <Controller
+                control={control}
+                name="displayName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    label="Nombre de la Tienda"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    error={!!errors.displayName}
+                    disabled={!isEditable}
+                    style={{ marginBottom: 20 }}
+                  />
+                )}
+              />
+              {errors.displayName && (
+                <Text style={{ color: "red", marginBottom: 10 }}>
+                  {errors.displayName.message}
+                </Text>
               )}
-            />
-          </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 20,
+                }}
+              >
+                <Icon
+                  source="tag-multiple"
+                  color={theme.colors.tertiary}
+                  size={20}
+                />
+                <Text style={{ marginLeft: 10 }}>Perfil Tienda</Text>
+              </View>
+              <Text style={{ color: theme.colors.tertiary, fontSize: 12 }}>
+                Recuerda que para realizar gestiones del perfil Tienda debes
+                dirigirte a nuestro sitio web.
+              </Text>
+            </View>
+          )}
         </View>
 
-        {/* Spacer to push the button to the bottom */}
         <View style={{ flex: 1 }} />
-
-        {/* Button Section */}
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginBottom: 20 }}>
           {isEditable ? (
             <View>
               <Button
@@ -259,9 +315,10 @@ export default function PersonalInfo() {
                 Confirmar cambios
               </Button>
               <Button
-                mode="outlined"
+                mode="contained"
                 onPress={onCancel}
-                textColor={theme.colors.error}
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
               >
                 Cancelar
               </Button>

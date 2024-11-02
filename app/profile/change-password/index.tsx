@@ -7,6 +7,10 @@ import { useState } from "react";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserStore } from "@stores/useUserStore";
+import bcrypt from "bcryptjs";
+import { useUpdateUser } from "@hooks/useUser";
+import { UserPut } from "@models/user.type";
 
 type FormValues = {
   currentPassword: string;
@@ -21,7 +25,7 @@ const formSchema = z
       .min(1, { message: "Este campo no puede estar vacio" }),
     newPassword: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .min(8, "La contraseña debe tener 8 caracteres")
       .regex(/[A-Z]/, "Debe contener al menos una letra mayúscula")
       .regex(/[a-z]/, "Debe contener al menos una letra minúscula")
       .regex(/\d/, "Debe contener al menos un número")
@@ -31,6 +35,10 @@ const formSchema = z
       ),
     repeatNewPassword: z.string(),
   })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: "La nueva contraseña no puede ser la misma que la actual",
+    path: ["newPassword"],
+  })
   .refine((data) => data.newPassword === data.repeatNewPassword, {
     message: "La nueva contraseña no coincide",
     path: ["repeatNewPassword"],
@@ -39,11 +47,14 @@ const formSchema = z
 export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
+  const { user } = useUserStore();
+  const { mutate: updatePassword } = useUpdateUser();
   const {
     control,
     reset,
     formState: { errors },
     handleSubmit,
+    setError,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,13 +65,50 @@ export default function ChangePassword() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
+    //As123!1235
+    const storedPassword = user?.password || "";
+
+    const isPasswordCorrect = await bcrypt.compare(
+      data.currentPassword,
+      storedPassword
+    );
+
+    if (!isPasswordCorrect) {
+      setError("currentPassword", {
+        type: "manual",
+        message: "La contraseña actual no es correcta",
+      });
+      return;
+    }
+
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(data.newPassword, saltRounds);
+
+    if (user) {
+      const userData: UserPut = {
+        id: user.id,
+        password: hashedNewPassword,
+      };
+
+      const data = { userData };
+
+      updatePassword(data, {
+        onSuccess: () => {
+          reset();
+          router.push("/profile");
+        },
+      });
+    }
   };
 
   const onCancel = () => {
     reset();
     router.push("/profile");
   };
+
+  if (!user) {
+    onCancel();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -132,20 +180,44 @@ export default function ChangePassword() {
                 </Text>
               )}
             </View>
-            <Button
-              mode="contained"
-              onPress={handleSubmit(onSubmit)}
-              style={{ marginBottom: 10 }}
-            >
-              Cambiar contraseña
-            </Button>
-            <Button
-              mode="outlined"
-              onPress={onCancel}
-              textColor={theme.colors.error}
-            >
-              Cancelar
-            </Button>
+            <View style={{ marginBottom: 20 }}>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                La contraseña debe tener:{" "}
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                8 caracteres.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos una letra mayúscula.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos una letra minúscula.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos un número.
+              </Text>
+              <Text style={{ fontSize: 16, color: theme.colors.secondary }}>
+                Al menos un caracter especial.
+              </Text>
+            </View>
+            <View style={{ flex: 1 }} />
+            <View style={{ marginBottom: 20 }}>
+              <Button
+                mode="contained"
+                onPress={handleSubmit(onSubmit)}
+                style={{ marginBottom: 10 }}
+              >
+                Cambiar contraseña
+              </Button>
+              <Button
+                mode="contained"
+                onPress={onCancel}
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
+              >
+                Cancelar
+              </Button>
+            </View>
           </View>
         </View>
       </ScrollView>

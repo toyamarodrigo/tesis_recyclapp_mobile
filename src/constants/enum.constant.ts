@@ -32,3 +32,8 @@ export const POSTPURPOUSE = {
   HAVE: "HAVE",
   WANT: "WANT",
 } as const;
+
+export const USER_TYPE = {
+  CUSTOMER: "CUSTOMER",
+  STORE: "STORE",
+} as const;

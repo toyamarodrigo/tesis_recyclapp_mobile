@@ -23,11 +23,12 @@ import { USER_TYPE } from "@constants/enum.constant";
 const Profile = () => {
   const { userError, userLoading, imageLoading } = useUserList();
   const { user, profileImage } = useUserStore();
-  const [visible, setVisible] = React.useState(false);
+  const [deleteVisible, setDeleteVisible] = React.useState(false);
+  const [logoutVisible, setLogoutVisible] = React.useState(false);
   const theme = useAppTheme();
 
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
+  const showModalDelete = () => setDeleteVisible(true);
+  const showModalLogout = () => setLogoutVisible(true);
 
   if (!user) return null;
 
@@ -47,8 +48,8 @@ const Profile = () => {
       >
         <Portal>
           <Modal
-            visible={visible}
-            onDismiss={hideModal}
+            visible={deleteVisible}
+            onDismiss={() => setDeleteVisible(false)}
             contentContainerStyle={{
               backgroundColor: "white",
               padding: 20,
@@ -81,7 +82,7 @@ const Profile = () => {
             </View>
             <Button
               mode="contained"
-              onPress={() => hideModal()}
+              onPress={() => setDeleteVisible(false)}
               buttonColor={theme.colors.outline}
               style={{
                 margin: 10,
@@ -100,7 +101,52 @@ const Profile = () => {
               Eliminar
             </Button>
           </Modal>
+          <Modal
+            visible={logoutVisible}
+            onDismiss={() => setLogoutVisible(false)}
+            contentContainerStyle={{
+              backgroundColor: "white",
+              padding: 20,
+            }}
+          >
+            <View
+              style={{
+                padding: 10,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
+                ¿Deseas cerrar sesión?
+              </Text>
+              <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
+                Deberás volver a ingresar tus datos la próxima vez.
+              </Text>
+            </View>
+            <Button
+              mode="contained"
+              onPress={() => setLogoutVisible(false)}
+              buttonColor={theme.colors.outline}
+              style={{
+                margin: 10,
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => console.log("Se borraron los datulis")}
+              buttonColor={theme.colors.error}
+              style={{
+                margin: 10,
+              }}
+            >
+              Cerrar sesion
+            </Button>
+          </Modal>
         </Portal>
+
         <View style={{ flex: 1, width: "100%" }}>
           {(userLoading || userError) && (
             <View style={{ alignItems: "center", marginVertical: 20 }}>
@@ -157,15 +203,6 @@ const Profile = () => {
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
-            <Link href="/profile/notifications" asChild>
-              <List.Item
-                title="Notificaciones"
-                left={() => (
-                  <List.Icon icon="bell-ring" color={theme.colors.tertiary} />
-                )}
-                right={(props) => <List.Icon {...props} icon="chevron-right" />}
-              />
-            </Link>
             {user?.userType == USER_TYPE.STORE && (
               <Link href="/profile/benefits" asChild>
                 <List.Item
@@ -203,14 +240,14 @@ const Profile = () => {
         >
           <Button
             mode="text"
-            onPress={() => console.log("Cerrar sesión")}
+            onPress={() => showModalLogout()}
             textColor={theme.colors.secondary}
           >
             Cerrar sesión
           </Button>
           <Button
             mode="text"
-            onPress={() => showModal()}
+            onPress={() => showModalDelete()}
             textColor={theme.colors.error}
           >
             Eliminar cuenta

@@ -27,7 +27,6 @@ export const UserSchema = z.object({
   Rating: RatingSchema.optional().optional(),
   UserStore: UserStoreSchema.optional().optional(),
   UserCustomer: UserCustomerSchema.optional().optional(),
-  // Image: ImageSchema.optional(),
 });
 
 const UserPostSchema = z.object({
@@ -48,7 +47,6 @@ const UserPostSchema = z.object({
   Rating: RatingSchema.optional(),
   UserStore: UserStoreSchema.optional(),
   UserCustomer: UserCustomerSchema.optional(),
-  // Image: ImageSchema.optional(),
 });
 
 const UserPutSchema = z.object({

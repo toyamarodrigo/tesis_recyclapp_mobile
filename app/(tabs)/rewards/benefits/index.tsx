@@ -1,28 +1,132 @@
 import { ScrollView, View, StyleSheet } from "react-native";
-import { IconButton, Text } from "react-native-paper";
 import { router } from "expo-router";
+import {
+  Text,
+  Title,
+  Button,
+  IconButton,
+  Modal,
+  Portal,
+  TextInput,
+} from "react-native-paper";
+import { useBenefitList } from "@hooks/useBenefit";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { theme } from "src/theme";
+import CardBenefit from "@components/CardBenefit";
+import { useState } from "react";
+import { Benefit } from "@models/benefit.type";
+import { useUserStore } from "@stores/useUserStore";
 
 export default function Benefits() {
+  const { isLoading, error, data: benefitList } = useBenefitList();
+  const [visible, setVisible] = useState<boolean>(false);
+  const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
+  const { userCustomer } = useUserStore();
+
+  console.log(userCustomer);
+
+  const hideModal = () => {
+    setVisible(false);
+  };
+
+  const showModal = (benefit: Benefit) => {
+    setSelectedBenefit(benefit);
+    setVisible(true);
+  };
+
+  const confirmPoints = () => {
+    console.log("confirmo cambio de puntos");
+    hideModal();
+  };
+
+  const disablePoints = () => {
+    if (
+      selectedBenefit &&
+      userCustomer &&
+      userCustomer.pointsCurrent < selectedBenefit.pointsCost
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  console.log("benefitlist", benefitList);
+
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <View style={styles.header}>
         <IconButton
           icon="chevron-left"
-          iconColor="#1B5E20"
+          iconColor={theme.colors.primary}
           style={styles.backButton}
           size={32}
           onPress={() => router.back()}
         />
-        <Text style={styles.title}>Beneficios</Text>
+        <Title style={styles.title}>Beneficios ofrecidos</Title>
       </View>
-    </ScrollView>
+      <View style={{ flex: 1 }}>
+        <View style={styles.scoreHeader}>
+          <Text style={styles.score}>
+            Puntos disponibles: {userCustomer && userCustomer.pointsCost}
+          </Text>
+        </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+          <Portal>
+            <Modal
+              visible={visible}
+              onDismiss={hideModal}
+              contentContainerStyle={{
+                backgroundColor: "white",
+                padding: 20,
+              }}
+            >
+              <View style={{ gap: 20 }}>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 18,
+                    color: theme.colors.primary,
+                    textAlign: "center",
+                  }}
+                >
+                  Cambio de puntos por beneficio
+                </Text>
+                <Button
+                  mode="contained-tonal"
+                  onPress={confirmPoints}
+                  disabled={disablePoints()}
+                >
+                  Confirmar canje
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={hideModal}
+                  buttonColor={theme.colors.errorContainer}
+                  textColor={theme.colors.onErrorContainer}
+                >
+                  Cancelar
+                </Button>
+              </View>
+            </Modal>
+          </Portal>
+          {benefitList
+            ? benefitList.map((benefit) => (
+                <CardBenefit
+                  key={benefit.id}
+                  benefit={benefit}
+                  handlePoints={() => showModal(benefit)}
+                  disabled={disablePoints()}
+                />
+              ))
+            : null}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -35,8 +139,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#1B5E20",
+    color: theme.colors.primary,
     flex: 1,
     flexWrap: "wrap",
+  },
+  scoreHeader: {
+    margin: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: theme.colors.tertiary,
+    padding: 10,
+    borderRadius: 20,
+  },
+  score: {
+    fontSize: 18,
+    color: theme.colors.onTertiary,
   },
 });

@@ -21,8 +21,11 @@ const useUserList = () => {
 
   useEffect(() => {
     if (userSuccess && userData) {
-      initializeUser(userData[6]);
-      setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+      // 6 store, 4 customer dakun
+      // initializeUser(userData[6]);
+      // setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+      initializeUser(userData[4]);
+      setUserId(userData[4].id); //TODO arreglar esta llamada en el login del usuario
     }
   }, [userSuccess, userData, initializeUser]);
 

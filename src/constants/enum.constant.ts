@@ -14,6 +14,19 @@ export const BENEFITTYPE = {
 } as const;
 
 //enum
+export const BENEFITTYPEICON = {
+  DISCOUNT: "percent",
+  PRODUCT: "gift-open",
+  DOUBLEPRODUCT: "plus-circle-multiple",
+} as const;
+
+export const BENEFITTYPETEXT = {
+  DISCOUNT: "Descuento",
+  PRODUCT: "Regalo",
+  DOUBLEPRODUCT: "2 x 1",
+} as const;
+
+//enum
 export const USERTYPE = {
   CUSTOMER: "CUSTOMER",
   STORE: "STORE",

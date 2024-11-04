@@ -6,6 +6,7 @@ import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
 import { colors } from "@constants/colors.constant";
 import type { Ad, News } from "@models/advertisement.type";
+import { useUserList } from "@hooks/useUser";
 
 const mockAds: Ad[] = [
   {
@@ -214,6 +215,8 @@ const fetchNews = async () => {
 };
 
 const Home = () => {
+  useUserList(); //TODO colocar bien esta llamada en el login
+
   // TODO: fetch ads from API
   const { data: ads, isPending: adsPending } = useQuery({
     queryKey: ["ads"],

@@ -9,7 +9,6 @@ import {
   Button,
 } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
-import { useRouter } from "expo-router";
 
 export default function CardProfile({
   title,

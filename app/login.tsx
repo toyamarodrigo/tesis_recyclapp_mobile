@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { useForm, type Resolver } from "react-hook-form";
 import Constants from "expo-constants";
 import { Button, TextInput, Text } from "react-native-paper";
-import { useUser } from "@hooks/useUser";
+import { useUser, useUserList } from "@hooks/useUser";
 import { colors } from "@constants/colors.constant";
 import { useRouter } from "expo-router";
 
@@ -41,7 +41,6 @@ const Login = () => {
   };
 
   const router = useRouter();
-
   const { data } = useUser("cleuifi5a0000v8fc341gbc31");
 
   console.log("user cleuifi5a0000v8fc341gbc31", data);

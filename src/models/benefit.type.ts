@@ -46,9 +46,15 @@ const BenefitPutSchema = z.object({
   userCustomerHistory: z.array(UserCustomerSchema).optional(),
 });
 
+const BenefitUserSchema = z.object({
+  idBenefit: z.string(),
+  idUser: z.string(),
+});
+
 export type Benefit = z.infer<typeof BenefitSchema>;
 export type BenefitPost = z.infer<typeof BenefitPostSchema>;
 export type BenefitPut = z.infer<typeof BenefitPutSchema>;
+export type BenefitUser = z.infer<typeof BenefitUserSchema>;
 
 // model Benefit {
 //   id                  String         @id @default(cuid())

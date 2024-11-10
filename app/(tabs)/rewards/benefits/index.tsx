@@ -7,18 +7,21 @@ import {
   IconButton,
   Modal,
   Portal,
-  TextInput,
+  ActivityIndicator,
 } from "react-native-paper";
-import { useBenefitList } from "@hooks/useBenefit";
+import { useAddBenefitUserActive, useBenefitList } from "@hooks/useBenefit";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
 import { useState } from "react";
-import { Benefit } from "@models/benefit.type";
+import { Benefit, BenefitUser } from "@models/benefit.type";
 import { useUserStore } from "@stores/useUserStore";
+import { BENEFITTYPETEXT } from "@constants/enum.constant";
+import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
+  const { mutate: addBenefitUserActive } = useAddBenefitUserActive();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { userCustomer } = useUserStore();
@@ -35,7 +38,14 @@ export default function Benefits() {
   };
 
   const confirmPoints = () => {
-    console.log("confirmo cambio de puntos");
+    if (selectedBenefit) {
+      const benefitUser: BenefitUser = {
+        idBenefit: selectedBenefit.id,
+        idUser: userCustomer.id,
+      };
+
+      addBenefitUserActive(benefitUser);
+    }
     hideModal();
   };
 
@@ -68,7 +78,7 @@ export default function Benefits() {
       <View style={{ flex: 1 }}>
         <View style={styles.scoreHeader}>
           <Text style={styles.score}>
-            Puntos disponibles: {userCustomer && userCustomer.pointsCost}
+            Puntos disponibles: {userCustomer && userCustomer.pointsCurrent}
           </Text>
         </View>
         <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
@@ -81,42 +91,60 @@ export default function Benefits() {
                 padding: 20,
               }}
             >
-              <View style={{ gap: 20 }}>
-                <Text
-                  style={{
-                    fontWeight: "600",
-                    fontSize: 18,
-                    color: theme.colors.primary,
-                    textAlign: "center",
-                  }}
-                >
-                  Cambio de puntos por beneficio
-                </Text>
-                <Button
-                  mode="contained-tonal"
-                  onPress={confirmPoints}
-                  disabled={disablePoints()}
-                >
-                  Confirmar canje
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={hideModal}
-                  buttonColor={theme.colors.errorContainer}
-                  textColor={theme.colors.onErrorContainer}
-                >
-                  Cancelar
-                </Button>
-              </View>
+              {selectedBenefit && (
+                <View style={{ gap: 20 }}>
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 18,
+                      color: theme.colors.primary,
+                      textAlign: "center",
+                    }}
+                  >
+                    Cambio de {selectedBenefit.pointsCost} puntos por beneficio
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 18,
+                      color: theme.colors.primary,
+                      textAlign: "center",
+                    }}
+                  >
+                    {BENEFITTYPETEXT[selectedBenefit.type]}
+                  </Text>
+                  <Button
+                    mode="contained-tonal"
+                    onPress={confirmPoints}
+                    disabled={disablePoints()}
+                  >
+                    Confirmar canje
+                  </Button>
+                  <Button
+                    mode="contained"
+                    onPress={hideModal}
+                    buttonColor={theme.colors.errorContainer}
+                    textColor={theme.colors.onErrorContainer}
+                  >
+                    Cancelar
+                  </Button>
+                </View>
+              )}
             </Modal>
           </Portal>
+          {isLoading && (
+            <ActivityIndicator color={theme.colors.primary} size={"large"} />
+          )}
+          {error && (
+            <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
+          )}
           {benefitList
             ? benefitList.map((benefit) => (
                 <CardBenefit
                   key={benefit.id}
                   benefit={benefit}
                   handlePoints={() => showModal(benefit)}
-                  disabled={disablePoints()}
+                  userPoints={userCustomer.pointsCurrent}
                 />
               ))
             : null}

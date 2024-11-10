@@ -14,15 +14,15 @@ import { transformDate } from "@utils/helpers";
 
 export default function CardBenefit({
   benefit,
-  disabled,
+  userPoints,
   handlePoints,
 }: {
   benefit: any;
-  disabled: boolean;
+  userPoints: number;
   handlePoints: () => void;
 }) {
   return (
-    <Card>
+    <Card style={{ margin: 15 }}>
       <Card.Title
         title={BENEFITTYPETEXT[benefit.type]}
         subtitle={`Por ${benefit.pointsCost} puntos`}
@@ -36,14 +36,21 @@ export default function CardBenefit({
           Válido hasta {transformDate(benefit.endDate)}
         </Text>
       </Card.Content>
-      <Card.Actions>
+      <Card.Actions style={{ justifyContent: "center" }}>
         <Button
           mode="contained"
           onPress={handlePoints}
-          style={{ marginBottom: 8 }}
-          disabled={disabled}
+          style={{
+            marginBottom: 20,
+            marginTop: 20,
+            alignSelf: "center",
+            width: "100%",
+          }}
+          disabled={benefit.pointsCost > userPoints}
         >
-          Cambiar mis puntos
+          {benefit.pointsCost > userPoints
+            ? "No tienes puntos suficientes"
+            : "Cambiar mis puntos"}
         </Button>
       </Card.Actions>
     </Card>

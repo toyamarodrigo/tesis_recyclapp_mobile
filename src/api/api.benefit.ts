@@ -1,4 +1,9 @@
-import type { Benefit, BenefitPost, BenefitPut } from "@models/benefit.type";
+import type {
+  Benefit,
+  BenefitPost,
+  BenefitPut,
+  BenefitUser,
+} from "@models/benefit.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 import { Alert } from "react-native";
@@ -104,6 +109,31 @@ export const benefitApi = {
       Alert.alert(
         "Error",
         "Ocurrió un problema al eliminar el beneficio. Intente nuevamente."
+      );
+      throw new Error("Unknown error");
+    }
+  },
+  addBenefitUserActive: async (benefit: BenefitUser) => {
+    try {
+      const result = await axios.put<BenefitUser>(
+        `${backendApiConfig.baseURL}/benefit/${benefit.idBenefit}/connect-active`,
+        benefit
+      );
+
+      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
+      return result;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al canjear el beneficio. Intente nuevamente."
+        );
+        throw new Error(e.message);
+      }
+
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al canjear el beneficio. Intente nuevamente."
       );
       throw new Error("Unknown error");
     }

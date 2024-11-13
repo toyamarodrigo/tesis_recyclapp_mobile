@@ -9,7 +9,7 @@ import {
   Portal,
   ActivityIndicator,
 } from "react-native-paper";
-import { useAddBenefitUserActive, useBenefitList } from "@hooks/useBenefit";
+import { useBenefitList } from "@hooks/useBenefit";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
@@ -21,12 +21,9 @@ import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
-  const { mutate: addBenefitUserActive } = useAddBenefitUserActive();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { userCustomer } = useUserStore();
-
-  console.log(userCustomer);
 
   const hideModal = () => {
     setVisible(false);
@@ -44,7 +41,7 @@ export default function Benefits() {
         idUser: userCustomer.id,
       };
 
-      addBenefitUserActive(benefitUser);
+      //addBenefitUserActive(benefitUser);
     }
     hideModal();
   };
@@ -60,8 +57,6 @@ export default function Benefits() {
       return false;
     }
   };
-
-  console.log("benefitlist", benefitList);
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -144,6 +139,7 @@ export default function Benefits() {
                   key={benefit.id}
                   benefit={benefit}
                   handlePoints={() => showModal(benefit)}
+                  isActiveBenefit={false}
                   userPoints={userCustomer.pointsCurrent}
                 />
               ))

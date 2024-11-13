@@ -72,26 +72,10 @@ const useDeleteBenefit = () => {
   return { mutate, isPending, isSuccess, error };
 };
 
-const useAddBenefitUserActive = () => {
-  const queryClient = useQueryClient();
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: (benefitUser: BenefitUser) =>
-      benefitApi.addBenefitUserActive(benefitUser),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
-      });
-    },
-  });
-
-  return { mutate, isPending, isError, error };
-};
-
 export {
   useBenefitById,
   useBenefitList,
   useCreateBenefit,
   useDeleteBenefit,
   useUpdateBenefit,
-  useAddBenefitUserActive,
 };

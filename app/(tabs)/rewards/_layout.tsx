@@ -24,6 +24,13 @@ export default function FeedLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="code-benefit"
+        options={{
+          title: "Canjear beneficio",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

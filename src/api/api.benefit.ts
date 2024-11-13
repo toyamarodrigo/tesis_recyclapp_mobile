@@ -113,29 +113,4 @@ export const benefitApi = {
       throw new Error("Unknown error");
     }
   },
-  addBenefitUserActive: async (benefit: BenefitUser) => {
-    try {
-      const result = await axios.put<BenefitUser>(
-        `${backendApiConfig.baseURL}/benefit/${benefit.idBenefit}/connect-active`,
-        benefit
-      );
-
-      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
-      return result;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        Alert.alert(
-          "Error",
-          "Ocurrió un problema al canjear el beneficio. Intente nuevamente."
-        );
-        throw new Error(e.message);
-      }
-
-      Alert.alert(
-        "Error",
-        "Ocurrió un problema al canjear el beneficio. Intente nuevamente."
-      );
-      throw new Error("Unknown error");
-    }
-  },
 };

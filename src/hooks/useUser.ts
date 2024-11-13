@@ -5,6 +5,7 @@ import { UserPost, UserPut } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
 import { useEffect, useState } from "react";
 import { useImageById } from "./useImage";
+import { benefitKeys } from "@api/query/benefit.factory";
 
 const useUserList = () => {
   const { initializeUser, setProfileImage } = useUserStore();
@@ -22,10 +23,10 @@ const useUserList = () => {
   useEffect(() => {
     if (userSuccess && userData) {
       // 6 store, 4 customer dakun
-      // initializeUser(userData[6]);
-      // setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
-      initializeUser(userData[4]);
-      setUserId(userData[4].id); //TODO arreglar esta llamada en el login del usuario
+      initializeUser(userData[6]);
+      setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+      // initializeUser(userData[4]);
+      // setUserId(userData[4].id); //TODO arreglar esta llamada en el login del usuario
     }
   }, [userSuccess, userData, initializeUser]);
 
@@ -91,6 +92,9 @@ const useUpdateUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: userKeys.user.list().queryKey, //TODO revisar si actualiza todo o los datos
+      });
+      queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.list().queryKey,
       });
     },
   });

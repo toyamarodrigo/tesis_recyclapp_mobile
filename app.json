@@ -44,7 +44,7 @@
         "expo-asset",
         {
           "assets": [
-            "./assets/images/francella.PNG"
+            "./assets/images/icon.png"
           ]
         }
       ]

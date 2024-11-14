@@ -19,9 +19,11 @@ import { useUserList } from "@hooks/useUser";
 import DataEmpty from "@components/DataEmpty";
 import { IMAGE } from "@constants/image.constant";
 import { USER_TYPE } from "@constants/enum.constant";
+import { useAuth } from "@clerk/clerk-react";
 
 const Profile = () => {
   const { userError, userLoading, imageLoading } = useUserList();
+  const { signOut } = useAuth();
   const { user, profileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
@@ -29,8 +31,6 @@ const Profile = () => {
 
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
-
-  if (!user) return null;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -136,7 +136,7 @@ const Profile = () => {
             </Button>
             <Button
               mode="contained"
-              onPress={() => console.log("Se borraron los datulis")}
+              onPress={() => signOut()}
               buttonColor={theme.colors.error}
               style={{
                 margin: 10,
@@ -175,9 +175,9 @@ const Profile = () => {
             )}
             <Text style={{ marginTop: 10 }}>
               @
-              {user.userType == USER_TYPE.STORE
+              {user && user.userType == USER_TYPE.STORE
                 ? user.UserStore?.displayName
-                : user.name}
+                : user?.name}
             </Text>
           </View>
 

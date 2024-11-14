@@ -26,6 +26,13 @@ export default function AuthRoutesLayout() {
           headerShown: true,
         }}
       />
+      <Stack.Screen
+        name="password-reset"
+        options={{
+          title: "Resetear contraseña",
+          headerShown: true,
+        }}
+      />
     </Stack>
   );
 }

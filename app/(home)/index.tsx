@@ -101,6 +101,14 @@ const Home = () => {
                 <Text style={styles.text}>Registrarse</Text>
               </Button>
             </Link>
+            <Link href="/(auth)/password-reset" asChild>
+              <Button
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
+              >
+                <Text style={styles.text}>Olvidé mi contraseña</Text>
+              </Button>
+            </Link>
           </View>
         </View>
       </SignedOut>

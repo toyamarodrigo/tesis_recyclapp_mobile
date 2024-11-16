@@ -8,7 +8,7 @@ const Wiki = () => {
 
   const { data } = useUser(user as string);
 
-  console.log("user", data);
+  // console.log("user", data);
 
   return (
     <View style={styles.container}>

@@ -4,7 +4,6 @@ import { userApi } from "@api/api.user";
 import { UserPost, UserPut } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
 import { useEffect, useState } from "react";
-import { useImageById } from "./useImage";
 
 const useUserList = () => {
   const { initializeUser, setProfileImage } = useUserStore();
@@ -19,33 +18,33 @@ const useUserList = () => {
   });
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (userSuccess && userData) {
-      initializeUser(userData[6]);
-      setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
-    }
-  }, [userSuccess, userData, initializeUser]);
+  // useEffect(() => {
+  //   if (userSuccess && userData) {
+  //     initializeUser(userData[6]);
+  //     setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+  //   }
+  // }, [userSuccess, userData, initializeUser]);
 
-  const {
-    data: imageData,
-    isLoading: imageLoading,
-    error: imageError,
-  } = useImageById(userId as string);
+  // const {
+  //   data: imageData,
+  //   isLoading: imageLoading,
+  //   error: imageError,
+  // } = useImageById(userId as string);
 
-  useEffect(() => {
-    if (imageData?.url) {
-      setProfileImage(imageData.url);
-    }
-  }, [imageData, setProfileImage]);
+  // useEffect(() => {
+  //   if (imageData?.url) {
+  //     setProfileImage(imageData.url);
+  //   }
+  // }, [imageData, setProfileImage]);
 
   return {
     userData,
     userLoading,
     userSuccess,
     userError,
-    imageData,
-    imageLoading,
-    imageError,
+    // imageData,
+    // imageLoading,
+    // imageError,
   };
 };
 

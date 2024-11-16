@@ -1,9 +1,6 @@
 import { z } from "zod";
-import { ImageSchema } from "./image.type";
 import { PostCommitmentSchema } from "./postCommitment.type";
 import { ChatSchema } from "./chat.type";
-import { MaterialProductSchema } from "./materialProduct.type";
-import { UserSchema } from "./user.type";
 
 export const PostSchema = z.object({
   id: z.string(),
@@ -39,7 +36,7 @@ const PostPostSchema = z.object({
   materialProduct: z.object({ id: z.boolean() }),
   userPost: z.object({ id: z.boolean() }),
   PostCommitment: z.array(PostCommitmentSchema),
-  Image: ImageSchema.optional(),
+  image: z.string(),
 });
 
 const PostPutSchema = z.object({
@@ -56,7 +53,7 @@ const PostPutSchema = z.object({
   materialProduct: z.object({ id: z.boolean() }).optional(),
   userPost: z.object({ id: z.boolean() }).optional(),
   PostCommitment: z.array(PostCommitmentSchema).optional(),
-  Image: ImageSchema.optional(),
+  image: z.string(),
 });
 
 export type Post = z.infer<typeof PostSchema>;

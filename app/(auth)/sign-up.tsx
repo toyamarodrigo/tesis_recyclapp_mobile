@@ -1,12 +1,14 @@
 import * as React from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import { useSignUp, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { theme } from "src/theme";
 import { Button, TextInput } from "react-native-paper";
 import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { PasswordInput } from "@components/PasswordInput";
+import { useCreateUser } from "@hooks/useUser";
+import { useUserStore } from "@stores/useUserStore";
 
 type FormValues = {
   emailAddress: string;
@@ -96,7 +98,12 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
+  const { mutate: createUserDB } = useCreateUser();
+  const { initializeUser } = useUserStore();
+  const [localUser, setLocalUser] = React.useState<any>();
+  const { user } = useUser();
 
+  // console.log(user);
   const {
     control,
     reset,
@@ -127,7 +134,7 @@ export default function SignUpScreen() {
 
     const data = { userData };
 
-    console.log(data);
+    // console.log(data);
 
     onSignUpPress(formData);
   };
@@ -147,6 +154,13 @@ export default function SignUpScreen() {
         lastName: formData.lastName,
       });
 
+      setLocalUser({
+        mail: formData.emailAddress,
+        password: formData.password,
+        username: formData.username,
+        name: formData.firstName,
+        surname: formData.lastName,
+      });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
     } catch (err: any) {
       // See https://clerk.com/docs/custom-flows/error-handling
@@ -167,6 +181,7 @@ export default function SignUpScreen() {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        initializeUser(localUser);
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

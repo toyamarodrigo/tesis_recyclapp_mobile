@@ -6,19 +6,15 @@ import { PostSchema } from "./post.type";
 import { RatingSchema } from "./rating.type";
 import { UserStoreSchema } from "./userStore.type";
 import { UserCustomerSchema } from "./userCustomer.type";
-import { ImageSchema } from "./image.type";
 
 export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   surname: z.string(),
   mail: z.string(),
-  phone: z.string(),
-  password: z.string(),
   username: z.string(),
-  isArchived: z.boolean(),
-  createDate: z.coerce.date(),
   userType: z.string(),
+  image: z.string(),
   address: z.array(AddressSchema).optional(),
   Advertisement: z.array(AdvertisementSchema).optional(),
   ChatMessageReceived: z.array(ChatMessageSchema).optional(),

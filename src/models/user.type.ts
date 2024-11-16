@@ -14,7 +14,6 @@ export const UserSchema = z.object({
   mail: z.string(),
   username: z.string(),
   userType: z.string(),
-  image: z.string(),
   address: z.array(AddressSchema).optional(),
   Advertisement: z.array(AdvertisementSchema).optional(),
   ChatMessageReceived: z.array(ChatMessageSchema).optional(),
@@ -29,7 +28,6 @@ const UserPostSchema = z.object({
   name: z.string(),
   surname: z.string(),
   mail: z.string(),
-  phone: z.string(),
   password: z.string(),
   username: z.string(),
   isArchived: z.boolean(),
@@ -50,7 +48,6 @@ const UserPutSchema = z.object({
   name: z.string().optional(),
   surname: z.string().optional(),
   mail: z.string().optional(),
-  phone: z.string().optional(),
   password: z.string().optional(),
   username: z.string().optional(),
   isArchived: z.boolean().optional(),
@@ -64,7 +61,6 @@ const UserPutSchema = z.object({
   Rating: RatingSchema.optional(),
   UserStore: UserStoreSchema.optional(),
   UserCustomer: UserCustomerSchema.optional(),
-  // Image: ImageSchema.optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

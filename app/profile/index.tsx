@@ -22,7 +22,7 @@ import { USER_TYPE } from "@constants/enum.constant";
 import { useAuth } from "@clerk/clerk-react";
 
 const Profile = () => {
-  const { userError, userLoading, imageLoading } = useUserList();
+  const { userError, userLoading } = useUserList();
   const { signOut } = useAuth();
   const { user, profileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
@@ -32,6 +32,7 @@ const Profile = () => {
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
 
+  console.log("profileImage", profileImage);
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <View style={{ flexDirection: "row", zIndex: 1 }}>
@@ -162,14 +163,14 @@ const Profile = () => {
             </View>
           )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
-            {!imageLoading && (
+            {profileImage && (
               <Avatar.Image
                 size={100}
                 source={{
                   uri:
                     profileImage && profileImage !== ""
                       ? profileImage
-                      : IMAGE.USER_GENERIC,
+                      : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
                 }}
               />
             )}
@@ -177,7 +178,7 @@ const Profile = () => {
               @
               {user && user.userType == USER_TYPE.STORE
                 ? user.UserStore?.displayName
-                : user?.name}
+                : user?.username}
             </Text>
           </View>
 

@@ -22,21 +22,27 @@ type FormValues = {
   name: string;
   surname: string;
   mail: string;
-  phone: string;
   displayName: string;
+  username: string;
 };
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
   surname: z.string().min(1, { message: "El apellido es obligatorio." }),
   mail: z.string().email({ message: "El formato de email es incorrecto." }),
-  phone: z
-    .string()
-    .regex(/^\d{10}$/, {
-      message: "Debe ingresar los 10 números luego del + 54 9",
-    })
-    .max(10, { message: "Debe ingresar los 10 números luego del + 54 9" }),
   displayName: z.string().min(4).max(60),
+  username: z
+    .string()
+    .min(4, {
+      message: "El nombre de usuario debe tener al menos 4 caracteres.",
+    })
+    .max(60, {
+      message: "El nombre de usuario no puede superar los 60 caracteres.",
+    })
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      "El nombre de usuario solo puede contener letras, números, guiones bajos '_' o guiones '-'"
+    ),
 });
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -98,11 +104,11 @@ export default function PersonalInfo() {
       name: user?.name ?? "",
       surname: user?.surname ?? "",
       mail: user?.mail ?? "",
-      phone: user?.phone ?? "",
       displayName:
         user?.userType == USER_TYPE.STORE
           ? user.UserStore?.displayName
           : "null",
+      username: user?.username ?? "",
     },
   });
 
@@ -115,7 +121,6 @@ export default function PersonalInfo() {
         name: formData.name,
         surname: formData.surname,
         mail: formData.mail,
-        phone: formData.phone,
       };
 
       if (userStore) {
@@ -141,12 +146,6 @@ export default function PersonalInfo() {
   const onCancel = () => {
     setIsEditable(false);
     reset();
-  };
-
-  const handleChangePhone = (text: string) => {
-    if (text.length > 9) return;
-    const numericText = text.replace(/[^0-9]/g, "");
-    setValue("phone", numericText);
   };
 
   if (!user) {
@@ -208,51 +207,36 @@ export default function PersonalInfo() {
             </Text>
           )}
 
-          {/* Mail Input */}
+          {/* Username Input */}
           <Controller
             control={control}
-            name="mail"
+            name="username"
+            rules={{
+              required: "El nombre de usuario es obligatorio",
+              min: {
+                value: 4,
+                message: "Debe tener 4 caracteres como mínimo",
+              },
+              max: {
+                value: 60,
+                message: "Debe tener 60 caracteres como máximo",
+              },
+            }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                label="Mail"
+                label="Nombre de usuario"
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                error={!!errors.mail}
+                error={!!errors.username}
                 disabled={!isEditable}
                 style={{ marginBottom: 20 }}
               />
             )}
           />
-          {errors.mail && (
+          {errors.username && (
             <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.mail.message}
-            </Text>
-          )}
-
-          {/* Phone Input */}
-          <Controller
-            control={control}
-            name="phone"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                label="Teléfono"
-                onChangeText={(text) => {
-                  handleChangePhone(text);
-                  onChange(text);
-                }}
-                onBlur={onBlur}
-                value={value}
-                error={!!errors.phone}
-                disabled={!isEditable}
-                keyboardType="numeric"
-                style={{ marginBottom: 20 }}
-              />
-            )}
-          />
-          {errors.phone && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.phone.message}
+              {errors.username.message}
             </Text>
           )}
 

@@ -13,6 +13,7 @@ import { theme } from "src/theme";
 import { useEffect } from "react";
 import { User } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
+import { IMAGE } from "@constants/image.constant";
 
 // TODO: make custom hook to fetch ads
 const fetchAds = async () => {
@@ -28,7 +29,7 @@ const fetchNews = async () => {
 
 const Home = () => {
   const { user: userClerk } = useUser();
-  const { initializeUser } = useUserStore();
+  const { initializeUser, setProfileImage } = useUserStore();
 
   useEffect(() => {
     if (userClerk) {
@@ -37,12 +38,13 @@ const Home = () => {
         mail: userClerk.primaryEmailAddress?.emailAddress ?? "",
         name: userClerk.firstName ?? "",
         surname: userClerk.lastName ?? "",
-        image: userClerk.imageUrl,
         username: userClerk.username ?? "",
         userType: "CUSTOMER",
       };
-      console.log("userLocal", userLocal);
       initializeUser(userLocal);
+      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}${userClerk.id}.jpg`;
+
+      setProfileImage(urlImage);
     }
   }, [userClerk]);
 

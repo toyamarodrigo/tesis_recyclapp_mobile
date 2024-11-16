@@ -17,7 +17,6 @@ import { Link, useRouter } from "expo-router";
 import { USER_TYPE } from "@constants/enum.constant";
 import { useUpdateUser } from "@hooks/useUser";
 import { UserPut } from "@models/user.type";
-import { UserStorePut } from "@models/userStore.type";
 
 type FormValues = {
   name: string;
@@ -37,7 +36,7 @@ const formSchema = z.object({
       message: "Debe ingresar los 10 números luego del + 54 9",
     })
     .max(10, { message: "Debe ingresar los 10 números luego del + 54 9" }),
-  displayName: z.string().min(3).max(20),
+  displayName: z.string().min(4).max(60),
 });
 
 const resolver: Resolver<FormValues> = async (values) => {

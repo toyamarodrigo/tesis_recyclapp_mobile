@@ -7,73 +7,46 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { CircleLink } from "@features/wiki/components/circle-link";
-import type { MaterialSection } from "@features/wiki/models/card-material.type";
 import { MaterialsSection } from "@features/wiki/components/materials-section";
 import { useDeferredValue } from "@features/wiki/hooks/useDeferredValue";
 import { normalizeText } from "@features/wiki/utils/normalize-text";
+import { useMaterialComponentList } from "@hooks/useMaterialComponent";
 
 export default function Wiki() {
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery, 300);
 
-  const allItems: MaterialSection[] = useMemo(
-    () => [
+  const { data } = useMaterialComponentList();
+
+  const allItems = useMemo(() => {
+    if (!data) return [];
+
+    const recyclableItems = data
+      .filter((item) => item.isRecyclable && !item.isArchived)
+      .map((item) => ({
+        name: item.name,
+        icon: item.icon || "help-circle",
+        material: [item.materialProductId],
+      }));
+
+    const specialItems = data
+      .filter((item) => !item.isRecyclable && !item.isArchived)
+      .map((item) => ({
+        name: item.name,
+        icon: item.icon || "help-circle",
+      }));
+
+    return [
       {
         title: "Materiales reciclables",
-        data: [
-          { name: "Papel y cartón", icon: "package-variant-closed", material: ["paper"] },
-          { name: "Plásticos", icon: "bottle-soda", material: ["plastic"] },
-          { name: "Metales", icon: "trash-can", material: ["metal"] },
-          { name: "Vidrio", icon: "bottle-wine", material: ["glass"] },
-          { name: "Cajas", icon: "package-variant-closed", material: ["paper"] },
-          { name: "Sobres", icon: "file-multiple", material: ["paper"] },
-          { name: "Revistas", icon: "book-open-page-variant", material: ["paper"] },
-          { name: "Diarios", icon: "newspaper", material: ["paper"] },
-          { name: "Folletos", icon: "file-multiple", material: ["paper"] },
-          { name: "Tetra brick", icon: "food-takeout-box", material: ["plastic"] },
-          { name: "Botellas", icon: "bottle-soda-classic", material: ["plastic"] },
-          { name: "Tapas", icon: "bottle-tonic", material: ["plastic"] },
-          { name: "Papel film", icon: "file-multiple", material: ["plastic"] },
-          { name: "Sachets", icon: "food-takeout-box", material: ["plastic"] },
-          { name: "Bidones", icon: "bottle-soda", material: ["plastic"] },
-          { name: "Potes", icon: "cup", material: ["plastic"] },
-          { name: "Vajilla descartable", icon: "silverware-fork-knife", material: ["plastic"] },
-          { name: "Latas", icon: "bottle-soda", material: ["metal"] },
-          { name: "Desodorantes", icon: "spray", material: ["metal"] },
-          { name: "Llaves", icon: "key", material: ["metal"] },
-          { name: "Frascos", icon: "glass-fragile", material: ["glass"] },
-        ],
+        data: recyclableItems,
       },
       {
         title: "Desechables especiales\n¡no van a la basura!",
-        data: [
-          { name: "Pilas", icon: "battery" },
-          { name: "Papel carbónico", icon: "file-multiple" },
-          { name: "Aceites Vegetales Usados", icon: "oil" },
-          { name: "Aceites Minerales Usados", icon: "oil" },
-          { name: "RAEEs", icon: "television-classic" },
-          { name: "Pilas, baterías portátiles", icon: "battery" },
-          {
-            name: "Lámparas de bajo consumo conteniendo mercurio",
-            icon: "lightbulb-fluorescent-tube",
-          },
-          { name: "Cartuchos y tonners", icon: "printer" },
-          {
-            name: "Envases de sustancias peligrosas",
-            icon: "bottle-tonic-skull",
-          },
-          { name: "Envases vacíos de fitosanitarios", icon: "spray" },
-          { name: "Neumáticos de desecho", icon: "tire" },
-          { name: "Termómetros, esfigmomanómetros", icon: "thermometer" },
-          { name: "Acumuladores de ácido plomo", icon: "car-battery" },
-          { name: "Pinturas y solventes", icon: "brush" },
-          { name: "Medicamentos", icon: "pill" },
-          { name: "Membranas asfálticas", icon: "road-variant" },
-        ],
+        data: specialItems,
       },
-    ],
-    []
-  );
+    ];
+  }, [data]);
 
   const filteredItems = useMemo(() => {
     const normalizedQuery = normalizeText(deferredSearchQuery);

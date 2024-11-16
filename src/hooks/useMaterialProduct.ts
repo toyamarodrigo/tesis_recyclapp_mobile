@@ -1,4 +1,7 @@
-import { materialColors, materialProductKeys } from "@api/query/materialProduct.factory";
+import {
+  materialColors,
+  materialProductKeys,
+} from "@api/query/materialProduct.factory";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import type { MaterialProduct } from "@models/materialProduct.type";
 import { materialProductApi } from "@api/api.materialProduct";
@@ -7,7 +10,7 @@ const useMaterialProductList = () => {
   return useQuery({
     ...materialProductKeys.materialProduct.list(),
     select: (data) =>
-      data.map((material) => ({
+      data.slice(0, 4).map((material) => ({
         ...material,
         color: materialColors[material.id],
       })),

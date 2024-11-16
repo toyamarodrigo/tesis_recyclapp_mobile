@@ -61,6 +61,16 @@ export default function Page() {
           <Text style={styles.text}>Ingresar</Text>
         </Button>
       </View>
+      <View style={styles.buttonBox}>
+        <Link href="/(auth)/password-reset" asChild>
+          <Button
+            buttonColor={theme.colors.errorContainer}
+            textColor={theme.colors.onErrorContainer}
+          >
+            <Text style={styles.text}>Olvidé mi contraseña</Text>
+          </Button>
+        </Link>
+      </View>
       <View style={{ flex: 1 }} />
       <View style={styles.textOptions}>
         <Text style={styles.text}>¿No tienes cuenta?</Text>

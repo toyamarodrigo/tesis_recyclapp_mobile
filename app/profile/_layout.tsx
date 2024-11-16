@@ -5,7 +5,6 @@ const routes = [
   { name: "personal-info/index", title: "" },
   { name: "address/index", title: "Mis direcciones" },
   { name: "address/new", title: "" },
-  { name: "notifications/index", title: "Notificaciones" },
   { name: "benefits/index", title: "Mis beneficios" },
   { name: "benefits/new", title: "" },
   { name: "change-password/index", title: "Cambiar contraseña" },

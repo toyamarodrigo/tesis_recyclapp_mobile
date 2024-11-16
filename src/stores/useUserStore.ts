@@ -1,31 +1,41 @@
-import { useUser } from "@hooks/useUser";
 import { User } from "@models/user.type";
+import { UserCustomer } from "@models/userCustomer.type";
 import { UserStore } from "@models/userStore.type";
 import { create } from "zustand";
-import { userStore } from "./eliminarEsto";
 
 type UserState = {
-  user: User;
-  userStore: UserStore | null;
+  user: User | undefined;
+  userStore: UserStore | undefined;
+  userCustomer: UserCustomer | undefined;
+  profileImage: string | undefined;
+  initializeUser: (user: User) => void;
+  removeUsers: () => void;
+  setProfileImage: (url: string) => void;
 };
 
-export const useUserStore = create<UserState>(() => ({
-  user: {
-    id: "cleuipzo60002v8fcwfmyp9xk",
-    name: "Aaa",
-    surname: "aa",
-    mail: "aaaaa",
-    phone: "123123",
-    password: "1231231",
-    username: "asd123",
-    isArchived: false,
-    createDate: new Date("2023-03-04T22:10:29.678Z"),
-    userType: "STORE",
-    address: [],
-    Post: [],
-    Advertisement: [],
-    ChatMessageReceived: [],
-    ChatMessageSent: [],
+export const useUserStore = create<UserState>((set) => ({
+  user: undefined,
+  userStore: undefined,
+  // userCustomer: undefined,
+  userCustomer: {
+    id: "cleum9yc50002v8f8gnwv5rz0",
+    pointsCurrent: 200,
+    pointsTotal: 200,
+    userId: "cleum9yc50002v8f8gnwv5rz9",
   },
-  userStore: userStore[0],
+  profileImage: undefined,
+  initializeUser: (user: User) =>
+    set({
+      user: user,
+      userStore: user.UserStore || undefined,
+      userCustomer: user.UserCustomer || undefined,
+    }),
+  removeUsers: () =>
+    set({
+      user: undefined,
+      userStore: undefined,
+      userCustomer: undefined,
+      profileImage: undefined,
+    }),
+  setProfileImage: (url: string) => set({ profileImage: url }),
 }));

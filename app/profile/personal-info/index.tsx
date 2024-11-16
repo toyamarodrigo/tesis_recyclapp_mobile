@@ -1,39 +1,48 @@
 import React, { useState } from "react";
 import { View, ScrollView } from "react-native";
-import { type Resolver, useForm, Controller, useWatch } from "react-hook-form";
+import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
   TextInput,
-  Switch,
   Text,
   Button,
   Title,
   IconButton,
+  Icon,
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { USER_TYPE } from "@constants/enum.constant";
+import { useUpdateUser } from "@hooks/useUser";
+import { UserPut } from "@models/user.type";
 
 type FormValues = {
   name: string;
   surname: string;
   mail: string;
-  phone: string;
-  isStore: boolean;
+  displayName: string;
+  username: string;
 };
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
   surname: z.string().min(1, { message: "El apellido es obligatorio." }),
   mail: z.string().email({ message: "El formato de email es incorrecto." }),
-  phone: z
+  displayName: z.string().min(4).max(60),
+  username: z
     .string()
-    .regex(/^\d{10}$/, {
-      message: "Debe ingresar los 10 números luego del + 54 9",
+    .min(4, {
+      message: "El nombre de usuario debe tener al menos 4 caracteres.",
     })
-    .max(10, { message: "Debe ingresar los 10 números luego del + 54 9" }),
-  isStore: z.boolean().optional(),
+    .max(60, {
+      message: "El nombre de usuario no puede superar los 60 caracteres.",
+    })
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      "El nombre de usuario solo puede contener letras, números, guiones bajos '_' o guiones '-'"
+    ),
 });
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -75,9 +84,11 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function PersonalInfo() {
-  const { user } = useUserStore();
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
+  const router = useRouter();
+  const { user, userStore } = useUserStore();
+  const { mutate: updateUser } = useUpdateUser();
 
   const {
     control,
@@ -93,19 +104,43 @@ export default function PersonalInfo() {
       name: user?.name ?? "",
       surname: user?.surname ?? "",
       mail: user?.mail ?? "",
-      phone: user?.phone ?? "",
+      displayName:
+        user?.userType == USER_TYPE.STORE
+          ? user.UserStore?.displayName
+          : "null",
+      username: user?.username ?? "",
     },
   });
 
-  const watchIsStore = useWatch({
-    control,
-    name: "isStore",
-    defaultValue: false,
-  });
+  const onSubmit = async (formData: FormValues) => {
+    let userStoreData;
 
-  const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
-    setIsEditable(false);
+    if (user) {
+      const userData: UserPut = {
+        id: user.id,
+        name: formData.name,
+        surname: formData.surname,
+        mail: formData.mail,
+      };
+
+      if (userStore) {
+        userStoreData = {
+          id: userStore.id,
+          displayName: formData.displayName,
+        };
+      } else {
+        userStoreData = undefined;
+      }
+
+      const data = { userData, userStoreData };
+
+      updateUser(data, {
+        onSuccess: () => {
+          onCancel();
+          router.push("/profile");
+        },
+      });
+    }
   };
 
   const onCancel = () => {
@@ -113,11 +148,10 @@ export default function PersonalInfo() {
     reset();
   };
 
-  const handleChangePhone = (text: string) => {
-    if (text.length > 9) return;
-    const numericText = text.replace(/[^0-9]/g, "");
-    setValue("phone", numericText);
-  };
+  if (!user) {
+    onCancel();
+    router.push("/profile");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -173,82 +207,87 @@ export default function PersonalInfo() {
             </Text>
           )}
 
-          {/* Mail Input */}
+          {/* Username Input */}
           <Controller
             control={control}
-            name="mail"
+            name="username"
+            rules={{
+              required: "El nombre de usuario es obligatorio",
+              min: {
+                value: 4,
+                message: "Debe tener 4 caracteres como mínimo",
+              },
+              max: {
+                value: 60,
+                message: "Debe tener 60 caracteres como máximo",
+              },
+            }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                label="Mail"
+                label="Nombre de usuario"
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                error={!!errors.mail}
+                error={!!errors.username}
                 disabled={!isEditable}
                 style={{ marginBottom: 20 }}
               />
             )}
           />
-          {errors.mail && (
+          {errors.username && (
             <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.mail.message}
+              {errors.username.message}
             </Text>
           )}
 
-          {/* Phone Input */}
-          <Controller
-            control={control}
-            name="phone"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                label="Teléfono"
-                onChangeText={(text) => {
-                  handleChangePhone(text);
-                  onChange(text);
-                }}
-                onBlur={onBlur}
-                value={value}
-                error={!!errors.phone}
-                disabled={!isEditable}
-                keyboardType="numeric"
-                style={{ marginBottom: 20 }}
+          {user?.userType == USER_TYPE.STORE && (
+            <View>
+              {/* displayName Input */}
+              <Controller
+                control={control}
+                name="displayName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    label="Nombre de la Tienda"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    error={!!errors.displayName}
+                    disabled={!isEditable}
+                    style={{ marginBottom: 20 }}
+                  />
+                )}
               />
-            )}
-          />
-          {errors.phone && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.phone.message}
-            </Text>
-          )}
-
-          {/* Is Store Switch */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 20,
-            }}
-          >
-            <Text>Soy tienda</Text>
-            <Controller
-              control={control}
-              name="isStore"
-              render={({ field: { onChange, value } }) => (
-                <Switch
-                  value={value}
-                  onValueChange={onChange}
-                  disabled={!isEditable}
-                />
+              {errors.displayName && (
+                <Text style={{ color: "red", marginBottom: 10 }}>
+                  {errors.displayName.message}
+                </Text>
               )}
-            />
-          </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 20,
+                }}
+              >
+                <Icon
+                  source="tag-multiple"
+                  color={theme.colors.tertiary}
+                  size={20}
+                />
+                <Text style={{ marginLeft: 10 }}>Perfil Tienda</Text>
+              </View>
+              <Text style={{ color: theme.colors.tertiary, fontSize: 12 }}>
+                Recuerda que para realizar gestiones del perfil Tienda debes
+                dirigirte a nuestro sitio web.
+              </Text>
+            </View>
+          )}
         </View>
 
-        {/* Spacer to push the button to the bottom */}
         <View style={{ flex: 1 }} />
-
-        {/* Button Section */}
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginBottom: 20 }}>
           {isEditable ? (
             <View>
               <Button
@@ -259,9 +298,10 @@ export default function PersonalInfo() {
                 Confirmar cambios
               </Button>
               <Button
-                mode="outlined"
+                mode="contained"
                 onPress={onCancel}
-                textColor={theme.colors.error}
+                buttonColor={theme.colors.errorContainer}
+                textColor={theme.colors.onErrorContainer}
               >
                 Cancelar
               </Button>

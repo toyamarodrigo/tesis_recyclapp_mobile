@@ -5,10 +5,10 @@ export const addressKeys = createQueryKeyStore({
   address: {
     list: () => ({
       queryKey: ["addressList"],
-      queryFn: () => addressApi.getAddress(),
+      queryFn: addressApi.getAddress,
     }),
     detail: (id: string) => ({
-      queryKey: [id],
+      queryKey: ["address", "detail", id],
       queryFn: () => addressApi.getAddressById(id),
     }),
   },

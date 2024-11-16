@@ -6,18 +6,13 @@ import { PostSchema } from "./post.type";
 import { RatingSchema } from "./rating.type";
 import { UserStoreSchema } from "./userStore.type";
 import { UserCustomerSchema } from "./userCustomer.type";
-import { ImageSchema } from "./image.type";
 
 export const UserSchema = z.object({
   id: z.string(),
   name: z.string(),
   surname: z.string(),
   mail: z.string(),
-  phone: z.string(),
-  password: z.string(),
   username: z.string(),
-  isArchived: z.boolean(),
-  createDate: z.coerce.date(),
   userType: z.string(),
   address: z.array(AddressSchema).optional(),
   Advertisement: z.array(AdvertisementSchema).optional(),
@@ -27,14 +22,12 @@ export const UserSchema = z.object({
   Rating: RatingSchema.optional().optional(),
   UserStore: UserStoreSchema.optional().optional(),
   UserCustomer: UserCustomerSchema.optional().optional(),
-  // Image: ImageSchema.optional(),
 });
 
 const UserPostSchema = z.object({
   name: z.string(),
   surname: z.string(),
   mail: z.string(),
-  phone: z.string(),
   password: z.string(),
   username: z.string(),
   isArchived: z.boolean(),
@@ -48,7 +41,6 @@ const UserPostSchema = z.object({
   Rating: RatingSchema.optional(),
   UserStore: UserStoreSchema.optional(),
   UserCustomer: UserCustomerSchema.optional(),
-  // Image: ImageSchema.optional(),
 });
 
 const UserPutSchema = z.object({
@@ -56,7 +48,6 @@ const UserPutSchema = z.object({
   name: z.string().optional(),
   surname: z.string().optional(),
   mail: z.string().optional(),
-  phone: z.string().optional(),
   password: z.string().optional(),
   username: z.string().optional(),
   isArchived: z.boolean().optional(),
@@ -70,7 +61,6 @@ const UserPutSchema = z.object({
   Rating: RatingSchema.optional(),
   UserStore: UserStoreSchema.optional(),
   UserCustomer: UserCustomerSchema.optional(),
-  // Image: ImageSchema.optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;

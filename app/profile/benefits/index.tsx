@@ -10,15 +10,37 @@ import {
   Text,
   TextInput,
   IconButton,
+  ActivityIndicator,
 } from "react-native-paper";
 import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
+import { useBenefitStore } from "@stores/useBenefitStore";
+import { Benefit, BenefitPut } from "@models/benefit.type";
+import DataEmpty from "@components/DataEmpty";
 
 export default function Benefits() {
+  const { isLoading, error, data: benefitList } = useBenefitList();
+  const { setCurrentBenefit } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const router = useRouter();
   const showModal = () => setVisible(true);
+  const { mutate: updateBenefit } = useUpdateBenefit();
+
+  const handleDelete = (benefit: Benefit) => {
+    const removeBenefit: BenefitPut = {
+      id: benefit.id,
+      isActive: false,
+      isArchived: true,
+    };
+    updateBenefit(removeBenefit);
+  };
+
+  const handleEdit = (benefit: Benefit) => {
+    setCurrentBenefit(benefit);
+    router.push("/profile/benefits/new");
+  };
 
   const hideModal = () => {
     setVisible(false);
@@ -92,10 +114,31 @@ export default function Benefits() {
           <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
             <View style={{ width: "100%" }}>
               <View style={{ marginBottom: 20 }}>
-                <CardProfile title="Beneficiososossoos" type={"beneficio"} />
-                <CardProfile title="Beneficiososossoos" type={"beneficio"} />
-                <CardProfile title="Beneficiososossoos" type={"beneficio"} />
-                <CardProfile title="Beneficiososossoos" type={"beneficio"} />
+                {isLoading && (
+                  <ActivityIndicator
+                    color={theme.colors.primary}
+                    size={"large"}
+                  />
+                )}
+                {error && (
+                  <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
+                )}
+                {!isLoading &&
+                  !error &&
+                  benefitList &&
+                  benefitList.length === 0 && (
+                    <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
+                  )}
+                {benefitList &&
+                  benefitList.map((benefit) => (
+                    <CardProfile
+                      key={benefit.id}
+                      title={benefit.name}
+                      type={"beneficio"}
+                      onDelete={() => handleDelete(benefit)}
+                      onEdit={() => handleEdit(benefit)}
+                    />
+                  ))}
               </View>
             </View>
           </View>

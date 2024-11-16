@@ -1,36 +1,10 @@
-import { imageKeys } from "@api/query/image.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { ImagePut } from "@models/image.type";
-import { imageApi } from "@api/api.image";
+import { imageApi } from "@api/api.imagen";
+import { ImageDelete, ImageUpload } from "@models/image.type";
+import { useMutation } from "@tanstack/react-query";
 
-const useImageList = () => {
-  const { data, error, isError, isLoading } = useQuery(imageKeys.image.list());
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useImageById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    imageKeys.image.detail(id)
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useUpdateImage = (image: ImagePut) => {
+const useCreateAddress = () => {
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: imageApi.updateImage,
-    mutationKey: [image],
+    mutationFn: (image: ImageUpload) => imageApi.uploadImage(image),
   });
 
   return {
@@ -41,10 +15,9 @@ const useUpdateImage = (image: ImagePut) => {
   };
 };
 
-const useDeleteImage = (id: string) => {
+const useDeleteAddress = () => {
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: imageApi.deleteImage,
-    mutationKey: [id],
+    mutationFn: (image: ImageDelete) => imageApi.deleteImage(image),
   });
 
   return {
@@ -55,4 +28,4 @@ const useDeleteImage = (id: string) => {
   };
 };
 
-export { useImageList, useImageById, useDeleteImage, useUpdateImage };
+export { useCreateAddress, useDeleteAddress };

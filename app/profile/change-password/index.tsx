@@ -1,9 +1,8 @@
 import { ScrollView, View } from "react-native";
 import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
-import { TextInput, Button, Text, Title, IconButton } from "react-native-paper";
+import { Button, Text, Title, IconButton } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,6 +10,7 @@ import { useUserStore } from "@stores/useUserStore";
 import bcrypt from "bcryptjs";
 import { useUpdateUser } from "@hooks/useUser";
 import { UserPut } from "@models/user.type";
+import { PasswordInput } from "@components/PasswordInput";
 
 type FormValues = {
   currentPassword: string;
@@ -224,34 +224,3 @@ export default function ChangePassword() {
     </SafeAreaView>
   );
 }
-
-const PasswordInput = ({
-  value,
-  onChangeText,
-  onBlur,
-}: {
-  value: string;
-  onChangeText: (text: string) => void;
-  onBlur: () => void;
-}) => {
-  const [show, setShow] = useState(false);
-
-  return (
-    <TextInput
-      value={value}
-      onChangeText={onChangeText}
-      onBlur={onBlur}
-      style={{ marginTop: 10 }}
-      secureTextEntry={!show}
-      maxLength={10}
-      mode="outlined"
-      right={
-        <TextInput.Icon
-          icon={show ? "eye-off" : "eye"}
-          size={20}
-          onPress={() => setShow(!show)}
-        />
-      }
-    />
-  );
-};

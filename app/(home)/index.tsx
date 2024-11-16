@@ -10,6 +10,10 @@ import { mockAds, mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
+import { useEffect } from "react";
+import { User } from "@models/user.type";
+import { useUserStore } from "@stores/useUserStore";
+import { IMAGE } from "@constants/image.constant";
 
 // TODO: make custom hook to fetch ads
 const fetchAds = async () => {
@@ -24,9 +28,25 @@ const fetchNews = async () => {
 };
 
 const Home = () => {
-  const { user } = useUser();
+  const { user: userClerk } = useUser();
+  const { initializeUser, setProfileImage } = useUserStore();
 
-  console.log("user", user);
+  useEffect(() => {
+    if (userClerk) {
+      const userLocal: User = {
+        id: userClerk.id,
+        mail: userClerk.primaryEmailAddress?.emailAddress ?? "",
+        name: userClerk.firstName ?? "",
+        surname: userClerk.lastName ?? "",
+        username: userClerk.username ?? "",
+        userType: "CUSTOMER",
+      };
+      initializeUser(userLocal);
+      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}${userClerk.id}.jpg`;
+
+      setProfileImage(urlImage);
+    }
+  }, [userClerk]);
 
   // TODO: fetch ads from API
   const { data: ads, isPending: adsPending } = useQuery({

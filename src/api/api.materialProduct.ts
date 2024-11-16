@@ -1,4 +1,4 @@
-import {
+import type {
   MaterialProduct,
   MaterialProductPost,
   MaterialProductPut,
@@ -7,7 +7,7 @@ import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
 export const materialProductApi = {
-  getMaterialProduct: async () => {
+  getMaterialProducts: async () => {
     const result = await axios.get<MaterialProduct[]>(
       `${backendApiConfig.baseURL}/materialProducts`
     );
@@ -76,21 +76,3 @@ export const materialProductApi = {
     }
   },
 };
-
-// router.get("/materialProducts", materialProductController.getMaterialProducts);
-// router.get(
-//   "/materialProduct/:id",
-//   materialProductController.getMaterialProduct
-// );
-// router.post(
-//   "/materialProduct",
-//   materialProductController.createMaterialProduct
-// );
-// router.put(
-//   "/materialProduct/:id",
-//   materialProductController.updateMaterialProduct
-// );
-// router.delete(
-//   "/materialProduct/:id",
-//   materialProductController.deleteMaterialProduct
-// );

@@ -7,16 +7,7 @@ import {
 import { materialComponentApi } from "@api/api.materialComponent";
 
 const useMaterialComponentList = () => {
-  const { data, error, isError, isLoading } = useQuery(
-    materialComponentKeys.materialComponent.list()
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery(materialComponentKeys.materialComponent.list());
 };
 
 const useMaterialComponentById = (id: string) => {

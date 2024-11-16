@@ -1,21 +1,34 @@
 import { Fragment } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Text, Card, SegmentedButtons, IconButton } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
-import { materialColors, materials } from "../models/materials";
 import * as WebBrowser from "expo-web-browser";
 import { useSelectedMaterialStore } from "../hooks/useSelectedMaterial";
+import { useMaterialProductList } from "@hooks/useMaterialProduct";
 
 export const ListHeader = ({ selectedMaterial, router }) => {
   const setSelectedMaterial = useSelectedMaterialStore(
     (state) => state.setSelectedMaterial
   );
 
+  const {
+    data: materials,
+    isPending,
+    isLoadingError,
+  } = useMaterialProductList();
+
   const handlePress = async () => {
     await WebBrowser.openBrowserAsync(
       "https://buenosaires.gob.ar/espaciopublicoehigieneurbana/noticias/como-separar-tus-residuos"
     );
   };
+
+  if (isLoadingError) return <Text>Error al cargar los materiales</Text>;
 
   return (
     <Fragment>
@@ -53,27 +66,31 @@ export const ListHeader = ({ selectedMaterial, router }) => {
         style={styles.arrow}
       />
 
-      <SegmentedButtons
-        value={selectedMaterial}
-        onValueChange={(value) => setSelectedMaterial(value)}
-        buttons={materials.map((material) => ({
-          value: material.id,
-          label: material.name,
-          style: {
-            backgroundColor:
-              selectedMaterial === material.id
-                ? materialColors[material.id]
-                : "transparent",
-          },
-          labelStyle: {
-            color:
-              selectedMaterial === material.id
-                ? "#FFFFFF"
-                : materialColors[material.id],
-          },
-        }))}
-        style={styles.segmentedButtons}
-      />
+      {isPending ? (
+        <ActivityIndicator size="large" color="#1B5E20" />
+      ) : (
+        materials && (
+          <SegmentedButtons
+            value={selectedMaterial}
+            onValueChange={(value) => setSelectedMaterial(value)}
+            buttons={materials?.map((material) => ({
+              value: material.id,
+              label: material.name,
+              style: {
+                backgroundColor:
+                  selectedMaterial === material.id
+                    ? material.color
+                    : "transparent",
+              },
+              labelStyle: {
+                color:
+                  selectedMaterial === material.id ? "#FFFFFF" : material.color,
+              },
+            }))}
+            style={styles.segmentedButtons}
+          />
+        )
+      )}
     </Fragment>
   );
 };

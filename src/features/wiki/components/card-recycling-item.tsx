@@ -1,6 +1,6 @@
+import { materialColors } from "@api/query/materialProduct.factory";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Card, Text, Chip } from "react-native-paper";
-import { materialColors } from "../models/materials";
 
 export const CardRecyclingItem = ({ item, onPress }) => {
   const formatMaterial = (material) => {
@@ -19,19 +19,19 @@ export const CardRecyclingItem = ({ item, onPress }) => {
           {item.title}
         </Text>
         <View style={styles.chipContainer}>
-          {item.materials.map((material) => (
-            <Chip
-              key={material}
-              compact
-              style={[
-                styles.chip,
-                { backgroundColor: materialColors[material] },
-              ]}
-              textStyle={styles.chipText}
-            >
-              {formatMaterial(material)}
-            </Chip>
-          ))}
+          {item.materials.map((material) => {
+            const color = materialColors[material];
+            return (
+              <Chip
+                key={material}
+                compact
+                style={[styles.chip, { backgroundColor: color }]}
+                textStyle={styles.chipText}
+              >
+                {formatMaterial(material)}
+              </Chip>
+            );
+          })}
         </View>
       </Card.Content>
       <Card.Actions style={styles.cardActions}>

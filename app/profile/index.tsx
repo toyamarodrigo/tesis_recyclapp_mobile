@@ -20,6 +20,7 @@ import DataEmpty from "@components/DataEmpty";
 import { IMAGE } from "@constants/image.constant";
 import { USER_TYPE } from "@constants/enum.constant";
 import { useAuth } from "@clerk/clerk-react";
+import ImageUploader from "@components/ImageUploader";
 
 const Profile = () => {
   const { userError, userLoading } = useUserList();
@@ -164,15 +165,27 @@ const Profile = () => {
           )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
             {profileImage && (
-              <Avatar.Image
-                size={100}
-                source={{
-                  uri:
-                    profileImage && profileImage !== ""
-                      ? profileImage
-                      : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
-                }}
-              />
+              <View style={{ position: "relative" }}>
+                <Avatar.Image
+                  size={100}
+                  source={{
+                    uri:
+                      profileImage && profileImage !== ""
+                        ? profileImage
+                        : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
+                  }}
+                />
+                <ImageUploader
+                  style={{
+                    position: "absolute",
+                    bottom: -15,
+                    right: -15,
+                    backgroundColor: "white",
+                    borderRadius: 25,
+                    elevation: 5,
+                  }}
+                />
+              </View>
             )}
             <Text style={{ marginTop: 10 }}>
               @

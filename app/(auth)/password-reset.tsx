@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   textStyle: {
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 18,
     borderRadius: 10,
     borderColor: theme.colors.secondaryContainer,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   text: {
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 18,
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",

@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     width: "60%",
   },
   text: {
-    fontWeight: 500,
+    fontWeight: "500",
     fontSize: 18,
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",

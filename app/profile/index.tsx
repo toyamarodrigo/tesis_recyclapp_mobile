@@ -15,16 +15,13 @@ import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserList } from "@hooks/useUser";
-import DataEmpty from "@components/DataEmpty";
 import { IMAGE } from "@constants/image.constant";
 import { USER_TYPE } from "@constants/enum.constant";
 import { useAuth } from "@clerk/clerk-react";
 import ImageUploader from "@components/ImageUploader";
 
 const Profile = () => {
-  const { userError, userLoading } = useUserList();
-  const { signOut } = useAuth();
+  const { signOut, isLoaded } = useAuth();
   const { user, profileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
@@ -74,7 +71,7 @@ const Profile = () => {
               <Text
                 style={{
                   color: theme.colors.error,
-                  fontWeight: 600,
+                  fontWeight: "600",
                   fontSize: 16,
                   padding: 10,
                 }}
@@ -150,16 +147,13 @@ const Profile = () => {
         </Portal>
 
         <View style={{ flex: 1, width: "100%" }}>
-          {(userLoading || userError) && (
+          {!isLoaded && (
             <View style={{ alignItems: "center", marginVertical: 20 }}>
-              {userLoading && (
+              {!isLoaded && (
                 <ActivityIndicator
                   color={theme.colors.primary}
                   size={"large"}
                 />
-              )}
-              {userError && (
-                <DataEmpty displayText="Ocurrió un problema al mostrar sus datos. Intente nuevamente." />
               )}
             </View>
           )}

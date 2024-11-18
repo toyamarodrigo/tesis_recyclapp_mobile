@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import {
   Button,
   Text,
@@ -26,7 +26,9 @@ const Profile = () => {
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
   const theme = useAppTheme();
+  const router = useRouter();
 
+  //TODO DELETE PENDING UNTIL POSTS IS DONE
   useEffect(() => {
     if (user) {
       const timestamp = `?timestamp=${Date.now()}`;
@@ -39,6 +41,13 @@ const Profile = () => {
 
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
+  const logout = async () => {
+    setLogoutVisible(false);
+    setDeleteVisible(false);
+    await signOut();
+    router.replace("/(auth)/sign-in");
+    return null;
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -66,7 +75,6 @@ const Profile = () => {
             <View
               style={{
                 padding: 10,
-                flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -120,7 +128,6 @@ const Profile = () => {
             <View
               style={{
                 padding: 10,
-                flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -144,7 +151,7 @@ const Profile = () => {
             </Button>
             <Button
               mode="contained"
-              onPress={() => signOut()}
+              onPress={() => logout()}
               buttonColor={theme.colors.error}
               style={{
                 margin: 10,
@@ -195,12 +202,7 @@ const Profile = () => {
               )}
             </View>
 
-            <Text style={{ marginTop: 10 }}>
-              @
-              {user && user.userType == USER_TYPE.STORE
-                ? user.UserStore?.displayName
-                : user?.username}
-            </Text>
+            <Text style={{ marginTop: 10 }}>@{user?.username}</Text>
           </View>
 
           <List.Section style={{ width: "100%" }}>

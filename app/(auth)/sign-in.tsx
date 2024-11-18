@@ -1,11 +1,11 @@
-import { useSignIn, useUser } from "@clerk/clerk-expo";
+import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Text, TextInput, View, StyleSheet } from "react-native";
+import { Text, TextInput, View, StyleSheet, Alert } from "react-native";
 import { Button } from "react-native-paper";
 import React from "react";
 import { theme } from "src/theme";
 
-export default function Page() {
+export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [emailAddress, setEmailAddress] = React.useState("");
@@ -26,11 +26,13 @@ export default function Page() {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");
       } else {
-        // See https://clerk.com/docs/custom-flows/error-handling
-        // for more info on error handling
+        Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Error", err.errors[0].longMessage);
+      }
       console.error(JSON.stringify(err, null, 2));
     }
   }, [isLoaded, emailAddress, password]);

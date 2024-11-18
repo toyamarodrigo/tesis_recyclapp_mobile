@@ -11,6 +11,7 @@ type UserState = {
   initializeUser: (user: User) => void;
   removeUsers: () => void;
   setProfileImage: (url: string) => void;
+  updateUser: (user: any) => void;
 };
 
 export const useUserStore = create<UserState>((set) => ({
@@ -38,4 +39,5 @@ export const useUserStore = create<UserState>((set) => ({
       profileImage: undefined,
     }),
   setProfileImage: (url: string) => set({ profileImage: url }),
+  updateUser: (user: any) => set({ user: user }),
 }));

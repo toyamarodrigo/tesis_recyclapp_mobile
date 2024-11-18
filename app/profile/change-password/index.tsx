@@ -1,4 +1,4 @@
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { Button, Text, Title, IconButton } from "react-native-paper";
@@ -7,10 +7,8 @@ import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "@stores/useUserStore";
-import bcrypt from "bcryptjs";
-import { useUpdateUser } from "@hooks/useUser";
-import { UserPut } from "@models/user.type";
 import { PasswordInput } from "@components/PasswordInput";
+import { useUser } from "@clerk/clerk-expo";
 
 type FormValues = {
   currentPassword: string;
@@ -48,7 +46,7 @@ export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
   const { user } = useUserStore();
-  const { mutate: updatePassword } = useUpdateUser();
+  const { user: userClerk } = useUser();
   const {
     control,
     reset,
@@ -65,39 +63,23 @@ export default function ChangePassword() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    //As123!1235
-    const storedPassword = user?.password || "";
-
-    const isPasswordCorrect = await bcrypt.compare(
-      data.currentPassword,
-      storedPassword
-    );
-
-    if (!isPasswordCorrect) {
-      setError("currentPassword", {
-        type: "manual",
-        message: "La contraseña actual no es correcta",
+    try {
+      userClerk?.updatePassword({
+        newPassword: data.newPassword,
+        currentPassword: data.currentPassword,
+        signOutOfOtherSessions: true,
       });
-      return;
-    }
-
-    const saltRounds = 10;
-    const hashedNewPassword = await bcrypt.hash(data.newPassword, saltRounds);
-
-    if (user) {
-      const userData: UserPut = {
-        id: user.id,
-        password: hashedNewPassword,
-      };
-
-      const data = { userData };
-
-      updatePassword(data, {
-        onSuccess: () => {
-          reset();
-          router.push("/profile");
-        },
-      });
+      Alert.alert(
+        "¡Operación exitosa!",
+        "Se cambió la contraseña con éxito. Su sesión se cerrará en el resto de los dispositivos y deberá volver a ingresar."
+      );
+      reset();
+      router.replace("/profile");
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Ocurrió un error al actualizar la contraseña. Intente nuevamente."
+      );
     }
   };
 

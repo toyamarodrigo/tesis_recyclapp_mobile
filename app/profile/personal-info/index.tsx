@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Alert } from "react-native";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -15,22 +15,17 @@ import { useUserStore } from "@stores/useUserStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { USER_TYPE } from "@constants/enum.constant";
-import { useUpdateUser } from "@hooks/useUser";
-import { UserPut } from "@models/user.type";
+import { useUser } from "@clerk/clerk-expo";
 
 type FormValues = {
   name: string;
   surname: string;
-  mail: string;
-  displayName: string;
   username: string;
 };
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
   surname: z.string().min(1, { message: "El apellido es obligatorio." }),
-  mail: z.string().email({ message: "El formato de email es incorrecto." }),
-  displayName: z.string().min(4).max(60),
   username: z
     .string()
     .min(4, {
@@ -87,8 +82,8 @@ export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
   const router = useRouter();
-  const { user, userStore } = useUserStore();
-  const { mutate: updateUser } = useUpdateUser();
+  const { user, userStore, updateUser } = useUserStore();
+  const { user: userClerk } = useUser();
 
   const {
     control,
@@ -103,43 +98,31 @@ export default function PersonalInfo() {
     defaultValues: {
       name: user?.name ?? "",
       surname: user?.surname ?? "",
-      mail: user?.mail ?? "",
-      displayName:
-        user?.userType == USER_TYPE.STORE
-          ? user.UserStore?.displayName
-          : "null",
       username: user?.username ?? "",
     },
   });
 
   const onSubmit = async (formData: FormValues) => {
-    let userStoreData;
-
-    if (user) {
-      const userData: UserPut = {
-        id: user.id,
-        name: formData.name,
-        surname: formData.surname,
-        mail: formData.mail,
-      };
-
-      if (userStore) {
-        userStoreData = {
-          id: userStore.id,
-          displayName: formData.displayName,
-        };
-      } else {
-        userStoreData = undefined;
+    if (user && userClerk) {
+      try {
+        await userClerk.update({
+          firstName: formData.name,
+          lastName: formData.surname,
+          username: formData.username,
+        });
+        updateUser(userClerk);
+        Alert.alert(
+          "¡Operación exitosa!",
+          "Se actualizaron sus datos correctamente."
+        );
+        onCancel();
+        router.replace("/profile");
+      } catch (error) {
+        Alert.alert(
+          "Error",
+          "Ocurrió al actualizar sus datos. Intente nuevamente."
+        );
       }
-
-      const data = { userData, userStoreData };
-
-      updateUser(data, {
-        onSuccess: () => {
-          onCancel();
-          router.push("/profile");
-        },
-      });
     }
   };
 
@@ -242,28 +225,6 @@ export default function PersonalInfo() {
 
           {user?.userType == USER_TYPE.STORE && (
             <View>
-              {/* displayName Input */}
-              <Controller
-                control={control}
-                name="displayName"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    label="Nombre de la Tienda"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    error={!!errors.displayName}
-                    disabled={!isEditable}
-                    style={{ marginBottom: 20 }}
-                  />
-                )}
-              />
-              {errors.displayName && (
-                <Text style={{ color: "red", marginBottom: 10 }}>
-                  {errors.displayName.message}
-                </Text>
-              )}
-
               <View
                 style={{
                   flexDirection: "row",

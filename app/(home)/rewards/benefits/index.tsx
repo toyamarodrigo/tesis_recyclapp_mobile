@@ -18,12 +18,15 @@ import { Benefit, BenefitUser } from "@models/benefit.type";
 import { useUserStore } from "@stores/useUserStore";
 import { BENEFITTYPETEXT } from "@constants/enum.constant";
 import DataEmpty from "@components/DataEmpty";
+import { useCreateBenefitAssignment } from "@hooks/useBenefitAssignment";
+import { BenefitAssignmentPost } from "@models/benefitAssignment.type";
 
 export default function Benefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { userCustomer } = useUserStore();
+  const { mutate: createBenefitAssignment } = useCreateBenefitAssignment();
 
   const hideModal = () => {
     setVisible(false);
@@ -36,12 +39,16 @@ export default function Benefits() {
 
   const confirmPoints = () => {
     if (selectedBenefit) {
-      const benefitUser: BenefitUser = {
-        idBenefit: selectedBenefit.id,
-        idUser: userCustomer.id,
+      const benefitAssignment: BenefitAssignmentPost = {
+        benefitId: selectedBenefit.id,
+        userCustomerId: userCustomer.id,
       };
 
-      //addBenefitUserActive(benefitUser);
+      //agregar a la tabla relacional
+      createBenefitAssignment(benefitAssignment);
+      userCustomer;
+      //reducir puntos usuario
+      //reducir disponibilidad beneficio
     }
     hideModal();
   };

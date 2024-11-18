@@ -15,34 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Title, Divider } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
-
-const mockedHistoricalPoints = [
-  {
-    id: 1,
-    points: 100,
-    date: "2023-04-15",
-    description: "Compra en Local Verde",
-  },
-  { id: 2, points: -50, date: "2023-04-10", description: "Canje de beneficio" },
-  {
-    id: 3,
-    points: 75,
-    date: "2023-04-05",
-    description: "Reciclaje en punto verde",
-  },
-  {
-    id: 4,
-    points: 200,
-    date: "2023-03-30",
-    description: "Compra en Local Verde",
-  },
-  {
-    id: 5,
-    points: -100,
-    date: "2023-03-25",
-    description: "Canje de beneficio",
-  },
-];
+import { mockedHistoricalPoints } from "@constants/data.constant";
 
 export function fetchHistoricalPoints() {
   const totalPoints = mockedHistoricalPoints.reduce(

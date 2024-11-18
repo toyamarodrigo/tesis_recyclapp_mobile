@@ -13,7 +13,6 @@ export const BenefitAssignmentSchema = z.object({
 const BenefitAssignmentPostSchema = z.object({
   benefitId: z.string(),
   userCustomerId: z.string(),
-  isActive: z.boolean(),
 });
 
 const BenefitAssignmentPutSchema = z.object({

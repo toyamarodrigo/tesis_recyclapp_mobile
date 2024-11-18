@@ -2,6 +2,7 @@ import { Link, Tabs, Slot } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
 import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import React from "react";
 
 const tabScreens = [
   { name: "feed", icon: "timeline-text-outline" as const },

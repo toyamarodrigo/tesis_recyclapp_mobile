@@ -1,32 +1,26 @@
-import { materialProductKeys } from "@api/query/materialProduct.factory";
+import {
+  materialColors,
+  materialProductKeys,
+} from "@api/query/materialProduct.factory";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { MaterialProduct } from "@models/materialProduct.type";
+import type { MaterialProduct } from "@models/materialProduct.type";
 import { materialProductApi } from "@api/api.materialProduct";
 
 const useMaterialProductList = () => {
-  const { data, error, isError, isLoading } = useQuery(
-    materialProductKeys.materialProduct.list()
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery({
+    ...materialProductKeys.materialProduct.list(),
+    select: (data) =>
+      data.slice(0, 4).map((material) => ({
+        ...material,
+        color: materialColors[material.id],
+      })),
+  });
 };
 
 const useMaterialProductById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    materialProductKeys.materialProduct.detail(id)
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery({
+    ...materialProductKeys.materialProduct.detail(id),
+  });
 };
 
 const useCreateMaterialProduct = (materialProduct: MaterialProduct) => {

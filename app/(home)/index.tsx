@@ -29,7 +29,7 @@ const fetchNews = async () => {
 
 const Home = () => {
   const { user: userClerk } = useUser();
-  const { initializeUser, setProfileImage } = useUserStore();
+  const { initializeUser } = useUserStore();
 
   useEffect(() => {
     if (userClerk) {
@@ -42,9 +42,6 @@ const Home = () => {
         userType: "CUSTOMER",
       };
       initializeUser(userLocal);
-      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}${userClerk.id}.jpg`;
-
-      setProfileImage(urlImage);
     }
   }, [userClerk]);
 

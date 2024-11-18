@@ -7,7 +7,7 @@ const ImageUploadSchema = z.object({
 });
 
 const ImageDeleteSchema = z.object({
-  publicid: z.string(),
+  public_id: z.string(),
 });
 
 export type ImageUpload = z.infer<typeof ImageUploadSchema>;

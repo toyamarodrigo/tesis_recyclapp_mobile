@@ -42,9 +42,6 @@ const Home = () => {
         userType: "CUSTOMER",
       };
       initializeUser(userLocal);
-      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}${userClerk.id}.jpg`;
-
-      setProfileImage(urlImage);
     }
   }, [userClerk]);
 

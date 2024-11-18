@@ -2,7 +2,7 @@ import { imageApi } from "@api/api.imagen";
 import { ImageDelete, ImageUpload } from "@models/image.type";
 import { useMutation } from "@tanstack/react-query";
 
-const useCreateAddress = () => {
+const useUploadImage = () => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (image: ImageUpload) => imageApi.uploadImage(image),
   });
@@ -15,7 +15,7 @@ const useCreateAddress = () => {
   };
 };
 
-const useDeleteAddress = () => {
+const useDeleteImage = () => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: (image: ImageDelete) => imageApi.deleteImage(image),
   });
@@ -28,4 +28,4 @@ const useDeleteAddress = () => {
   };
 };
 
-export { useCreateAddress, useDeleteAddress };
+export { useUploadImage, useDeleteImage };

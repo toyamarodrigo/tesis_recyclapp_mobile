@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { Link } from "expo-router";
 import {
@@ -22,15 +22,24 @@ import ImageUploader from "@components/ImageUploader";
 
 const Profile = () => {
   const { signOut, isLoaded } = useAuth();
-  const { user, profileImage } = useUserStore();
+  const { user, profileImage, setProfileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
   const theme = useAppTheme();
 
+  useEffect(() => {
+    if (user) {
+      const timestamp = `?timestamp=${Date.now()}`;
+      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
+
+      console.log("urlImage", urlImage);
+      setProfileImage(urlImage);
+    }
+  }, [user]);
+
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
 
-  console.log("profileImage", profileImage);
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <View style={{ flexDirection: "row", zIndex: 1 }}>
@@ -158,8 +167,8 @@ const Profile = () => {
             </View>
           )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
-            {profileImage && (
-              <View style={{ position: "relative" }}>
+            <View style={{ position: "relative" }}>
+              {profileImage && (
                 <Avatar.Image
                   size={100}
                   source={{
@@ -169,6 +178,8 @@ const Profile = () => {
                         : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
                   }}
                 />
+              )}
+              {user && (
                 <ImageUploader
                   style={{
                     position: "absolute",
@@ -178,9 +189,12 @@ const Profile = () => {
                     borderRadius: 25,
                     elevation: 5,
                   }}
+                  publicid={user?.id}
+                  subfolder={IMAGE.USER_UPLOAD}
                 />
-              </View>
-            )}
+              )}
+            </View>
+
             <Text style={{ marginTop: 10 }}>
               @
               {user && user.userType == USER_TYPE.STORE

@@ -64,7 +64,7 @@ export default function CardProfile({
             <Text
               style={{
                 color: theme.colors.error,
-                fontWeight: 600,
+                fontWeight: "600",
                 fontSize: 16,
                 padding: 10,
               }}

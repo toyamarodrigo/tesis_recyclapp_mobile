@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import {
   Button,
   Text,
@@ -15,24 +15,40 @@ import { useAppTheme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserList } from "@hooks/useUser";
-import DataEmpty from "@components/DataEmpty";
 import { IMAGE } from "@constants/image.constant";
 import { USER_TYPE } from "@constants/enum.constant";
 import { useAuth } from "@clerk/clerk-react";
+import ImageUploader from "@components/ImageUploader";
 
 const Profile = () => {
-  const { userError, userLoading } = useUserList();
-  const { signOut } = useAuth();
-  const { user, profileImage } = useUserStore();
+  const { signOut, isLoaded } = useAuth();
+  const { user, profileImage, setProfileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
   const theme = useAppTheme();
+  const router = useRouter();
+
+  //TODO DELETE PENDING UNTIL POSTS IS DONE
+  useEffect(() => {
+    if (user) {
+      const timestamp = `?timestamp=${Date.now()}`;
+      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
+
+      console.log("urlImageUser", urlImage);
+      setProfileImage(urlImage);
+    }
+  }, []);
 
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
+  const logout = async () => {
+    setLogoutVisible(false);
+    setDeleteVisible(false);
+    await signOut();
+    router.replace("/(auth)/sign-in");
+    return null;
+  };
 
-  console.log("profileImage", profileImage);
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <View style={{ flexDirection: "row", zIndex: 1 }}>
@@ -59,7 +75,6 @@ const Profile = () => {
             <View
               style={{
                 padding: 10,
-                flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -73,7 +88,7 @@ const Profile = () => {
               <Text
                 style={{
                   color: theme.colors.error,
-                  fontWeight: 600,
+                  fontWeight: "600",
                   fontSize: 16,
                   padding: 10,
                 }}
@@ -113,7 +128,6 @@ const Profile = () => {
             <View
               style={{
                 padding: 10,
-                flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -137,7 +151,7 @@ const Profile = () => {
             </Button>
             <Button
               mode="contained"
-              onPress={() => signOut()}
+              onPress={() => logout()}
               buttonColor={theme.colors.error}
               style={{
                 margin: 10,
@@ -149,37 +163,46 @@ const Profile = () => {
         </Portal>
 
         <View style={{ flex: 1, width: "100%" }}>
-          {(userLoading || userError) && (
+          {!isLoaded && (
             <View style={{ alignItems: "center", marginVertical: 20 }}>
-              {userLoading && (
+              {!isLoaded && (
                 <ActivityIndicator
                   color={theme.colors.primary}
                   size={"large"}
                 />
               )}
-              {userError && (
-                <DataEmpty displayText="Ocurrió un problema al mostrar sus datos. Intente nuevamente." />
-              )}
             </View>
           )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
-            {profileImage && (
-              <Avatar.Image
-                size={100}
-                source={{
-                  uri:
-                    profileImage && profileImage !== ""
-                      ? profileImage
-                      : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
-                }}
-              />
-            )}
-            <Text style={{ marginTop: 10 }}>
-              @
-              {user && user.userType == USER_TYPE.STORE
-                ? user.UserStore?.displayName
-                : user?.username}
-            </Text>
+            <View style={{ position: "relative" }}>
+              {profileImage && (
+                <Avatar.Image
+                  size={100}
+                  source={{
+                    uri:
+                      profileImage && profileImage !== ""
+                        ? profileImage
+                        : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
+                  }}
+                />
+              )}
+              {user && (
+                <ImageUploader
+                  style={{
+                    position: "absolute",
+                    bottom: -15,
+                    right: -15,
+                    backgroundColor: "white",
+                    borderRadius: 25,
+                    elevation: 5,
+                  }}
+                  publicid={user?.id}
+                  subfolder={IMAGE.USER_UPLOAD}
+                />
+              )}
+            </View>
+
+            <Text style={{ marginTop: 10 }}>@{user?.username}</Text>
           </View>
 
           <List.Section style={{ width: "100%" }}>

@@ -82,7 +82,7 @@ export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
   const router = useRouter();
-  const { user, userStore, updateUser } = useUserStore();
+  const { user, userStore, initializeUser } = useUserStore();
   const { user: userClerk } = useUser();
 
   const {
@@ -110,7 +110,12 @@ export default function PersonalInfo() {
           lastName: formData.surname,
           username: formData.username,
         });
-        updateUser(userClerk);
+        initializeUser({
+          ...user,
+          name: formData.name,
+          surname: formData.surname,
+          username: formData.username,
+        });
         Alert.alert(
           "¡Operación exitosa!",
           "Se actualizaron sus datos correctamente."

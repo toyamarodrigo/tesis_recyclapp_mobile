@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
 import { UserPost } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { useState } from "react";
+import { useAuth } from "@clerk/clerk-expo";
 
 const useUserList = () => {
   const {
@@ -46,10 +46,17 @@ const useUserList = () => {
   };
 };
 
-const useUser = (id: string) => {
-  const { data, isLoading, isError, error } = useQuery(
-    userKeys.user.detail(id)
-  );
+const useUserById = () => {
+  const { userId } = useAuth();
+
+  if (!userId) {
+    return { isLoading: true, isError: false, data: null, error: null };
+  }
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: userKeys.user.detail(userId).queryKey,
+    queryFn: userKeys.user.detail(userId).queryFn,
+  });
 
   return {
     data,
@@ -114,4 +121,10 @@ const useDeleteUser = () => {
   };
 };
 
-export { useUserList, useUser, useCreateUser, useUpdateUser, useDeleteUser };
+export {
+  useUserList,
+  useUserById,
+  useCreateUser,
+  useUpdateUser,
+  useDeleteUser,
+};

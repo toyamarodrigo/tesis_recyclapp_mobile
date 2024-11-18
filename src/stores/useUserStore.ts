@@ -8,28 +8,29 @@ type UserState = {
   userStore: UserStore | undefined;
   userCustomer: UserCustomer | undefined;
   profileImage: string | undefined;
-  initializeUser: (user: User) => void;
+  initializeUser: (
+    user: User,
+    userStore?: UserStore,
+    userCustomer?: UserCustomer
+  ) => void;
   removeUsers: () => void;
   setProfileImage: (url: string) => void;
-  updateUser: (user: any) => void;
 };
 
 export const useUserStore = create<UserState>((set) => ({
   user: undefined,
   userStore: undefined,
-  // userCustomer: undefined,
-  userCustomer: {
-    id: "cleum9yc50002v8f8gnwv5rz0",
-    pointsCurrent: 200,
-    pointsTotal: 200,
-    userId: "cleum9yc50002v8f8gnwv5rz9",
-  },
+  userCustomer: undefined,
   profileImage: undefined,
-  initializeUser: (user: User) =>
+  initializeUser: (
+    user: User,
+    userStore?: UserStore,
+    userCustomer?: UserCustomer
+  ) =>
     set({
       user: user,
-      userStore: user.UserStore || undefined,
-      userCustomer: user.UserCustomer || undefined,
+      userStore: userStore || undefined,
+      userCustomer: userCustomer || undefined,
     }),
   removeUsers: () =>
     set({
@@ -39,5 +40,4 @@ export const useUserStore = create<UserState>((set) => ({
       profileImage: undefined,
     }),
   setProfileImage: (url: string) => set({ profileImage: url }),
-  updateUser: (user: any) => set({ user: user }),
 }));

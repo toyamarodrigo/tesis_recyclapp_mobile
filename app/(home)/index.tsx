@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { User } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
 import { IMAGE } from "@constants/image.constant";
+import { useUserById } from "@hooks/useUser";
 
 // TODO: make custom hook to fetch ads
 const fetchAds = async () => {
@@ -30,20 +31,26 @@ const fetchNews = async () => {
 const Home = () => {
   const { user: userClerk } = useUser();
   const { initializeUser } = useUserStore();
+  const { data: userById } = useUserById();
 
   useEffect(() => {
-    if (userClerk) {
+    if (userClerk && userById) {
       const userLocal: User = {
         id: userClerk.id,
         mail: userClerk.primaryEmailAddress?.emailAddress ?? "",
         name: userClerk.firstName ?? "",
         surname: userClerk.lastName ?? "",
         username: userClerk.username ?? "",
-        userType: "CUSTOMER",
+        userType: userById?.userType,
       };
-      initializeUser(userLocal);
+
+      if (userById.userType == "STORE") {
+        initializeUser(userLocal, userById.UserStore, undefined);
+      } else {
+        initializeUser(userLocal, undefined, userById.UserCustomer);
+      }
     }
-  }, [userClerk]);
+  }, [userClerk, userById]);
 
   // TODO: fetch ads from API
   const { data: ads, isPending: adsPending } = useQuery({

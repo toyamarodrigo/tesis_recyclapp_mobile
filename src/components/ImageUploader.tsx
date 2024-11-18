@@ -4,7 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 import { useUserStore } from "@stores/useUserStore";
-import { CLOUDINARY } from "@constants/image.constant";
+import { CLOUDINARY, IMAGE } from "@constants/image.constant";
 import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import { getFileExtension } from "@utils/helpers";
@@ -21,7 +21,9 @@ export default function ImageUploader({
   subfolder,
 }: ImageUploaderProps) {
   const [image, setImage] = useState<string | null>(null);
-  const { setProfileImage } = useUserStore();
+  const { setProfileImage } = useUserStore(); //revisar para reutilizar
+  const public_id = IMAGE.USER_UPLOAD + "/" + publicid; //revisar para reutilizar
+
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -44,9 +46,10 @@ export default function ImageUploader({
       console.log("No se seleccionó ninguna imagen o se canceló la selección.");
     }
   };
+
   useEffect(() => {
     if (image) {
-      console.log("Nueva imagen:", image); // Verifica que el estado `image` se actualiza correctamente
+      console.log("Nueva imagen:", image);
       uploadImage();
     }
   }, [image]);
@@ -60,15 +63,12 @@ export default function ImageUploader({
     try {
       const fileInfo = await FileSystem.getInfoAsync(image);
       const fileUri = fileInfo.uri;
-      const fileBlob = await (await fetch(fileUri)).blob();
-
       const fileExtension = getFileExtension(image);
       const fileWithExtension = `${publicid}${fileExtension}`;
 
       const formData = new FormData();
-      // formData.append("file", fileBlob, fileWithExtension);
       formData.append("upload_preset", CLOUDINARY.uploadPreset);
-      formData.append("public_id", publicid);
+      formData.append("public_id", public_id);
       formData.append("folder", subfolder);
 
       formData.append("file", {
@@ -78,29 +78,16 @@ export default function ImageUploader({
       } as any);
 
       const response = await axios.post(CLOUDINARY.apiUrlUpload, formData, {
-        headers: { "Content-Type": "multipart/form-data" }, // Encabezado correcto
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       const refreshedUrl = `${response.data.secure_url}?timestamp=${Date.now()}`;
-      Alert.alert("¡Éxito!", `Imagen subida: ${refreshedUrl}`);
-      console.log("¡Éxito! Imagen subida:", refreshedUrl);
-      setProfileImage(refreshedUrl);
+      Alert.alert("¡Éxito!", `Se subió la imagen`);
+      setProfileImage(refreshedUrl); //revisar para reutilizar
 
       setImage(null);
     } catch (error) {
-      console.error("Error en la solicitud:", error); // Mostrar error completo
-
-      // Mostrar detalles del error de Axios
-      if (axios.isAxiosError(error)) {
-        console.error("Mensaje del error:", error.message); // Mensaje de error
-        console.error("Código de estado:", error.response?.status); // Código de estado HTTP (si está disponible)
-        console.error("Respuesta:", error.response?.data); // Detalles de la respuesta del servidor
-        console.error("Encabezados de respuesta:", error.response?.headers); // Encabezados de la respuesta
-        console.error("Solicitud:", error.config); // Detalles de la solicitud original
-      } else {
-        // No es un error de Axios
-        console.error("Error desconocido:", error);
-      }
+      console.error("Error en la solicitud:", error);
 
       Alert.alert("Error", "No se pudo subir la imagen.");
     }

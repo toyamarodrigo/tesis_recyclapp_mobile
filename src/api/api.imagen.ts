@@ -38,7 +38,6 @@ export const imageApi = {
       );
 
       Alert.alert("Éxito", "Se eliminó la imagen con éxito.");
-      console.log(result);
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {

@@ -1,12 +1,11 @@
 import { userKeys } from "@api/query/user.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
-import { UserPost, UserPut } from "@models/user.type";
+import { UserPost } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const useUserList = () => {
-  const { initializeUser, setProfileImage } = useUserStore();
   const {
     data: userData,
     isSuccess: userSuccess,
@@ -16,7 +15,6 @@ const useUserList = () => {
     queryKey: userKeys.user.list().queryKey,
     queryFn: userKeys.user.list().queryFn,
   });
-  const [userId, setUserId] = useState<string | null>(null);
 
   // useEffect(() => {
   //   if (userSuccess && userData) {

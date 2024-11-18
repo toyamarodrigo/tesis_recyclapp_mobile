@@ -29,7 +29,7 @@ const fetchNews = async () => {
 
 const Home = () => {
   const { user: userClerk } = useUser();
-  const { initializeUser, setProfileImage } = useUserStore();
+  const { initializeUser } = useUserStore();
 
   useEffect(() => {
     if (userClerk) {

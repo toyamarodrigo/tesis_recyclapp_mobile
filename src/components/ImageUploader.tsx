@@ -8,6 +8,7 @@ import { CLOUDINARY, IMAGE } from "@constants/image.constant";
 import axios from "axios";
 import * as FileSystem from "expo-file-system";
 import { getFileExtension } from "@utils/helpers";
+import { imageApi } from "@api/api.imagen";
 
 interface ImageUploaderProps {
   style?: object;
@@ -23,6 +24,7 @@ export default function ImageUploader({
   const [image, setImage] = useState<string | null>(null);
   const { setProfileImage } = useUserStore(); //revisar para reutilizar
   const public_id = IMAGE.USER_UPLOAD + "/" + publicid; //revisar para reutilizar
+  const timestamp = `?timestamp=${Date.now()}`;
 
   const pickImage = async () => {
     const permissionResult =
@@ -61,6 +63,9 @@ export default function ImageUploader({
     }
 
     try {
+      const deletedddd = await imageApi.deleteImage({ public_id: public_id });
+      console.log("deletedddd", deletedddd);
+
       const fileInfo = await FileSystem.getInfoAsync(image);
       const fileUri = fileInfo.uri;
       const fileExtension = getFileExtension(image);
@@ -68,7 +73,7 @@ export default function ImageUploader({
 
       const formData = new FormData();
       formData.append("upload_preset", CLOUDINARY.uploadPreset);
-      formData.append("public_id", public_id);
+      formData.append("public_id", publicid);
       formData.append("folder", subfolder);
 
       formData.append("file", {
@@ -81,8 +86,9 @@ export default function ImageUploader({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const refreshedUrl = `${response.data.secure_url}?timestamp=${Date.now()}`;
+      const refreshedUrl = `${response.data.secure_url}${timestamp}`;
       Alert.alert("¡Éxito!", `Se subió la imagen`);
+      console.log("refreshedUrl", refreshedUrl);
       setProfileImage(refreshedUrl); //revisar para reutilizar
 
       setImage(null);

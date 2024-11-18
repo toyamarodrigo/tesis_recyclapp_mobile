@@ -32,10 +32,10 @@ const Profile = () => {
       const timestamp = `?timestamp=${Date.now()}`;
       const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
 
-      console.log("urlImage", urlImage);
+      console.log("urlImageUser", urlImage);
       setProfileImage(urlImage);
     }
-  }, [user]);
+  }, []);
 
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);

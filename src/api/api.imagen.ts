@@ -37,21 +37,15 @@ export const imageApi = {
         image
       );
 
-      Alert.alert("Éxito", "Se eliminó la imagen con éxito.");
+      console.log("Éxito", "Se eliminó la imagen con éxito.");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        Alert.alert(
-          "Error",
-          "Ocurrió un problema al eliminar la imagen. Intente nuevamente."
-        );
+        console.log("Ocurrio un problema al eliminar la imagen");
         throw new Error(e.message);
       }
 
-      Alert.alert(
-        "Error",
-        "Ocurrió un problema al eliminar la imagen. Intente nuevamente."
-      );
+      console.log("Ocurrio un problema al eliminar la imagen");
       throw new Error("Unknown error");
     }
   },

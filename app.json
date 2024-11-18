@@ -44,10 +44,11 @@
         "expo-asset",
         {
           "assets": [
-            "./assets/images/francella.PNG"
+            "./assets/images/icon.png"
           ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

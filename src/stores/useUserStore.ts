@@ -8,7 +8,11 @@ type UserState = {
   userStore: UserStore | undefined;
   userCustomer: UserCustomer | undefined;
   profileImage: string | undefined;
-  initializeUser: (user: User) => void;
+  initializeUser: (
+    user: User,
+    userStore?: UserStore,
+    userCustomer?: UserCustomer
+  ) => void;
   removeUsers: () => void;
   setProfileImage: (url: string) => void;
 };
@@ -36,11 +40,15 @@ export const useUserStore = create<UserState>((set) => ({
     userId: "cleum9yc50002v8f8gnwv5rz9",
   },
   profileImage: undefined,
-  initializeUser: (user: User) =>
+  initializeUser: (
+    user: User,
+    userStore?: UserStore,
+    userCustomer?: UserCustomer
+  ) =>
     set({
       user: user,
-      userStore: user.UserStore || undefined,
-      userCustomer: user.UserCustomer || undefined,
+      userStore: userStore || undefined,
+      userCustomer: userCustomer || undefined,
     }),
   removeUsers: () =>
     set({

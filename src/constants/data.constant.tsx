@@ -1,14 +1,6 @@
-import { View, StyleSheet, ScrollView } from "react-native";
-import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { AdCard } from "@features/home/components/ad-card";
-import { NewsCard } from "@features/home/components/news-card";
-import { Carousel } from "@features/home/components/carousel";
-import { colors } from "@constants/colors.constant";
-import type { Ad, News } from "@models/advertisement.type";
-import { useUserList } from "@hooks/useUser";
+import { Ad, News } from "@models/advertisement.type";
 
-const mockAds: Ad[] = [
+export const mockAds: Ad[] = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09",
@@ -115,7 +107,7 @@ const mockAds: Ad[] = [
   },
 ];
 
-const mockNews: News[] = [
+export const mockNews: News[] = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce",
@@ -201,77 +193,3 @@ const mockNews: News[] = [
     source: "https://www.example.com",
   },
 ];
-
-// TODO: make custom hook to fetch ads
-const fetchAds = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return mockAds;
-};
-
-// TODO: make custom hook to fetch news
-const fetchNews = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return mockNews;
-};
-
-const Home = () => {
-  useUserList(); //TODO colocar bien esta llamada en el login
-
-  // TODO: fetch ads from API
-  const { data: ads, isPending: adsPending } = useQuery({
-    queryKey: ["ads"],
-    queryFn: fetchAds,
-  });
-  // TODO: fetch news from API
-  const { data: news, isPending: newsPending } = useQuery({
-    queryKey: ["news"],
-    queryFn: fetchNews,
-  });
-
-  const handleNewsPress = (item: News) => {
-    router.push({
-      pathname: "/news-detail",
-      params: { newsItem: JSON.stringify(item) },
-    });
-  };
-
-  const handleAdPress = (item: Ad) => {
-    router.push({
-      pathname: "/ads-detail",
-      params: { adItem: JSON.stringify(item) },
-    });
-  };
-
-  return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Carousel
-          title="Consejos Ecológicos"
-          data={ads}
-          renderItem={(item) => <AdCard item={item} onPress={handleAdPress} />}
-          isPending={adsPending}
-          height={250}
-        />
-        <Carousel
-          title="Últimas Noticias"
-          data={news}
-          renderItem={(item) => (
-            <NewsCard item={item} onPress={handleNewsPress} />
-          )}
-          isPending={newsPending}
-          height={250}
-        />
-      </View>
-    </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.gray[50],
-    paddingTop: 20,
-  },
-});
-
-export default Home;

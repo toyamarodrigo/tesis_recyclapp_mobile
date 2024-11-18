@@ -110,8 +110,6 @@ export default function NewAddress() {
       };
     }
 
-    console.log("addressData", addressData);
-
     if (currentAddress) {
       const addressEdit: AddressPut = {
         ...addressData,

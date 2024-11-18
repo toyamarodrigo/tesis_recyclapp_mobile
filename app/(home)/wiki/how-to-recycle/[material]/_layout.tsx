@@ -1,15 +1,15 @@
 import { Stack } from "expo-router";
 
-
-export default function FeedLayout() { 
+export default function HowToRecycleMaterialLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" 
+      <Stack.Screen
+        name="index"
         options={{
-          title: "Feed",
+          title: "",
           headerShown: false,
         }}
       />
     </Stack>
-  )
+  );
 }

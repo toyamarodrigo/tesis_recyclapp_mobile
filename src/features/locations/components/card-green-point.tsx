@@ -1,6 +1,6 @@
-import type { TransformedGreenPoint } from "@api/api.greenPoint";
 import { colors } from "@constants/colors.constant";
 import type BottomSheet from "@gorhom/bottom-sheet";
+import type { TransformedGreenPoint } from "@models/greenPoint.type";
 import type { RefObject } from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, TouchableRipple, Text, Chip } from "react-native-paper";

@@ -1,14 +1,11 @@
 import { userKeys } from "@api/query/user.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
-import { UserPost, UserPut } from "@models/user.type";
+import { UserPost } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { useEffect, useState } from "react";
-import { useImageById } from "./useImage";
-import { benefitKeys } from "@api/query/benefit.factory";
+import { useAuth } from "@clerk/clerk-expo";
 
 const useUserList = () => {
-  const { initializeUser, setProfileImage } = useUserStore();
   const {
     data: userData,
     isSuccess: userSuccess,
@@ -18,45 +15,48 @@ const useUserList = () => {
     queryKey: userKeys.user.list().queryKey,
     queryFn: userKeys.user.list().queryFn,
   });
-  const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (userSuccess && userData) {
-      // 6 store, 4 customer dakun
-      initializeUser(userData[6]);
-      setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
-      // initializeUser(userData[4]);
-      // setUserId(userData[4].id); //TODO arreglar esta llamada en el login del usuario
-    }
-  }, [userSuccess, userData, initializeUser]);
+  // useEffect(() => {
+  //   if (userSuccess && userData) {
+  //     initializeUser(userData[6]);
+  //     setUserId(userData[6].id); //TODO arreglar esta llamada en el login del usuario
+  //   }
+  // }, [userSuccess, userData, initializeUser]);
 
-  const {
-    data: imageData,
-    isLoading: imageLoading,
-    error: imageError,
-  } = useImageById(userId as string);
+  // const {
+  //   data: imageData,
+  //   isLoading: imageLoading,
+  //   error: imageError,
+  // } = useImageById(userId as string);
 
-  useEffect(() => {
-    if (imageData?.url) {
-      setProfileImage(imageData.url);
-    }
-  }, [imageData, setProfileImage]);
+  // useEffect(() => {
+  //   if (imageData?.url) {
+  //     setProfileImage(imageData.url);
+  //   }
+  // }, [imageData, setProfileImage]);
 
   return {
     userData,
     userLoading,
     userSuccess,
     userError,
-    imageData,
-    imageLoading,
-    imageError,
+    // imageData,
+    // imageLoading,
+    // imageError,
   };
 };
 
-const useUser = (id: string) => {
-  const { data, isLoading, isError, error } = useQuery(
-    userKeys.user.detail(id)
-  );
+const useUserById = () => {
+  const { userId } = useAuth();
+
+  if (!userId) {
+    return { isLoading: true, isError: false, data: null, error: null };
+  }
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: userKeys.user.detail(userId).queryKey,
+    queryFn: userKeys.user.detail(userId).queryFn,
+  });
 
   return {
     data,
@@ -93,9 +93,6 @@ const useUpdateUser = () => {
       queryClient.invalidateQueries({
         queryKey: userKeys.user.list().queryKey, //TODO revisar si actualiza todo o los datos
       });
-      queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
-      });
     },
   });
 
@@ -124,4 +121,10 @@ const useDeleteUser = () => {
   };
 };
 
-export { useUserList, useUser, useCreateUser, useUpdateUser, useDeleteUser };
+export {
+  useUserList,
+  useUserById,
+  useCreateUser,
+  useUpdateUser,
+  useDeleteUser,
+};

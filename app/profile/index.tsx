@@ -16,25 +16,24 @@ import { useUserStore } from "@stores/useUserStore";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IMAGE } from "@constants/image.constant";
-import { USER_TYPE } from "@constants/enum.constant";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import ImageUploader from "@components/ImageUploader";
+import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
   const { signOut, isLoaded } = useAuth();
-  const { user, profileImage, setProfileImage } = useUserStore();
+  const { user } = useUser();
+  const { data: userStore } = useUserStoreByClerk();
+  const { profileImage, setProfileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = React.useState(false);
   const [logoutVisible, setLogoutVisible] = React.useState(false);
   const theme = useAppTheme();
   const router = useRouter();
 
-  //TODO DELETE PENDING UNTIL POSTS IS DONE
   useEffect(() => {
     if (user) {
       const timestamp = `?timestamp=${Date.now()}`;
       const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
-
-      console.log("urlImageUser", urlImage);
       setProfileImage(urlImage);
     }
   }, []);
@@ -227,7 +226,7 @@ const Profile = () => {
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
-            {user?.userType == USER_TYPE.STORE && (
+            {userStore && (
               <Link href="/profile/benefits" asChild>
                 <List.Item
                   title="Mis beneficios"

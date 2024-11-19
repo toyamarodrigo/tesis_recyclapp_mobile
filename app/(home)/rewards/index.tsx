@@ -16,28 +16,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Title, Divider } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
 import { mockedHistoricalPoints } from "@constants/data.constant";
-
-export function fetchHistoricalPoints() {
-  const totalPoints = mockedHistoricalPoints.reduce(
-    (sum, item) => sum + item.points,
-    0
-  );
-
-  return {
-    historicalPoints: mockedHistoricalPoints,
-    totalPoints: totalPoints,
-  };
-}
+import { useUserStore } from "@stores/useUserStore";
+import { useBenefitStore } from "@stores/useBenefitStore";
+import { useBenefitList } from "@hooks/useBenefit";
 
 export default function Rewards() {
-  const { historicalPoints, totalPoints } = fetchHistoricalPoints();
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
+  const { userCustomer } = useUserStore();
+  //TODO HACER HOOK PARA BENEFITS POR USER
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <FlatList
-        data={historicalPoints}
+        data={mockedHistoricalPoints}
         renderItem={({ item }) => (
           <HistoricalPointItem
             points={item.points}
@@ -49,8 +41,8 @@ export default function Rewards() {
         contentContainerStyle={styles.flatListContent}
         ListHeaderComponent={
           <View style={styles.main}>
-            <Title style={styles.title}>Mis puntos</Title>
-            <Text style={styles.score}>{totalPoints}</Text>
+            <Title style={styles.title}>Mis puntos totales</Title>
+            <Text style={styles.score}>{userCustomer.pointsTotal}</Text>
             <Divider
               style={{
                 borderColor: theme.colors.inverseOnSurface,

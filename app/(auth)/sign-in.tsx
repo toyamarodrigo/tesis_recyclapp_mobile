@@ -4,9 +4,11 @@ import { Text, TextInput, View, StyleSheet, Alert } from "react-native";
 import { Button } from "react-native-paper";
 import React from "react";
 import { theme } from "src/theme";
+import { useUserCustomerByClerk } from "@hooks/useUser";
 
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { data: userCustomer } = useUserCustomerByClerk();
   const router = useRouter();
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -24,7 +26,9 @@ export default function SignInScreen() {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/");
+        if (userCustomer) {
+          router.replace("/");
+        }
       } else {
         Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
         console.error(JSON.stringify(signInAttempt, null, 2));

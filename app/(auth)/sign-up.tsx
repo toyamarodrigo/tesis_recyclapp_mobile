@@ -7,8 +7,7 @@ import { Button, TextInput } from "react-native-paper";
 import { z } from "zod";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { PasswordInput } from "@components/PasswordInput";
-import { useCreateUser } from "@hooks/useUser";
-import { useUserStore } from "@stores/useUserStore";
+import { useCreateUserCustomer } from "@hooks/useUser";
 
 type FormValues = {
   emailAddress: string;
@@ -98,12 +97,9 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
-  const { mutate: createUserDB } = useCreateUser();
-  const { initializeUser } = useUserStore();
-  const [localUser, setLocalUser] = React.useState<any>();
+  const { mutate: createUserDB } = useCreateUserCustomer();
   const { user } = useUser();
 
-  // console.log(user);
   const {
     control,
     reset,
@@ -125,17 +121,6 @@ export default function SignUpScreen() {
   });
 
   const onSubmit = async (formData: FormValues) => {
-    const userData = {
-      name: formData.firstName,
-      surname: formData.lastName,
-      mail: formData.emailAddress,
-      username: formData.username,
-    };
-
-    const data = { userData };
-
-    // console.log(data);
-
     onSignUpPress(formData);
   };
 
@@ -152,14 +137,6 @@ export default function SignUpScreen() {
         username: formData.username,
         firstName: formData.firstName,
         lastName: formData.lastName,
-      });
-
-      setLocalUser({
-        mail: formData.emailAddress,
-        password: formData.password,
-        username: formData.username,
-        name: formData.firstName,
-        surname: formData.lastName,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
     } catch (err: any) {
@@ -181,7 +158,9 @@ export default function SignUpScreen() {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        initializeUser(localUser);
+        if (user) {
+          createUserDB({ userId: user.id }); //TODO VALIDAR
+        }
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

@@ -1,14 +1,19 @@
-import { User, UserPost, UserPut } from "@models/user.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 import { Alert } from "react-native";
-import { UserCustomerPut } from "@models/userCustomer.type";
+import {
+  UserCustomer,
+  UserCustomerPost,
+  UserCustomerPut,
+} from "@models/userCustomer.type";
+import { UserStore, UserStorePost, UserStorePut } from "@models/userStore.type";
 
 export const userApi = {
-  getUsers: async () => {
+  // UserCustomer
+  getUserCustomers: async () => {
     try {
-      const result = await axios.get<User[]>(
-        `${backendApiConfig.baseURL}/users`
+      const result = await axios.get<UserCustomer[]>(
+        `${backendApiConfig.baseURL}/userCustomers`
       );
 
       return result.data;
@@ -20,12 +25,12 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-  getUser: async (id: string) => {
+  getUserCustomer: async (id: string) => {
     try {
-      const result = await axios.get<User>(
-        `${backendApiConfig.baseURL}/user/${id}`
+      const result = await axios.get<UserCustomer>(
+        `${backendApiConfig.baseURL}/userCustomer/${id}`
       );
-      console.log("response", result);
+
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -35,18 +40,28 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-  createUser: async (user: UserPost) => {
+  getUserCustomerClerk: async (id: string) => {
     try {
-      const result = await axios.post<User>(
-        `${backendApiConfig.baseURL}/user`,
+      const result = await axios.get<UserCustomer>(
+        `${backendApiConfig.baseURL}/userCustomerClerk/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+  createUserCustomer: async (user: UserCustomerPost) => {
+    try {
+      const result = await axios.post<UserCustomer>(
+        `${backendApiConfig.baseURL}/userCustomer`,
         user
       );
 
-      Alert.alert(
-        "Éxito",
-        "Se creó el nuevo usuario con éxito. Inicie sesión para continuar."
-      );
-      console.log(result);
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -64,11 +79,11 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-  updateUser: async (data: any) => {
+  updateUserCustomer: async (user: any) => {
     try {
-      const result = await axios.put<User>(
-        `${backendApiConfig.baseURL}/user/${data.userData.id}`,
-        data
+      const result = await axios.put<UserCustomerPut>(
+        `${backendApiConfig.baseURL}/userCustomer/${user.id}`,
+        user
       );
 
       Alert.alert("Éxito", "Se actualizaron sus datos con éxito.");
@@ -90,15 +105,114 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-
-  updateUserCustomer: async (data: any) => {
+  deleteUserCustomer: async (id: string) => {
     try {
-      const result = await axios.put<UserCustomerPut>(
-        `${backendApiConfig.baseURL}/usercustomer/${data.id}`,
-        data
+      const result = await axios.delete<UserCustomer>(
+        `${backendApiConfig.baseURL}/userCustomer/${id}`
       );
 
-      console.log("userCustomerUpdate", result);
+      Alert.alert(
+        "Éxito",
+        "Se eliminó su cuenta éxito. Gracias por utilizar nuestro servicio."
+      );
+      console.log(result);
+      return result;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al eliminar su cuenta. Intente nuevamente."
+        );
+        throw new Error(e.message);
+      }
+
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al eliminar su cuenta. Intente nuevamente."
+      );
+      throw new Error("Unknown error");
+    }
+  },
+
+  // UserStore
+  getUserStores: async () => {
+    try {
+      const result = await axios.get<UserStore[]>(
+        `${backendApiConfig.baseURL}/userStores`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+  getUserStore: async (id: string) => {
+    try {
+      const result = await axios.get<UserStore>(
+        `${backendApiConfig.baseURL}/userStore/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+  getUserStoreClerk: async (id: string) => {
+    try {
+      const result = await axios.get<UserStore>(
+        `${backendApiConfig.baseURL}/userStoreClerk/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+  createUserStore: async (user: UserStorePost) => {
+    try {
+      const result = await axios.post<UserStore>(
+        `${backendApiConfig.baseURL}/userStore`,
+        user
+      );
+
+      return result;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al crear el usuario. Intente nuevamente."
+        );
+        throw new Error(e.message);
+      }
+
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al crear el usuario. Intente nuevamente."
+      );
+      throw new Error("Unknown error");
+    }
+  },
+  updateUserStore: async (user: any) => {
+    try {
+      const result = await axios.put<UserStorePut>(
+        `${backendApiConfig.baseURL}/userStore/${user.id}`,
+        user
+      );
+
+      Alert.alert("Éxito", "Se actualizaron sus datos con éxito.");
+      console.log(result, "exito");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -116,11 +230,10 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-
-  deleteUser: async (id: string) => {
+  deleteUserStore: async (id: string) => {
     try {
-      const result = await axios.delete<User>(
-        `${backendApiConfig.baseURL}/user/${id}`
+      const result = await axios.delete<UserStore>(
+        `${backendApiConfig.baseURL}/userStore/${id}`
       );
 
       Alert.alert(

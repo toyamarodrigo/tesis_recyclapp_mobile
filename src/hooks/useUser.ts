@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
 import { UserPost } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { useAuth } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 
 const useUserList = () => {
   const {
@@ -47,15 +47,15 @@ const useUserList = () => {
 };
 
 const useUserById = () => {
-  const { userId } = useAuth();
+  const { user } = useUser();
 
-  if (!userId) {
+  if (!user) {
     return { isLoading: true, isError: false, data: null, error: null };
   }
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: userKeys.user.detail(userId).queryKey,
-    queryFn: userKeys.user.detail(userId).queryFn,
+    queryKey: userKeys.user.detail(user.id).queryKey,
+    queryFn: userKeys.user.detail(user.id).queryFn,
   });
 
   return {

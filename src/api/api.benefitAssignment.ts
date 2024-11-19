@@ -11,7 +11,7 @@ export const benefitAssignmentApi = {
   getBenefitAssignments: async () => {
     try {
       const result = await axios.get<BenefitAssignment[]>(
-        `${backendApiConfig.baseURL}/benefitAssignments`
+        `${backendApiConfig.baseURL}/benefitassignments`
       );
 
       return result.data;
@@ -26,7 +26,7 @@ export const benefitAssignmentApi = {
   getBenefitAssignmentById: async (id: string) => {
     try {
       const result = await axios.get<BenefitAssignment>(
-        `${backendApiConfig.baseURL}/benefitAssignment/${id}`
+        `${backendApiConfig.baseURL}/benefitassignment/${id}`
       );
 
       return result.data;
@@ -41,11 +41,12 @@ export const benefitAssignmentApi = {
   createBenefitAssignment: async (benefitAssignment: BenefitAssignmentPost) => {
     try {
       const result = await axios.post<BenefitAssignmentPost>(
-        `${backendApiConfig.baseURL}/benefitAssignment`,
+        `${backendApiConfig.baseURL}/benefitassignment`,
         benefitAssignment
       );
 
       Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
+      console.log("benefitAssignmentUpdate", result);
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -66,7 +67,7 @@ export const benefitAssignmentApi = {
   updateBenefitAssignment: async (benefitAssignment: BenefitAssignmentPut) => {
     try {
       const result = await axios.put<BenefitAssignmentPut>(
-        `${backendApiConfig.baseURL}/benefitAssignment/${benefitAssignment.id}`,
+        `${backendApiConfig.baseURL}/benefitassignment/${benefitAssignment.id}`,
         benefitAssignment
       );
 
@@ -91,7 +92,7 @@ export const benefitAssignmentApi = {
   deleteBenefitAssignment: async (id: string) => {
     try {
       const result = await axios.delete<BenefitAssignment>(
-        `${backendApiConfig.baseURL}/benefitAssignment/${id}`
+        `${backendApiConfig.baseURL}/benefitassignment/${id}`
       );
 
       Alert.alert("Éxito", "Se desasignó el beneficio con éxito.");

@@ -36,8 +36,18 @@ export default function Rewards() {
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <FlatList
+        data={historicalPoints}
+        renderItem={({ item }) => (
+          <HistoricalPointItem
+            points={item.points}
+            date={item.date}
+            description={item.description}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.flatListContent}
+        ListHeaderComponent={
           <View style={styles.main}>
             <Title style={styles.title}>Mis puntos</Title>
             <Text style={styles.score}>{totalPoints}</Text>
@@ -79,20 +89,8 @@ export default function Rewards() {
 
             <Text style={styles.historyTitle}>Historial de puntos</Text>
           </View>
-          <FlatList
-            data={historicalPoints}
-            renderItem={({ item }) => (
-              <HistoricalPointItem
-                points={item.points}
-                date={item.date}
-                description={item.description}
-              />
-            )}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.flatListContent}
-          />
-        </ScrollView>
-      </View>
+        }
+      />
     </SafeAreaView>
   );
 }

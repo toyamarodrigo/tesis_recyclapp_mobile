@@ -2,6 +2,7 @@ import { User, UserPost, UserPut } from "@models/user.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 import { Alert } from "react-native";
+import { UserCustomerPut } from "@models/userCustomer.type";
 
 export const userApi = {
   getUsers: async () => {
@@ -24,7 +25,7 @@ export const userApi = {
       const result = await axios.get<User>(
         `${backendApiConfig.baseURL}/user/${id}`
       );
-
+      console.log("response", result);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -89,6 +90,33 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
+
+  updateUserCustomer: async (data: any) => {
+    try {
+      const result = await axios.put<UserCustomerPut>(
+        `${backendApiConfig.baseURL}/usercustomer/${data.id}`,
+        data
+      );
+
+      console.log("userCustomerUpdate", result);
+      return result;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        Alert.alert(
+          "Error",
+          "Ocurrió un problema al actualizar sus datos. Intente nuevamente."
+        );
+        throw new Error(e.message);
+      }
+
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al actualizar sus datos. Intente nuevamente."
+      );
+      throw new Error("Unknown error");
+    }
+  },
+
   deleteUser: async (id: string) => {
     try {
       const result = await axios.delete<User>(

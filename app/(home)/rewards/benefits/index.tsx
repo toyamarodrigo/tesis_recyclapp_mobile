@@ -9,7 +9,7 @@ import {
   Portal,
   ActivityIndicator,
 } from "react-native-paper";
-import { useBenefitList } from "@hooks/useBenefit";
+import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
@@ -20,6 +20,7 @@ import { BENEFITTYPETEXT } from "@constants/enum.constant";
 import DataEmpty from "@components/DataEmpty";
 import { useCreateBenefitAssignment } from "@hooks/useBenefitAssignment";
 import { BenefitAssignmentPost } from "@models/benefitAssignment.type";
+import { useUpdateUser, useUpdateUserCustomer } from "@hooks/useUser";
 
 export default function Benefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
@@ -27,6 +28,8 @@ export default function Benefits() {
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { userCustomer } = useUserStore();
   const { mutate: createBenefitAssignment } = useCreateBenefitAssignment();
+  const { mutate: updateUserCustomer } = useUpdateUserCustomer();
+  const { mutate: updateBenefit } = useUpdateBenefit();
 
   const hideModal = () => {
     setVisible(false);
@@ -39,16 +42,27 @@ export default function Benefits() {
 
   const confirmPoints = () => {
     if (selectedBenefit) {
-      const benefitAssignment: BenefitAssignmentPost = {
+      const benefitAssignmentData: BenefitAssignmentPost = {
         benefitId: selectedBenefit.id,
         userCustomerId: userCustomer.id,
       };
-
+      const userData = {
+        id: userCustomer.id,
+        pointsCurrent: userCustomer.pointsCurrent - selectedBenefit.pointsCost,
+      };
+      const benefitData = {
+        id: selectedBenefit.id,
+        quantity: selectedBenefit.quantity - 1,
+      };
       //agregar a la tabla relacional
-      createBenefitAssignment(benefitAssignment);
-      userCustomer;
+      createBenefitAssignment(benefitAssignmentData);
+
       //reducir puntos usuario
+      updateUserCustomer(userData);
+      //actualizar el puntos disponibles en esta pagina y en el store
+
       //reducir disponibilidad beneficio
+      updateBenefit(benefitData);
     }
     hideModal();
   };

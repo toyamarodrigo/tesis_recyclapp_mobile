@@ -13,7 +13,6 @@ import { theme } from "src/theme";
 import { useEffect } from "react";
 import { User } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { IMAGE } from "@constants/image.constant";
 import { useUserById } from "@hooks/useUser";
 
 // TODO: make custom hook to fetch ads

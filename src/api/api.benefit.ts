@@ -71,7 +71,7 @@ export const benefitApi = {
         benefit
       );
 
-      Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
+      console.log("benefit", result);
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {

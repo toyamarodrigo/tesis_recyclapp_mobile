@@ -5,39 +5,14 @@ import { theme } from "src/theme";
 import { Link, useRouter } from "expo-router";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import { useUserStore } from "@stores/useUserStore";
 import { useBenefitStore } from "@stores/useBenefitStore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Fragment, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
-
-const BenefitSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-});
-
-const BenefitTypeList = [
-  {
-    id: "DISCOUNT",
-    name: "DESCUENTO",
-  },
-  {
-    id: "PRODUCT",
-    name: "PRODUCTO GRATIS",
-  },
-  {
-    id: "DOUBLEPRODUCT",
-    name: "2 * 1",
-  },
-];
-
-enum BenefitType {
-  DISCOUNT = "DISCOUNT",
-  PRODUCT = "PRODUCT",
-  DOUBLEPRODUCT = "DOUBLEPRODUCT",
-}
+import { useUserStoreByClerk } from "@hooks/useUser";
+import { BenefitType, BenefitTypeList } from "@constants/data.constant";
 
 type FormValues = {
   id: string | null;
@@ -96,7 +71,7 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function NewBenefits() {
-  const { userStore } = useUserStore();
+  const { data: userStore } = useUserStoreByClerk();
   const { currentBenefit, clearCurrentBenefit } = useBenefitStore();
   const router = useRouter();
   function addMonths(date: Date, months: number): Date {

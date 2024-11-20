@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
 import { useSignUp, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { theme } from "src/theme";
@@ -97,7 +97,7 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
-  const { mutate: createUserDB } = useCreateUserCustomer();
+  const { mutateAsync: createUserDB } = useCreateUserCustomer();
   const { user } = useUser();
 
   const {
@@ -156,11 +156,19 @@ export default function SignUpScreen() {
         code,
       });
 
+      if (completeSignUp.status !== "complete") {
+        Alert.alert("Código inválido. Por favor, intenta nuevamente.");
+        return;
+      }
+
+      if (!completeSignUp.createdUserId) throw new Error("User not created");
+
+      await createUserDB({
+        userId: completeSignUp.createdUserId,
+      });
+
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        if (user) {
-          createUserDB({ userId: user.id }); //TODO VALIDAR
-        }
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

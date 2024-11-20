@@ -4,11 +4,16 @@ import { theme } from "src/theme";
 import { Link, useRouter } from "expo-router";
 import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import { useUserStore } from "@stores/useUserStore";
 import { useAddressStore } from "@stores/useAddressStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AddressPost, AddressPut } from "@models/address.type";
-import { useCreateAddress, useUpdateAddress } from "@hooks/useAddress";
+import {
+  useAddressById,
+  useAddressClerkId,
+  useCreateAddress,
+  useUpdateAddress,
+} from "@hooks/useAddress";
+import { useUser } from "@clerk/clerk-expo";
 
 type FormValues = {
   street: string;
@@ -73,24 +78,31 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function NewAddress() {
-  const { user } = useUserStore();
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) {
+    return null;
+  }
+
   const { currentAddress, clearCurrentAddress } = useAddressStore();
   const router = useRouter();
-  const { mutate: createAddress } = useCreateAddress();
-  const { mutate: editAddress } = useUpdateAddress();
+  const { mutateAsync: createAddress } = useCreateAddress();
+  const { mutateAsync: editAddress } = useUpdateAddress();
+  //useAddressClerkId(user.id);
 
   const handleCancel = () => {
     reset();
     clearCurrentAddress();
-    router.push("/profile/address");
+    router.replace("/profile/address");
   };
 
-  const handleCreate = (address: AddressPost) => {
-    createAddress(address);
+  const handleCreate = async (address: AddressPost) => {
+    await createAddress(address);
+    //useAddressClerkId(user.id);
   };
 
-  const handleEdit = (address: AddressPut) => {
-    editAddress(address);
+  const handleEdit = async (address: AddressPut) => {
+    await editAddress(address);
+    //useAddressClerkId(user.id);
   };
 
   const onSubmit = (data: FormValues) => {

@@ -1,10 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { CircleLink } from "@features/rewards/components/circle-link";
 import { HistoricalPointItem } from "@features/rewards/components/historical-point-item";
 import {
@@ -16,14 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Title, Divider } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
 import { mockedHistoricalPoints } from "@constants/data.constant";
-import { useUserStore } from "@stores/useUserStore";
-import { useBenefitStore } from "@stores/useBenefitStore";
-import { useBenefitList } from "@hooks/useBenefit";
+import { useUserCustomerByClerk } from "@hooks/useUser";
 
 export default function Rewards() {
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
-  const { userCustomer } = useUserStore();
+  const { data: userCustomer } = useUserCustomerByClerk();
   //TODO HACER HOOK PARA BENEFITS POR USER
 
   return (
@@ -42,7 +34,7 @@ export default function Rewards() {
         ListHeaderComponent={
           <View style={styles.main}>
             <Title style={styles.title}>Mis puntos totales</Title>
-            <Text style={styles.score}>{userCustomer.pointsTotal}</Text>
+            <Text style={styles.score}>{userCustomer?.pointsTotal}</Text>
             <Divider
               style={{
                 borderColor: theme.colors.inverseOnSurface,

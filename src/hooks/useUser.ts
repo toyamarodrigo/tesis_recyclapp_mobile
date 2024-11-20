@@ -1,5 +1,5 @@
 import { userKeys } from "@api/query/user.factory";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
 import { useUser } from "@clerk/clerk-expo";
 import { UserCustomerPost } from "@models/userCustomer.type";
@@ -25,12 +25,12 @@ const useUserCustomerByClerk = () => {
 };
 
 const useCreateUserCustomer = () => {
-  const { mutate, isPending, isSuccess, error } = useMutation({
+  const { mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (user: UserCustomerPost) => userApi.createUserCustomer(user),
   });
 
   return {
-    mutate,
+    mutateAsync,
     isPending,
     isSuccess,
     error,

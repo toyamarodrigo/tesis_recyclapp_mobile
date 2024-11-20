@@ -14,18 +14,20 @@ import DataEmpty from "@components/DataEmpty";
 import { useBenefitList } from "@hooks/useBenefit";
 import { useState } from "react";
 import { Benefit } from "@models/benefit.type";
-import { useUserStore } from "@stores/useUserStore";
-import { useUpdateUser } from "@hooks/useUser";
-import { UserPut } from "@models/user.type";
+import { useUser } from "@clerk/clerk-expo";
+import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
+import { UserCustomerPut } from "@models/userCustomer.type";
 
 export default function ActiveBenefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
-  const { userCustomer, user } = useUserStore();
   const [modalTitle, setModalTitle] = useState<string>("");
   const [modalContent, setModalContent] = useState<string>("");
-  const { mutate: useAddPoints, isPending } = useUpdateUser();
+  const { user } = useUser();
+  const { data: userCustomer, isLoading: userLoading } =
+    useUserCustomerByClerk();
+  const { mutate: updateUserCustomer } = useUpdateUserCustomer();
 
   const hideModal = () => {
     setVisible(false);
@@ -37,27 +39,20 @@ export default function ActiveBenefits() {
   };
 
   const addPoints = () => {
-    let userCustomerData;
+    let userCustomerData: UserCustomerPut;
 
     if (user) {
-      const userData: UserPut = {
-        id: user.id,
-      };
-
       if (userCustomer && selectedBenefit) {
         userCustomerData = {
           id: userCustomer.id,
           pointsCurrent:
             userCustomer.pointsCurrent + selectedBenefit.pointsCost,
         };
-      } else {
-        userCustomerData = undefined;
+
+        console.log(userCustomerData);
+        updateUserCustomer(userCustomerData);
       }
-
-      const data = { userData, userCustomerData };
-
-      console.log(data);
-      useAddPoints(data); //TODO revisar que se actualicen los beneficios y los puntos del usuario
+      //TODO revisar que se actualicen los beneficios y los puntos del usuario
     }
   };
 
@@ -130,13 +125,13 @@ export default function ActiveBenefits() {
           )}
         </Modal>
       </Portal>
-      {(isLoading || isPending) && (
+      {(isLoading || userLoading) && (
         <ActivityIndicator color={theme.colors.primary} size={"large"} />
       )}
       {error && (
         <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
       )}
-      {!isLoading && !isPending && benefitList
+      {!isLoading && userCustomer && benefitList
         ? benefitList.map((benefit) => (
             <CardBenefit
               key={benefit.id}

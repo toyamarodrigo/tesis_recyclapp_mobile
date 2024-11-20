@@ -1,6 +1,6 @@
 import CardProfile from "@components/CardProfile";
 import DataEmpty from "@components/DataEmpty";
-import { useAddressList, useUpdateAddress } from "@hooks/useAddress";
+import { useAddressClerkId, useUpdateAddress } from "@hooks/useAddress";
 import { useAddressStore } from "@stores/useAddressStore";
 import { Link, useRouter } from "expo-router";
 import { ScrollView, View } from "react-native";
@@ -13,13 +13,21 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "src/theme";
 import { Address, AddressPut } from "@models/address.type";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function Addresses() {
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded || !user?.id) {
+    return null;
+  }
+
   const theme = useAppTheme();
   const router = useRouter();
-  const { data: addressList, error, isLoading } = useAddressList();
   const { setCurrentAddress } = useAddressStore();
   const { mutate: updateAddress } = useUpdateAddress();
+  //TODO recarga de direcciones post update
+  const { data: addressList, error, isLoading } = useAddressClerkId(user.id);
 
   const handleDelete = (address: Address) => {
     const removeAddress: AddressPut = {

@@ -1,11 +1,3 @@
-// export const ROUTES = {
-//   ROOT: "/",
-//   LOGIN: "/login",
-//   HOME: "/home",
-//   DETAILS: "/details",
-//   COUNTER: "/counter",
-// } as const;
-
 //enum
 export const BENEFITTYPEICON = {
   DISCOUNT: "percent",

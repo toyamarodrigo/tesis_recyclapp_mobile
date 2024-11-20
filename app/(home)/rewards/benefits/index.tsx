@@ -14,19 +14,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
 import { useState } from "react";
-import { Benefit, BenefitUser } from "@models/benefit.type";
-import { useUserStore } from "@stores/useUserStore";
+import { Benefit } from "@models/benefit.type";
 import { BENEFITTYPETEXT } from "@constants/enum.constant";
 import DataEmpty from "@components/DataEmpty";
 import { useCreateBenefitAssignment } from "@hooks/useBenefitAssignment";
 import { BenefitAssignmentPost } from "@models/benefitAssignment.type";
-import { useUpdateUser, useUpdateUserCustomer } from "@hooks/useUser";
+import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
 
 export default function Benefits() {
   const { isLoading, error, data: benefitList } = useBenefitList();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
-  const { userCustomer } = useUserStore();
+  const { data: userCustomer } = useUserCustomerByClerk();
   const { mutate: createBenefitAssignment } = useCreateBenefitAssignment();
   const { mutate: updateUserCustomer } = useUpdateUserCustomer();
   const { mutate: updateBenefit } = useUpdateBenefit();
@@ -41,7 +40,7 @@ export default function Benefits() {
   };
 
   const confirmPoints = () => {
-    if (selectedBenefit) {
+    if (selectedBenefit && userCustomer) {
       const benefitAssignmentData: BenefitAssignmentPost = {
         benefitId: selectedBenefit.id,
         userCustomerId: userCustomer.id,
@@ -154,7 +153,7 @@ export default function Benefits() {
           {error && (
             <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
           )}
-          {benefitList
+          {benefitList && userCustomer
             ? benefitList.map((benefit) => (
                 <CardBenefit
                   key={benefit.id}

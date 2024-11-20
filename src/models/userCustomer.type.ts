@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const UserCustomerSchema = z.object({
   id: z.string(),
-  pointsCurrent: z.string(),
-  pointsTotal: z.string(),
+  pointsCurrent: z.number(),
+  pointsTotal: z.number(),
   userId: z.string(),
 });
 
@@ -13,8 +13,8 @@ const UserCustomerPostSchema = z.object({
 
 const UserCustomerPutSchema = z.object({
   id: z.string(),
-  pointsCurrent: z.string().optional(),
-  pointsTotal: z.string().optional(),
+  pointsCurrent: z.number().optional(),
+  pointsTotal: z.number().optional(),
   userId: z.string().optional(),
 });
 

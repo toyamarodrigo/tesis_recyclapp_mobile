@@ -1,9 +1,4 @@
-import type {
-  Benefit,
-  BenefitPost,
-  BenefitPut,
-  BenefitUser,
-} from "@models/benefit.type";
+import type { Benefit, BenefitPost, BenefitPut } from "@models/benefit.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 import { Alert } from "react-native";

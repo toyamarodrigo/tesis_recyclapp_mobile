@@ -1,13 +1,10 @@
 import { colors } from "@constants/colors.constant";
 import { Text, StyleSheet, Pressable, PressableProps } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
 interface ButtonProps extends PressableProps {
   onPress: () => void;
   title?: string;
   colorText?: string;
   colorBg?: string;
-  // icon?: MaterialCommunityIcons;
 }
 
 const Button = ({

@@ -10,7 +10,6 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/addresses`
       );
 
-      console.log(result.data);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -35,6 +34,23 @@ export const addressApi = {
       throw new Error("Unknown error");
     }
   },
+  getAddressClerkId: async (id: string) => {
+    try {
+      const result = await axios.get<Address[]>(
+        `${backendApiConfig.baseURL}/addressesByUser/${id}`
+      );
+
+      console.log("result", result);
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+
   createAddress: async (address: AddressPost) => {
     try {
       const result = await axios.post<Address>(

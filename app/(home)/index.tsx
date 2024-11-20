@@ -1,15 +1,16 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { router, Link } from "expo-router";
+import { router, Link, Redirect } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
 import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
 import type { Ad, News } from "@models/advertisement.type";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useAuth, useUser } from "@clerk/clerk-expo";
 import { mockAds, mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
+import { useUserCustomerByClerk } from "@hooks/useUser";
 
 // TODO: make custom hook to fetch ads
 const fetchAds = async () => {
@@ -24,6 +25,10 @@ const fetchNews = async () => {
 };
 
 const Home = () => {
+  const { userId, isSignedIn } = useAuth();
+  if (!userId || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+  const { data: user } = useUserCustomerByClerk({ userId });
+
   // TODO: fetch ads from API
   const { data: ads, isPending: adsPending } = useQuery({
     queryKey: ["ads"],

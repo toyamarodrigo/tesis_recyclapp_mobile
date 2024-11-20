@@ -40,7 +40,6 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/addressesByUser/${id}`
       );
 
-      console.log("result", result);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -58,9 +57,7 @@ export const addressApi = {
         address
       );
 
-      Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(
@@ -84,9 +81,7 @@ export const addressApi = {
         address
       );
 
-      Alert.alert("Éxito", "Se actualizó la dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(
@@ -109,9 +104,7 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/address/${id}`
       );
 
-      Alert.alert("Éxito", "Se eliminó la dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(

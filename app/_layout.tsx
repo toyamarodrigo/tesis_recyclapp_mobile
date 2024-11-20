@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
-import * as Updates from "expo-updates";
 import { PaperProvider } from "react-native-paper";
 import { theme } from "src/theme";
 import * as SecureStore from "expo-secure-store";

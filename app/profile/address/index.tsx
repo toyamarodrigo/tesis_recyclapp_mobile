@@ -3,7 +3,7 @@ import DataEmpty from "@components/DataEmpty";
 import { useAddressClerkId, useUpdateAddress } from "@hooks/useAddress";
 import { useAddressStore } from "@stores/useAddressStore";
 import { Link, useRouter } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, RefreshControl } from "react-native";
 import {
   Title,
   Button,
@@ -14,27 +14,40 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "src/theme";
 import { Address, AddressPut } from "@models/address.type";
 import { useUser } from "@clerk/clerk-expo";
+import { useCallback, useState } from "react";
 
 export default function Addresses() {
   const { user, isLoaded } = useUser();
-
-  if (!isLoaded || !user?.id) {
-    return null;
-  }
-
   const theme = useAppTheme();
   const router = useRouter();
   const { setCurrentAddress } = useAddressStore();
-  const { mutate: updateAddress } = useUpdateAddress();
-  //TODO recarga de direcciones post update
-  const { data: addressList, error, isLoading } = useAddressClerkId(user.id);
+  if (!isLoaded || !user?.id) return null;
+  const { mutateAsync: updateAddress } = useUpdateAddress();
+  const {
+    data: addressList,
+    error,
+    isLoading,
+    refetch,
+  } = useAddressClerkId(user.id);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleDelete = (address: Address) => {
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const hasAddresses =
+    addressList &&
+    addressList.length > 0 &&
+    addressList.some((address) => !address.isArchived);
+
+  const handleDelete = async (address: Address) => {
     const removeAddress: AddressPut = {
       id: address.id,
       isArchived: true,
     };
-    updateAddress(removeAddress);
+    await updateAddress(removeAddress);
   };
 
   const handleEdit = (address: Address) => {
@@ -51,7 +64,17 @@ export default function Addresses() {
         <Title style={{ color: theme.colors.primary }}>Mis direcciones</Title>
       </View>
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+              tintColor={theme.colors.primary}
+            />
+          }
+        >
           <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
             <View style={{ width: "100%" }}>
               <View style={{ marginBottom: 20 }}>
@@ -64,22 +87,22 @@ export default function Addresses() {
                 {error && (
                   <DataEmpty displayText="Ocurrió un problema al mostrar las direcciones. Intente nuevamente." />
                 )}
-                {!isLoading &&
-                  !error &&
-                  addressList &&
-                  addressList.length === 0 && (
-                    <DataEmpty displayText="Aún no tienes direcciones creadas. Puedes agregar una a continuación." />
-                  )}
-                {addressList &&
-                  addressList.map((address) => (
-                    <CardProfile
-                      key={address.id}
-                      title={address.street}
-                      type={"dirección"}
-                      onDelete={() => handleDelete(address)}
-                      onEdit={() => handleEdit(address)}
-                    />
-                  ))}
+                {!isLoading && !error && !hasAddresses && (
+                  <DataEmpty displayText="Aún no tienes direcciones creadas. Puedes agregar una a continuación." />
+                )}
+                {hasAddresses &&
+                  addressList.map((address) => {
+                    if (address.isArchived) return null;
+                    return (
+                      <CardProfile
+                        key={address.id}
+                        title={address.street}
+                        type={"dirección"}
+                        onDelete={() => handleDelete(address)}
+                        onEdit={() => handleEdit(address)}
+                      />
+                    );
+                  })}
               </View>
             </View>
           </View>

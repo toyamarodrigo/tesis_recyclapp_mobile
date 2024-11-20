@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import {
   Button,
   Text,
@@ -21,14 +21,21 @@ import ImageUploader from "@components/ImageUploader";
 import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
-  const { signOut, isLoaded } = useAuth();
+  const { signOut, isSignedIn, userId, isLoaded } = useAuth();
   const { user } = useUser();
-  const { data: userStore } = useUserStoreByClerk();
   const { profileImage, setProfileImage } = useUserStore();
-  const [deleteVisible, setDeleteVisible] = React.useState(false);
-  const [logoutVisible, setLogoutVisible] = React.useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
   const theme = useAppTheme();
-  const router = useRouter();
+
+  const showModalDelete = () => setDeleteVisible(true);
+  const showModalLogout = () => setLogoutVisible(true);
+
+  const { data: userStore } = useUserStoreByClerk({ userId: userId || "" });
+
+  const logout = async () => {
+    await signOut();
+  };
 
   useEffect(() => {
     if (user) {
@@ -38,15 +45,8 @@ const Profile = () => {
     }
   }, []);
 
-  const showModalDelete = () => setDeleteVisible(true);
-  const showModalLogout = () => setLogoutVisible(true);
-  const logout = async () => {
-    setLogoutVisible(false);
-    setDeleteVisible(false);
-    await signOut();
-    router.replace("/(auth)/sign-in");
-    return null;
-  };
+  if (!userId || !isSignedIn || !isLoaded)
+    return <Redirect href="/(auth)/sign-in" />;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>

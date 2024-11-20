@@ -7,12 +7,7 @@ import { z } from "zod";
 import { useAddressStore } from "@stores/useAddressStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AddressPost, AddressPut } from "@models/address.type";
-import {
-  useAddressById,
-  useAddressClerkId,
-  useCreateAddress,
-  useUpdateAddress,
-} from "@hooks/useAddress";
+import { useCreateAddress, useUpdateAddress } from "@hooks/useAddress";
 import { useUser } from "@clerk/clerk-expo";
 
 type FormValues = {
@@ -77,6 +72,29 @@ const resolver: Resolver<FormValues> = async (values) => {
   }
 };
 
+const prepareAddressData = (
+  formData: FormValues,
+  userId: string
+): AddressPost => {
+  const addressData: AddressPost = {
+    street: formData.street,
+    city: formData.city,
+    state: formData.state,
+    postalCode: formData.postalCode,
+    userId: userId,
+    isArchived: false,
+  };
+
+  if (formData.flat?.trim()) {
+    return {
+      ...addressData,
+      flat: formData.flat,
+    };
+  }
+
+  return addressData;
+};
+
 export default function NewAddress() {
   const { user, isLoaded } = useUser();
   if (!isLoaded || !user?.id) {
@@ -85,9 +103,10 @@ export default function NewAddress() {
 
   const { currentAddress, clearCurrentAddress } = useAddressStore();
   const router = useRouter();
-  const { mutateAsync: createAddress } = useCreateAddress();
-  const { mutateAsync: editAddress } = useUpdateAddress();
-  //useAddressClerkId(user.id);
+  const { mutateAsync: createAddress, isPending: isLoadingCreate } =
+    useCreateAddress();
+  const { mutateAsync: editAddress, isPending: isLoadingEdit } =
+    useUpdateAddress();
 
   const handleCancel = () => {
     reset();
@@ -97,48 +116,34 @@ export default function NewAddress() {
 
   const handleCreate = async (address: AddressPost) => {
     await createAddress(address);
-    //useAddressClerkId(user.id);
   };
 
   const handleEdit = async (address: AddressPut) => {
     await editAddress(address);
-    //useAddressClerkId(user.id);
   };
 
-  const onSubmit = (data: FormValues) => {
-    let addressData: AddressPost = {
-      street: data.street,
-      city: data.city,
-      state: data.state,
-      postalCode: data.postalCode,
-      userId: user?.id,
-      isArchived: false,
-    };
+  const onSubmit = async (formData: FormValues) => {
+    try {
+      const addressData = prepareAddressData(formData, user.id);
 
-    if (data.flat && data.flat != "") {
-      addressData = {
-        ...addressData,
-        flat: data.flat,
-      };
+      if (currentAddress) {
+        await handleEdit({
+          ...addressData,
+          id: currentAddress.id,
+        });
+      } else {
+        await handleCreate(addressData);
+      }
+
+      handleCancel();
+    } catch (error) {
+      console.error("Failed to save address:", error);
     }
-
-    if (currentAddress) {
-      const addressEdit: AddressPut = {
-        ...addressData,
-        id: currentAddress.id,
-      };
-      handleEdit(addressEdit);
-    } else {
-      handleCreate(addressData);
-    }
-
-    handleCancel();
   };
 
   const {
     control,
     reset,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
@@ -295,7 +300,12 @@ export default function NewAddress() {
         </View>
       </ScrollView>
       <View style={{ padding: 16, gap: 15 }}>
-        <Button mode="contained" onPress={handleSubmit(onSubmit)}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          loading={isLoadingCreate || isLoadingEdit}
+          disabled={isLoadingCreate || isLoadingEdit}
+        >
           {currentAddress ? "Editar dirección" : "Crear nueva dirección"}
         </Button>
         <Button
@@ -310,19 +320,3 @@ export default function NewAddress() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  pickerContainer: {
-    marginBottom: 20,
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-    borderRadius: 4,
-    backgroundColor: theme.colors.background,
-    overflow: "hidden",
-  },
-  picker: {
-    height: 50,
-    width: "100%",
-    color: theme.colors.primary,
-  },
-});

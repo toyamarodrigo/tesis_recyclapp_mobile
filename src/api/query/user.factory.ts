@@ -8,7 +8,7 @@ export const userKeys = createQueryKeyStore({
       queryFn: () => userApi.getUserCustomer(id),
     }),
     customerDetailsClerk: (id: string) => ({
-      queryKey: ["customerDetailsClerk"],
+      queryKey: ["customerDetailsClerk", id],
       queryFn: () => userApi.getUserCustomerClerk(id),
     }),
     storeDetails: (id: string) => ({

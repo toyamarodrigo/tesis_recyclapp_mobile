@@ -1,19 +1,12 @@
 import { userKeys } from "@api/query/user.factory";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
-import { useUser } from "@clerk/clerk-expo";
 import { UserCustomerPost } from "@models/userCustomer.type";
 
-const useUserCustomerByClerk = () => {
-  const { user } = useUser();
-
-  if (!user) {
-    return { isLoading: true, isError: false, data: null, error: null };
-  }
-
+const useUserCustomerByClerk = ({ userId }: { userId: string }) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: userKeys.user.customerDetailsClerk(user.id).queryKey,
-    queryFn: userKeys.user.customerDetailsClerk(user.id).queryFn,
+    ...userKeys.user.customerDetailsClerk(userId),
+    enabled: !!userId,
   });
 
   return {
@@ -63,16 +56,11 @@ const useDeleteUserCustomer = () => {
   };
 };
 
-const useUserStoreByClerk = () => {
-  const { user } = useUser();
-
-  if (!user) {
-    return { isLoading: true, isError: false, data: null, error: null };
-  }
-
+const useUserStoreByClerk = ({ userId }: { userId: string }) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: userKeys.user.storeDetailsClerk(user.id).queryKey,
-    queryFn: userKeys.user.storeDetailsClerk(user.id).queryFn,
+    queryKey: userKeys.user.storeDetailsClerk(userId).queryKey,
+    queryFn: userKeys.user.storeDetailsClerk(userId).queryFn,
+    enabled: !!userId,
   });
 
   return {

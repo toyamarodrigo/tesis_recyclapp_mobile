@@ -1,13 +1,14 @@
-import * as React from "react";
 import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
-import { useSignUp, useUser } from "@clerk/clerk-expo";
+import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { theme } from "src/theme";
 import { Button, TextInput } from "react-native-paper";
 import { z } from "zod";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { PasswordInput } from "@components/PasswordInput";
 import { useCreateUserCustomer } from "@hooks/useUser";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Fragment, useState } from "react";
 
 type FormValues = {
   emailAddress: string;
@@ -54,60 +55,19 @@ const formSchema = z
     path: ["repeatPassword"],
   });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        firstName: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
-  const [pendingVerification, setPendingVerification] = React.useState(false);
-  const [code, setCode] = React.useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
   const { mutateAsync: createUserDB } = useCreateUserCustomer();
-  const { user } = useUser();
 
   const {
     control,
-    reset,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver,
+    resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
@@ -147,9 +107,7 @@ export default function SignUpScreen() {
   };
 
   const onPressVerify = async () => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
@@ -359,7 +317,7 @@ export default function SignUpScreen() {
         </ScrollView>
       )}
       {pendingVerification && (
-        <>
+        <Fragment>
           <Text style={styles.text}>
             Ingresa el código de 6 dígitos que fue enviado a tu casilla para
             confirmar la creación de la cuenta.
@@ -379,7 +337,7 @@ export default function SignUpScreen() {
               <Text style={styles.text}>Verificar email</Text>
             </Button>
           </View>
-        </>
+        </Fragment>
       )}
     </View>
   );

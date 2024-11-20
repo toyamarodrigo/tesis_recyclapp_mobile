@@ -1,54 +1,31 @@
 import { addressKeys } from "@api/query/address.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AddressPost, AddressPut } from "@models/address.type";
+import { Address, AddressPost, AddressPut } from "@models/address.type";
 import { addressApi } from "@api/api.address";
-import { useUser } from "@clerk/clerk-expo";
-
-const useAddressList = () => {
-  const { data, error, isSuccess, isLoading } = useQuery({
-    queryKey: addressKeys.address.list().queryKey,
-    queryFn: addressKeys.address.list().queryFn,
-  });
-
-  return {
-    data,
-    error,
-    isSuccess,
-    isLoading,
-  };
-};
-
-const useAddressById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery({
-    ...addressKeys.address.detail(id),
-    enabled: !!id,
-  });
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
+import { Alert } from "react-native";
 
 const useAddressClerkId = (userId: string) => {
-  const { data, error, isError, isLoading } = useQuery({
+  return useQuery({
     ...addressKeys.address.addressesClerk(userId),
     enabled: !!userId,
   });
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
 };
 
 const useCreateAddress = () => {
+  const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
+    mutationKey: ["createAddress"],
     mutationFn: (address: AddressPost) => addressApi.createAddress(address),
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        addressKeys.address.addressesClerk(data.userId).queryKey,
+        (old: any) => {
+          return [...old, data];
+        }
+      );
+
+      Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
+    },
   });
 
   return {
@@ -61,8 +38,20 @@ const useCreateAddress = () => {
 };
 
 const useUpdateAddress = () => {
+  const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
+    mutationKey: ["updateAddress"],
     mutationFn: (address: AddressPut) => addressApi.updateAddress(address),
+    onSuccess: (data: Address) => {
+      queryClient.setQueryData(
+        addressKeys.address.addressesClerk(data.userId).queryKey,
+        (old: any) => {
+          return old.map((address: Address) =>
+            address.id === data.id ? data : address
+          );
+        }
+      );
+    },
   });
 
   return {
@@ -74,25 +63,4 @@ const useUpdateAddress = () => {
   };
 };
 
-const useDeleteAddress = () => {
-  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
-    mutationFn: (id: string) => addressApi.deleteAddress(id),
-  });
-
-  return {
-    mutate,
-    mutateAsync,
-    isPending,
-    isError,
-    error,
-  };
-};
-
-export {
-  useAddressList,
-  useAddressById,
-  useCreateAddress,
-  useUpdateAddress,
-  useDeleteAddress,
-  useAddressClerkId,
-};
+export { useCreateAddress, useUpdateAddress, useAddressClerkId };

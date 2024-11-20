@@ -1,7 +1,7 @@
-import { Link, Tabs, Slot } from "expo-router";
+import { Link, Tabs, Slot, router, Redirect } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "react-native-paper";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import React from "react";
 
 const tabScreens = [
@@ -14,6 +14,8 @@ const tabScreens = [
 
 const RouterTabs = () => {
   const theme = useTheme();
+  const { userId, isSignedIn } = useAuth();
+  if (!userId || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
 
   return (
     <>

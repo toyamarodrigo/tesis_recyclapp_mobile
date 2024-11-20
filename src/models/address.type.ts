@@ -10,7 +10,7 @@ export const AddressSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   greenPointId: z.string().optional(),
-  userId: z.string().optional(),
+  userId: z.string(),
   isArchived: z.boolean(),
 });
 
@@ -23,7 +23,7 @@ const AddressPostSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   greenPointId: z.string().optional(),
-  userId: z.string().optional(),
+  userId: z.string(),
   isArchived: z.boolean().optional(),
 });
 

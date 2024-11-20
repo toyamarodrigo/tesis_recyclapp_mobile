@@ -1,60 +1,20 @@
 import { advertisementKeys } from "@api/query/advertisement.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  AdvertisementPost,
-  AdvertisementPut,
-} from "@models/advertisement.type";
-import { advertisementApi } from "@api/api.advertisement";
+import { useQuery } from "@tanstack/react-query";
+import { IMAGE } from "@constants/image.constant";
 
-const useAdvertisementList = () => {
-  const { data, error, isError, isLoading } = useQuery(
-    advertisementKeys.advertisement.list()
-  );
+export const useAdvertisementList = () => {
+  return useQuery({
+    ...advertisementKeys.advertisement.list(),
+    select: (data) => {
+      const formattedData = data
+        .map((ad) => ({
+          ...ad,
+          image: `${IMAGE.CLOUDINARY_URL}${IMAGE.ADVERTISEMENT_FOLDER}/${ad.userId}/${ad.id}.jpg`,
+        }))
+        .filter((ad) => !ad.isArchived)
+        .filter((ad) => ad.paymentCompleted);
 
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useAdvertisementById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    advertisementKeys.advertisement.detail(id)
-  );
-
-  return { data, error, isError, isLoading };
-};
-
-const useCreateAdvertisement = (advertisement: AdvertisementPost) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: advertisementApi.createAdvertisement,
-    mutationKey: [advertisement],
+      return formattedData;
+    },
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
-};
-
-const useUpdateAdvertisement = (advertisement: AdvertisementPut) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: advertisementApi.updateAdvertisement,
-    mutationKey: [advertisement],
-  });
-
-  return { mutate, isPending, isError, error };
-};
-
-const useDeleteAdvertisement = (id: string) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: advertisementApi.deleteAdvertisement,
-    mutationKey: [id],
-  });
-
-  return { mutate, isPending, isError, error };
 };

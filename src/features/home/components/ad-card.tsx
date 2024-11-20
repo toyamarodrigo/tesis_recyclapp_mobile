@@ -1,18 +1,29 @@
 import { View, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
+import type { Ad } from "@models/advertisement.type";
 
-export const AdCard = ({ item, onPress }) => (
-  <Card style={styles.adCard} onPress={() => onPress(item)}>
-    <View style={styles.cardContent}>
-      <Card.Cover source={{ uri: item.image }} style={styles.adImage} />
-      <View style={styles.adOverlay}>
-        <Text variant="bodyMedium" style={styles.adText}>
-          {item.description}
-        </Text>
+export const AdCard = ({
+  item,
+  onPress,
+}: {
+  item: Ad;
+  onPress: (item: Ad) => void;
+}) => {
+  return (
+    <Card style={styles.adCard} onPress={() => onPress(item)}>
+      <View style={styles.cardContent}>
+        {item.image && (
+          <Card.Cover source={{ uri: item.image }} style={styles.adImage} />
+        )}
+        <View style={styles.adOverlay}>
+          <Text variant="bodyMedium" style={styles.adText}>
+            {item.title}
+          </Text>
+        </View>
       </View>
-    </View>
-  </Card>
-);
+    </Card>
+  );
+};
 
 const styles = StyleSheet.create({
   adCard: {

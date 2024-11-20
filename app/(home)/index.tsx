@@ -6,21 +6,15 @@ import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
 import type { Ad, News } from "@models/advertisement.type";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { mockAds, mockNews } from "@constants/data.constant";
+import { mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
 import { useEffect } from "react";
 import { User } from "@models/user.type";
 import { useUserStore } from "@stores/useUserStore";
-import { IMAGE } from "@constants/image.constant";
 import { useUserById } from "@hooks/useUser";
-
-// TODO: make custom hook to fetch ads
-const fetchAds = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return mockAds;
-};
+import { useAdvertisementList } from "@hooks/useAdvertisement";
 
 // TODO: make custom hook to fetch news
 const fetchNews = async () => {
@@ -32,6 +26,8 @@ const Home = () => {
   const { user: userClerk } = useUser();
   const { initializeUser } = useUserStore();
   const { data: userById } = useUserById();
+
+  const { data: ads, isPending: adsPending } = useAdvertisementList();
 
   useEffect(() => {
     if (userClerk && userById) {
@@ -52,11 +48,6 @@ const Home = () => {
     }
   }, [userClerk, userById]);
 
-  // TODO: fetch ads from API
-  const { data: ads, isPending: adsPending } = useQuery({
-    queryKey: ["ads"],
-    queryFn: fetchAds,
-  });
   // TODO: fetch news from API
   const { data: news, isPending: newsPending } = useQuery({
     queryKey: ["news"],

@@ -13,7 +13,7 @@ const useAddressClerkId = (userId: string) => {
 
 const useCreateAddress = () => {
   const queryClient = useQueryClient();
-  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
+  return useMutation({
     mutationKey: ["createAddress"],
     mutationFn: (address: AddressPost) => addressApi.createAddress(address),
     onSuccess: (data) => {
@@ -27,19 +27,11 @@ const useCreateAddress = () => {
       Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
     },
   });
-
-  return {
-    mutate,
-    mutateAsync,
-    isPending,
-    isError,
-    error,
-  };
 };
 
 const useUpdateAddress = () => {
   const queryClient = useQueryClient();
-  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
+  return useMutation({
     mutationKey: ["updateAddress"],
     mutationFn: (address: AddressPut) => addressApi.updateAddress(address),
     onSuccess: (data: Address) => {
@@ -51,16 +43,13 @@ const useUpdateAddress = () => {
           );
         }
       );
+      if (data.isArchived) {
+        Alert.alert("Éxito", "Se eliminó la dirección con éxito.");
+      } else {
+        Alert.alert("Éxito", "Se actualizó la dirección con éxito.");
+      }
     },
   });
-
-  return {
-    mutate,
-    mutateAsync,
-    isPending,
-    isSuccess,
-    error,
-  };
 };
 
 export { useCreateAddress, useUpdateAddress, useAddressClerkId };

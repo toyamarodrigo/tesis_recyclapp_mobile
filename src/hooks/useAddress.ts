@@ -19,7 +19,7 @@ const useCreateAddress = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(
         addressKeys.address.addressesClerk(data.userId).queryKey,
-        (old: any) => {
+        (old: Address[]) => {
           return [...old, data];
         }
       );
@@ -45,7 +45,7 @@ const useUpdateAddress = () => {
     onSuccess: (data: Address) => {
       queryClient.setQueryData(
         addressKeys.address.addressesClerk(data.userId).queryKey,
-        (old: any) => {
+        (old: Address[]) => {
           return old.map((address: Address) =>
             address.id === data.id ? data : address
           );

@@ -123,11 +123,13 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 20,
     borderRadius: 10,
-    shadowColor: theme.colors.surfaceVariant,
+    shadowColor: theme.colors.surfaceDisabled,
     shadowOffset: {
       height: 5,
       width: 5,
     },
+    borderColor: theme.colors.surfaceDisabled,
+    borderWidth: 2,
     shadowOpacity: 1,
     shadowRadius: 3,
   },

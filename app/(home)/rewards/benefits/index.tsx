@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import { router } from "expo-router";
 import {
   Text,
@@ -31,9 +31,9 @@ export default function Benefits() {
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
-  const { mutate: createBenefitAssignment } = useCreateBenefitAssignment();
-  const { mutate: updateUserCustomer } = useUpdateUserCustomer();
-  const { mutate: updateBenefit } = useUpdateBenefit();
+  const { mutateAsync: createBenefitAssignment } = useCreateBenefitAssignment();
+  const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
+  const { mutateAsync: updateBenefit } = useUpdateBenefit();
   const [selectedBenefitAssignment, setSelectedBenefitAssignment] = useState<
     string | null
   >(null);
@@ -47,7 +47,7 @@ export default function Benefits() {
     setVisible(true);
   };
 
-  const confirmPoints = () => {
+  const confirmPoints = async () => {
     if (selectedBenefit && userCustomer) {
       const benefitAssignmentData: BenefitAssignmentPost = {
         benefitId: selectedBenefit.id,
@@ -61,15 +61,14 @@ export default function Benefits() {
         id: selectedBenefit.id,
         quantity: selectedBenefit.quantity - 1,
       };
-      //agregar a la tabla relacional
-      createBenefitAssignment(benefitAssignmentData);
 
-      //reducir puntos usuario
-      updateUserCustomer(userData);
-      //actualizar el puntos disponibles en esta pagina y en el store
-
-      //reducir disponibilidad beneficio
-      updateBenefit(benefitData);
+      await createBenefitAssignment(benefitAssignmentData);
+      await updateUserCustomer(userData);
+      await updateBenefit(benefitData);
+      Alert.alert(
+        "Éxito",
+        "Se restauraron los puntos del beneficio con éxito."
+      );
     }
     hideModal();
   };

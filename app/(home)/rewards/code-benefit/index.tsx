@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import { router } from "expo-router";
 import { Text, Button, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
@@ -16,6 +16,7 @@ export default function ActiveBenefits() {
         id: currentBenefitCustomer.id,
         isActive: false,
       });
+      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
       clearCurrentBenefitCustomer();
       router.back();
     }

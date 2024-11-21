@@ -20,6 +20,10 @@ import { Benefit, BenefitPut } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
 import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
+import {
+  useBenefitAssignmentByStoreBenefits,
+  useUpdateBenefitAssignment,
+} from "@hooks/useBenefitAssignment";
 
 export default function Benefits() {
   const { user, isLoaded } = useUser();
@@ -37,6 +41,12 @@ export default function Benefits() {
     error,
     data: benefitList,
   } = useBenefitListStore(userStore.id);
+  const benefitIds: string[] = benefitList
+    ? benefitList.map((benefit) => benefit.id)
+    : [];
+  const { data: benefitAssignmentListStore } =
+    useBenefitAssignmentByStoreBenefits(benefitIds);
+  const { mutate: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
 
   const handleDelete = async (benefit: Benefit) => {
     const removeBenefit: BenefitPut = {
@@ -62,9 +72,31 @@ export default function Benefits() {
   };
 
   const confirmCode = () => {
-    console.log(code);
-    //TODO validar el funcionamiento del codigo
-    hideModal();
+    if (!benefitList) return;
+    const getByCode = benefitAssignmentListStore?.find(
+      (benefit) => benefit.generatedCode == code
+    );
+
+    if (!getByCode) {
+      Alert.alert(
+        "Error",
+        "No hay beneficios otorgados con ese código. Intente nuevamente."
+      );
+    } else {
+      const benefitExchanged = benefitList.find(
+        (benefit) => benefit.id == getByCode.benefitId
+      );
+
+      updateBenefitAssignemnt({
+        id: getByCode.id,
+        isActive: false,
+      });
+      hideModal();
+      Alert.alert(
+        "¡Cambio exitoso!",
+        `Se realizó la recepción del código del beneficio ${benefitExchanged?.name} correctamente. No olvides avisarle al cliente que ya puede cerrar su pantalla del código. ¡Muchas gracias por tus servicios!`
+      );
+    }
   };
 
   return (
@@ -161,8 +193,18 @@ export default function Benefits() {
           >
             Agregar beneficio
           </Button>
-          <Button mode="contained-tonal" onPress={showModal}>
-            Recibir código
+          <Button
+            mode="contained-tonal"
+            onPress={showModal}
+            disabled={
+              !benefitAssignmentListStore ||
+              benefitAssignmentListStore.length == 0
+            }
+          >
+            {!benefitAssignmentListStore ||
+            benefitAssignmentListStore.length == 0
+              ? "No hay beneficios a recibir"
+              : "Recibir código"}
           </Button>
         </View>
       </View>

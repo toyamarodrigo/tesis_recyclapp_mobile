@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import { router } from "expo-router";
 import {
   Text,
@@ -80,6 +80,10 @@ export default function ActiveBenefits() {
 
       //reducir disponibilidad beneficio
       await updateBenefit(benefitData);
+      Alert.alert(
+        "Éxito",
+        "Se restauraron los puntos del beneficio con éxito."
+      );
     }
     hideModal();
   };

@@ -86,8 +86,6 @@ export const userApi = {
         user
       );
 
-      Alert.alert("Éxito", "Se actualizaron sus datos con éxito.");
-      console.log(result, "exito");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {

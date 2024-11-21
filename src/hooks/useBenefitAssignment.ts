@@ -36,9 +36,17 @@ const useBenefitAssignmentByUserCustomerId = (id: string) => {
   return { data, error, isError, isLoading };
 };
 
+const useBenefitAssignmentByStoreBenefits = (benefitIds: string[]) => {
+  const { data, error, isError, isLoading } = useQuery(
+    benefitAssignmentKeys.benefitAssignment.listStore(benefitIds)
+  );
+
+  return { data, error, isError, isLoading };
+};
+
 const useCreateBenefitAssignment = () => {
   const queryClient = useQueryClient();
-  const { mutate, isPending, isSuccess, error } = useMutation({
+  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPost) =>
       benefitAssignmentApi.createBenefitAssignment(benefitAssignment),
     onSuccess: () => {
@@ -50,6 +58,7 @@ const useCreateBenefitAssignment = () => {
 
   return {
     mutate,
+    mutateAsync,
     isPending,
     isSuccess,
     error,
@@ -90,6 +99,7 @@ export {
   useBenefitAssignmentById,
   useBenefitAssignmentList,
   useBenefitAssignmentByUserCustomerId,
+  useBenefitAssignmentByStoreBenefits,
   useCreateBenefitAssignment,
   useDeleteBenefitAssignment,
   useUpdateBenefitAssignment,

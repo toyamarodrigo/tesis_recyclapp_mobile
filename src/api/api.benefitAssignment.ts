@@ -53,6 +53,22 @@ export const benefitAssignmentApi = {
       throw new Error("Unknown error");
     }
   },
+  getBenefitAssignmentByStoreBenefits: async (benefitIds: string[]) => {
+    try {
+      const result = await axios.post<BenefitAssignment[]>(
+        `${backendApiConfig.baseURL}/benefitassignment/storeBenefits`,
+        { benefitIds: benefitIds }
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
   createBenefitAssignment: async (benefitAssignment: BenefitAssignmentPost) => {
     try {
       const result = await axios.post<BenefitAssignmentPost>(
@@ -87,7 +103,6 @@ export const benefitAssignmentApi = {
         benefitAssignment
       );
 
-      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {

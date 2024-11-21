@@ -80,8 +80,6 @@ export const benefitApi = {
         `${backendApiConfig.baseURL}/benefit/${benefit.id}`,
         benefit
       );
-
-      console.log("benefit", result);
       return result;
     } catch (e) {
       if (axios.isAxiosError(e)) {

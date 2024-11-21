@@ -31,12 +31,13 @@ const useCreateUserCustomer = () => {
 };
 
 const useUpdateUserCustomer = () => {
-  const { mutate, isPending, isSuccess, error } = useMutation({
+  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (data: any) => userApi.updateUserCustomer(data),
   });
 
   return {
     mutate,
+    mutateAsync,
     isPending,
     isSuccess,
     error,

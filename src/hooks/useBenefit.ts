@@ -25,9 +25,23 @@ const useBenefitById = (id: string) => {
   return { data, error, isError, isLoading };
 };
 
+const useBenefitListStore = (id: string) => {
+  const { data, isSuccess, error, isLoading } = useQuery({
+    queryKey: benefitKeys.benefit.storeList(id).queryKey,
+    queryFn: benefitKeys.benefit.storeList(id).queryFn,
+  });
+
+  return {
+    data,
+    error,
+    isSuccess,
+    isLoading,
+  };
+};
+
 const useCreateBenefit = () => {
   const queryClient = useQueryClient();
-  const { mutate, isPending, isSuccess, error } = useMutation({
+  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (benefit: BenefitPost) => benefitApi.createBenefit(benefit),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -38,6 +52,7 @@ const useCreateBenefit = () => {
 
   return {
     mutate,
+    mutateAsync,
     isPending,
     isSuccess,
     error,
@@ -46,7 +61,7 @@ const useCreateBenefit = () => {
 
 const useUpdateBenefit = () => {
   const queryClient = useQueryClient();
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefit: BenefitPut) => benefitApi.updateBenefit(benefit),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -55,7 +70,7 @@ const useUpdateBenefit = () => {
     },
   });
 
-  return { mutate, isPending, isError, error };
+  return { mutate, mutateAsync, isPending, isError, error };
 };
 
 const useDeleteBenefit = () => {
@@ -75,6 +90,7 @@ const useDeleteBenefit = () => {
 export {
   useBenefitById,
   useBenefitList,
+  useBenefitListStore,
   useCreateBenefit,
   useDeleteBenefit,
   useUpdateBenefit,

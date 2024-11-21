@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardProfile from "@components/CardProfile";
 import { Link, useRouter } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import {
   Button,
   Modal,
@@ -14,27 +14,38 @@ import {
 } from "react-native-paper";
 import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
+import { useBenefitListStore, useUpdateBenefit } from "@hooks/useBenefit";
 import { useBenefitStore } from "@stores/useBenefitStore";
 import { Benefit, BenefitPut } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
+import { useUser } from "@clerk/clerk-expo";
+import { useUserStoreByClerk } from "@hooks/useUser";
 
 export default function Benefits() {
-  const { isLoading, error, data: benefitList } = useBenefitList();
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
+  if (!userStore) return null;
   const { setCurrentBenefit } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const router = useRouter();
   const showModal = () => setVisible(true);
-  const { mutate: updateBenefit } = useUpdateBenefit();
+  const { mutateAsync: updateBenefit } = useUpdateBenefit();
+  const {
+    isLoading,
+    error,
+    data: benefitList,
+  } = useBenefitListStore(userStore.id);
 
-  const handleDelete = (benefit: Benefit) => {
+  const handleDelete = async (benefit: Benefit) => {
     const removeBenefit: BenefitPut = {
       id: benefit.id,
       isActive: false,
       isArchived: true,
     };
-    updateBenefit(removeBenefit);
+    await updateBenefit(removeBenefit);
+    Alert.alert("Éxito", "Se eliminó el beneficio con éxito.");
   };
 
   const handleEdit = (benefit: Benefit) => {
@@ -47,9 +58,9 @@ export default function Benefits() {
     setCode("");
   };
   const changeCode = (text: string) => {
-    if (text.length > 10) return;
-    setCode(text);
+    setCode(text.toUpperCase());
   };
+
   const confirmCode = () => {
     console.log(code);
     //TODO validar el funcionamiento del codigo
@@ -90,7 +101,7 @@ export default function Benefits() {
                   mode="outlined"
                   label="Ingrese el código"
                   placeholder="Código de intercambio"
-                  value={code}
+                  value={code.toUpperCase()}
                   onChangeText={(text) => changeCode(text)}
                 />
                 <Button

@@ -28,6 +28,14 @@ const useBenefitAssignmentById = (id: string) => {
   return { data, error, isError, isLoading };
 };
 
+const useBenefitAssignmentByUserCustomerId = (id: string) => {
+  const { data, error, isError, isLoading } = useQuery(
+    benefitAssignmentKeys.benefitAssignment.listClerk(id)
+  );
+
+  return { data, error, isError, isLoading };
+};
+
 const useCreateBenefitAssignment = () => {
   const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess, error } = useMutation({
@@ -50,7 +58,7 @@ const useCreateBenefitAssignment = () => {
 
 const useUpdateBenefitAssignment = () => {
   const queryClient = useQueryClient();
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPut) =>
       benefitAssignmentApi.updateBenefitAssignment(benefitAssignment),
     onSuccess: () => {
@@ -60,7 +68,7 @@ const useUpdateBenefitAssignment = () => {
     },
   });
 
-  return { mutate, isPending, isError, error };
+  return { mutate, mutateAsync, isPending, isError, error };
 };
 
 const useDeleteBenefitAssignment = () => {
@@ -81,6 +89,7 @@ const useDeleteBenefitAssignment = () => {
 export {
   useBenefitAssignmentById,
   useBenefitAssignmentList,
+  useBenefitAssignmentByUserCustomerId,
   useCreateBenefitAssignment,
   useDeleteBenefitAssignment,
   useUpdateBenefitAssignment,

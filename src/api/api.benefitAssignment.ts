@@ -38,6 +38,21 @@ export const benefitAssignmentApi = {
       throw new Error("Unknown error");
     }
   },
+  getBenefitAssignmentByClerkId: async (id: string) => {
+    try {
+      const result = await axios.get<BenefitAssignment[]>(
+        `${backendApiConfig.baseURL}/benefitassignment/user/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
   createBenefitAssignment: async (benefitAssignment: BenefitAssignmentPost) => {
     try {
       const result = await axios.post<BenefitAssignmentPost>(
@@ -65,6 +80,7 @@ export const benefitAssignmentApi = {
     }
   },
   updateBenefitAssignment: async (benefitAssignment: BenefitAssignmentPut) => {
+    console.log("update data", benefitAssignment);
     try {
       const result = await axios.put<BenefitAssignmentPut>(
         `${backendApiConfig.baseURL}/benefitassignment/${benefitAssignment.id}`,

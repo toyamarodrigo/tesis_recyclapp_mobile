@@ -20,15 +20,23 @@ import DataEmpty from "@components/DataEmpty";
 import { useCreateBenefitAssignment } from "@hooks/useBenefitAssignment";
 import { BenefitAssignmentPost } from "@models/benefitAssignment.type";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function Benefits() {
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) {
+    return null;
+  }
   const { isLoading, error, data: benefitList } = useBenefitList();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
-  const { data: userCustomer } = useUserCustomerByClerk();
+  const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
   const { mutate: createBenefitAssignment } = useCreateBenefitAssignment();
   const { mutate: updateUserCustomer } = useUpdateUserCustomer();
   const { mutate: updateBenefit } = useUpdateBenefit();
+  const [selectedBenefitAssignment, setSelectedBenefitAssignment] = useState<
+    string | null
+  >(null);
 
   const hideModal = () => {
     setVisible(false);
@@ -161,6 +169,7 @@ export default function Benefits() {
                   handlePoints={() => showModal(benefit)}
                   isActiveBenefit={false}
                   userPoints={userCustomer.pointsCurrent}
+                  setSelectedBenefitAssignment={setSelectedBenefitAssignment}
                 />
               ))
             : null}

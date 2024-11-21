@@ -9,6 +9,7 @@ export default function CardBenefit({
   isActiveBenefit,
   userPoints,
   handlePoints,
+  setSelectedBenefitAssignment,
   setModalContent,
   setModalTitle,
 }: {
@@ -16,15 +17,19 @@ export default function CardBenefit({
   isActiveBenefit: boolean;
   userPoints: number;
   handlePoints: () => void;
+  setSelectedBenefitAssignment: React.Dispatch<
+    React.SetStateAction<string | null>
+  >;
   setModalContent?: React.Dispatch<React.SetStateAction<string>>;
   setModalTitle?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const handleCanjear = () => {
     if (setModalContent && setModalTitle) {
       setModalContent(
-        "Recuerda generar el código ÚNICAMENTE cuando el local lo solicite, ya que no podras acceder al código nuevamente. ¿Estas seguro de que quieres generar el código? Esta acción es irreversible."
+        "Recuerda generar el código ÚNICAMENTE cuando el local lo solicite, ya que no podras acceder al código nuevamente. ¿Estas seguro de que quieres generar el código?"
       );
       setModalTitle("Generar código");
+      setSelectedBenefitAssignment(benefit.id);
       handlePoints();
     }
   };
@@ -32,9 +37,10 @@ export default function CardBenefit({
   const handleRestaurar = () => {
     if (setModalContent && setModalTitle) {
       setModalContent(
-        "¿Estas seguro de que quieres restaurar los puntos y descartar el beneficio? Los puntos volverán a tu cuenta pero perderás el beneficio. Esta acción es irreversible."
+        "¿Estas seguro de que quieres restaurar los puntos y descartar el beneficio? Los puntos volverán a tu cuenta pero perderás el beneficio."
       );
       setModalTitle("Restaurar puntos");
+      setSelectedBenefitAssignment(benefit.id);
       handlePoints();
     }
   };

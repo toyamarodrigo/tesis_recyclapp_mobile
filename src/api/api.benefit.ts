@@ -34,6 +34,21 @@ export const benefitApi = {
       throw new Error("Unknown error");
     }
   },
+  getBenefitByStore: async (id: string) => {
+    try {
+      const result = await axios.get<Benefit[]>(
+        `${backendApiConfig.baseURL}/benefits/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
   createBenefit: async (benefit: BenefitPost) => {
     try {
       const result = await axios.post<BenefitPost>(

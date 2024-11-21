@@ -22,7 +22,8 @@ import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
   const { signOut, isSignedIn, userId, isLoaded } = useAuth();
-  const { user } = useUser();
+  const { user, isLoaded: userLoaded } = useUser();
+  if (!userLoaded || !user?.id) return null;
   const { profileImage, setProfileImage } = useUserStore();
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
@@ -31,7 +32,7 @@ const Profile = () => {
   const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
 
-  const { data: userStore } = useUserStoreByClerk({ userId: userId || "" });
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const logout = async () => {
     await signOut();

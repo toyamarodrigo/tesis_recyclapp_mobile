@@ -23,16 +23,12 @@ const RouterTabs = () => {
         <Tabs
           screenOptions={() => ({
             headerRight: () => (
-              <Link
-                asChild
-                href={"/profile"}
-                onPress={() => console.log("boton")}
-              >
+              <Link asChild href={"/profile"} onPress={() => {}}>
                 <MaterialCommunityIcons.Button
                   color={theme.colors.primary}
                   name="face-man"
                   size={36}
-                  onPress={() => console.log("boton")}
+                  onPress={() => {}}
                   backgroundColor={theme.colors.background}
                 />
               </Link>

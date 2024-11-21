@@ -49,7 +49,6 @@ export default function CardProfile({
           <View
             style={{
               padding: 10,
-              flex: 1,
               justifyContent: "center",
               alignItems: "center",
             }}

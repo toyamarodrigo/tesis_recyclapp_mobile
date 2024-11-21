@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { theme } from "src/theme";
@@ -13,6 +13,7 @@ import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
 import { useUserStoreByClerk } from "@hooks/useUser";
 import { BenefitType, BenefitTypeList } from "@constants/data.constant";
+import { useUser } from "@clerk/clerk-expo";
 
 type FormValues = {
   id: string | null;
@@ -71,7 +72,9 @@ const resolver: Resolver<FormValues> = async (values) => {
 };
 
 export default function NewBenefits() {
-  const { data: userStore } = useUserStoreByClerk();
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
   const { currentBenefit, clearCurrentBenefit } = useBenefitStore();
   const router = useRouter();
   function addMonths(date: Date, months: number): Date {
@@ -84,8 +87,8 @@ export default function NewBenefits() {
   const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
   const [selectedDate, setSelectedDate] = useState(newDate);
-  const { mutate: createBenefit } = useCreateBenefit();
-  const { mutate: editBenefit } = useUpdateBenefit();
+  const { mutateAsync: createBenefit } = useCreateBenefit();
+  const { mutateAsync: editBenefit } = useUpdateBenefit();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
@@ -107,12 +110,13 @@ export default function NewBenefits() {
     router.push("/profile/benefits");
   };
 
-  const handleCreate = (benefit: BenefitPost) => {
-    createBenefit(benefit);
+  const handleCreate = async (benefit: BenefitPost) => {
+    await createBenefit(benefit);
   };
 
-  const handleEdit = (benefit: BenefitPut) => {
-    editBenefit(benefit);
+  const handleEdit = async (benefit: BenefitPut) => {
+    await editBenefit(benefit);
+    Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
   };
 
   const onSubmit = (data: FormValues) => {

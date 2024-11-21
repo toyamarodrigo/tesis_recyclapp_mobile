@@ -2,17 +2,25 @@ import { ScrollView, View, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Text, Button, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
-import { useState } from "react";
-import { generateRandomWord } from "@utils/helpers";
+import { useBenefitStore } from "@stores/useBenefitStore";
+import { useUpdateBenefitAssignment } from "@hooks/useBenefitAssignment";
 
 export default function ActiveBenefits() {
-  const [code, setCode] = useState<string>(generateRandomWord());
+  const { currentBenefitCustomer, clearCurrentBenefitCustomer } =
+    useBenefitStore();
+  const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
 
-  const handleBack = () => {
-    setCode("");
-    router.back();
+  const handleBack = async () => {
+    if (currentBenefitCustomer) {
+      await updateBenefitAssignemnt({
+        id: currentBenefitCustomer.id,
+        isActive: false,
+      });
+      clearCurrentBenefitCustomer();
+      router.back();
+    }
   };
-
+  console.log("currentBenefitCustomer", currentBenefitCustomer);
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
       <View style={styles.header}>
@@ -21,11 +29,11 @@ export default function ActiveBenefits() {
           iconColor="#1B5E20"
           style={styles.backButton}
           size={32}
-          onPress={() => router.back()}
+          onPress={handleBack}
         />
         <Text style={styles.title}>Canjear beneficio</Text>
       </View>
-      {code && (
+      {currentBenefitCustomer?.generatedCode && (
         <View style={{ alignItems: "center", padding: 20 }}>
           <Text
             style={{
@@ -46,7 +54,7 @@ export default function ActiveBenefits() {
               color: theme.colors.primary,
             }}
           >
-            {code}
+            {currentBenefitCustomer?.generatedCode}
           </Text>
           <Text
             style={{

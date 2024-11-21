@@ -11,5 +11,9 @@ export const benefitAssignmentKeys = createQueryKeyStore({
       queryKey: ["benefitAssignment", "detail", id],
       queryFn: () => benefitAssignmentApi.getBenefitAssignmentById(id),
     }),
+    listClerk: (id: string) => ({
+      queryKey: ["benefitAssignmentListClerk", "listClerk", id],
+      queryFn: () => benefitAssignmentApi.getBenefitAssignmentByClerkId(id),
+    }),
   },
 });

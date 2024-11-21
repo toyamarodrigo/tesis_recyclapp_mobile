@@ -11,11 +11,14 @@ import { Text, Title, Divider } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
 import { mockedHistoricalPoints } from "@constants/data.constant";
 import { useUserCustomerByClerk } from "@hooks/useUser";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function Rewards() {
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) return null;
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
-  const { data: userCustomer } = useUserCustomerByClerk();
+  const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
   //TODO HACER HOOK PARA BENEFITS POR USER
 
   return (

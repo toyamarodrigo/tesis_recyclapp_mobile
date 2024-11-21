@@ -11,23 +11,43 @@ import {
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
 import DataEmpty from "@components/DataEmpty";
-import { useBenefitList } from "@hooks/useBenefit";
+import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
 import { useState } from "react";
 import { Benefit } from "@models/benefit.type";
 import { useUser } from "@clerk/clerk-expo";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
-import { UserCustomerPut } from "@models/userCustomer.type";
+import {
+  useBenefitAssignmentByUserCustomerId,
+  useUpdateBenefitAssignment,
+} from "@hooks/useBenefitAssignment";
+import { useBenefitStore } from "@stores/useBenefitStore";
 
 export default function ActiveBenefits() {
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) {
+    return null;
+  }
   const { isLoading, error, data: benefitList } = useBenefitList();
+  const { setCurrentBenefitCustomer } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
+  const [selectedBenefitAssignment, setSelectedBenefitAssignment] = useState<
+    string | null
+  >(null);
   const [modalTitle, setModalTitle] = useState<string>("");
   const [modalContent, setModalContent] = useState<string>("");
-  const { user } = useUser();
-  const { data: userCustomer, isLoading: userLoading } =
-    useUserCustomerByClerk();
-  const { mutate: updateUserCustomer } = useUpdateUserCustomer();
+  const { data: userCustomer, isLoading: userLoading } = useUserCustomerByClerk(
+    { userId: user.id }
+  );
+  if (!userCustomer) {
+    return null;
+  }
+  const { data: benefitAssignmentList } = useBenefitAssignmentByUserCustomerId(
+    userCustomer.id
+  );
+  const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
+  const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
+  const { mutateAsync: updateBenefit } = useUpdateBenefit();
 
   const hideModal = () => {
     setVisible(false);
@@ -38,32 +58,48 @@ export default function ActiveBenefits() {
     setVisible(true);
   };
 
-  const addPoints = () => {
-    let userCustomerData: UserCustomerPut;
+  const restorePoints = async () => {
+    if (selectedBenefit && userCustomer && selectedBenefitAssignment) {
+      const userData = {
+        id: userCustomer.id,
+        pointsCurrent: userCustomer.pointsCurrent + selectedBenefit.pointsCost,
+      };
+      const benefitData = {
+        id: selectedBenefit.id,
+        quantity: selectedBenefit.quantity + 1,
+      };
+      //desactivar de la tabla relacional
+      await updateBenefitAssignemnt({
+        id: selectedBenefitAssignment,
+        isActive: false,
+      });
 
-    if (user) {
-      if (userCustomer && selectedBenefit) {
-        userCustomerData = {
-          id: userCustomer.id,
-          pointsCurrent:
-            userCustomer.pointsCurrent + selectedBenefit.pointsCost,
-        };
+      //reducir puntos usuario
+      await updateUserCustomer(userData);
+      //TODO actualizar el puntos disponibles en esta pagina y en el store
 
-        console.log(userCustomerData);
-        updateUserCustomer(userCustomerData);
-      }
-      //TODO revisar que se actualicen los beneficios y los puntos del usuario
+      //reducir disponibilidad beneficio
+      await updateBenefit(benefitData);
     }
+    hideModal();
   };
 
-  const handleConfirmModal = () => {
+  const handleConfirmModal = async () => {
     if (modalTitle == "Restaurar puntos") {
-      addPoints();
+      restorePoints();
       hideModal();
     } else if (modalTitle == "Generar código") {
       hideModal();
-      //TODO sacar el beneficio del usuario
-      router.push("/rewards/code-benefit");
+      if (selectedBenefitAssignment) {
+        const currentBenefitAssignment = benefitAssignmentList?.find(
+          (benefit) => benefit.id == selectedBenefitAssignment
+        );
+
+        if (currentBenefitAssignment) {
+          setCurrentBenefitCustomer(currentBenefitAssignment);
+          router.push("/rewards/code-benefit");
+        }
+      }
     }
   };
 
@@ -88,41 +124,50 @@ export default function ActiveBenefits() {
             padding: 20,
           }}
         >
-          {selectedBenefit && (
-            <View style={{ gap: 20 }}>
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 18,
-                  color: theme.colors.shadow,
-                  textAlign: "center",
-                }}
-              >
-                {modalTitle}
-              </Text>
-              <Text
-                style={{
-                  fontWeight: "500",
-                  fontSize: 14,
-                  color: theme.colors.shadow,
-                  textAlign: "center",
-                }}
-              >
-                {modalContent}
-              </Text>
-              <Button mode="contained-tonal" onPress={handleConfirmModal}>
-                Confirmar
-              </Button>
-              <Button
-                mode="contained"
-                onPress={hideModal}
-                buttonColor={theme.colors.errorContainer}
-                textColor={theme.colors.onErrorContainer}
-              >
-                Cancelar
-              </Button>
-            </View>
-          )}
+          <View
+            style={{
+              padding: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
+              {modalTitle}
+            </Text>
+            <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
+              {modalContent}
+            </Text>
+            <Text
+              style={{
+                color: theme.colors.error,
+                fontWeight: "600",
+                fontSize: 16,
+                padding: 10,
+              }}
+            >
+              Esta acción es IRREVERSIBLE.
+            </Text>
+          </View>
+          <Button
+            mode="contained-tonal"
+            onPress={handleConfirmModal}
+            style={{
+              margin: 10,
+            }}
+          >
+            Confirmar
+          </Button>
+          <Button
+            mode="contained"
+            onPress={hideModal}
+            buttonColor={theme.colors.errorContainer}
+            textColor={theme.colors.onErrorContainer}
+            style={{
+              margin: 10,
+            }}
+          >
+            Cancelar
+          </Button>
         </Modal>
       </Portal>
       {(isLoading || userLoading) && (
@@ -131,18 +176,37 @@ export default function ActiveBenefits() {
       {error && (
         <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
       )}
-      {!isLoading && userCustomer && benefitList
-        ? benefitList.map((benefit) => (
-            <CardBenefit
-              key={benefit.id}
-              benefit={benefit}
-              handlePoints={() => showModal(benefit)}
-              isActiveBenefit={true}
-              userPoints={userCustomer.pointsCurrent}
-              setModalTitle={setModalTitle}
-              setModalContent={setModalContent}
-            />
-          ))
+      {!isLoading && !error && benefitAssignmentList?.length == 0 && (
+        <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
+      )}
+      {!isLoading && userCustomer && benefitList && benefitAssignmentList
+        ? benefitList
+            .filter((benefit) =>
+              benefitAssignmentList.some(
+                (assignment) => assignment.benefitId === benefit.id
+              )
+            )
+            .map((benefit) => {
+              const relatedAssignment = benefitAssignmentList.find(
+                (assignment) => assignment.benefitId === benefit.id
+              );
+
+              return (
+                <CardBenefit
+                  key={benefit.id}
+                  benefit={benefit}
+                  handlePoints={() => showModal(benefit)}
+                  isActiveBenefit={benefit.isActive}
+                  userPoints={userCustomer.pointsCurrent}
+                  setModalTitle={setModalTitle}
+                  setModalContent={setModalContent}
+                  setSelectedBenefitAssignment={() =>
+                    relatedAssignment &&
+                    setSelectedBenefitAssignment(relatedAssignment.id)
+                  }
+                />
+              );
+            })
         : null}
     </ScrollView>
   );

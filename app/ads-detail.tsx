@@ -31,23 +31,7 @@ const NewsDetail = () => {
       </View>
       <View style={styles.modalContent}>
         <Text variant="headlineSmall" style={styles.modalTitle}>
-          {selectedAd.description}
-        </Text>
-        {selectedAd.extraDescription.map((element, index) => (
-          <Text
-            key={`${element.type}-${index}`}
-            variant="bodyMedium"
-            style={styles.modalExtraDescription}
-          >
-            {element.content}
-          </Text>
-        ))}
-        <Text
-          variant="bodyMedium"
-          style={styles.modalSource}
-          onPress={() => Linking.openURL(selectedAd.source)}
-        >
-          Ver más en {selectedAd.source}
+          {selectedAd.text}
         </Text>
       </View>
     </Fragment>

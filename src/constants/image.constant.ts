@@ -4,6 +4,7 @@ export const IMAGE = {
   USER_GENERIC: "Utils/userGeneric.png",
   USER_FOLDER: "User",
   USER_UPLOAD: "RecyclApp/User",
+  ADVERTISEMENT_FOLDER: "Advertisement",
 };
 
 export const CLOUDINARY = {

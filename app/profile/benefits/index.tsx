@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardProfile from "@components/CardProfile";
 import { Link, useRouter } from "expo-router";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, View, RefreshControl } from "react-native";
 import {
   Button,
   Modal,
@@ -16,7 +16,7 @@ import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBenefitListStore, useUpdateBenefit } from "@hooks/useBenefit";
 import { useBenefitStore } from "@stores/useBenefitStore";
-import { Benefit, BenefitPut } from "@models/benefit.type";
+import { Benefit } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
 import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
@@ -30,32 +30,47 @@ export default function Benefits() {
   if (!isLoaded || !user?.id) return null;
   const { data: userStore } = useUserStoreByClerk({ userId: user.id });
   if (!userStore) return null;
-  const { setCurrentBenefit } = useBenefitStore();
+  const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const router = useRouter();
-  const showModal = () => setVisible(true);
+  const { setCurrentBenefit } = useBenefitStore();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
   const {
     isLoading,
     error,
     data: benefitList,
+    refetch,
   } = useBenefitListStore(userStore.id);
-  const benefitIds: string[] = benefitList
+
+  const benefitIds = benefitList
     ? benefitList.map((benefit) => benefit.id)
     : [];
+
+  const formatedBenefitList = benefitList?.filter(
+    (benefit) => !benefit.isArchived && benefit.isActive
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const { data: benefitAssignmentListStore } =
     useBenefitAssignmentByStoreBenefits(benefitIds);
   const { mutate: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
 
   const handleDelete = async (benefit: Benefit) => {
-    const removeBenefit: BenefitPut = {
+    const removeBenefit = {
       id: benefit.id,
       isActive: false,
       isArchived: true,
     };
     await updateBenefit(removeBenefit);
-    Alert.alert("Éxito", "Se eliminó el beneficio con éxito.");
   };
 
   const handleEdit = (benefit: Benefit) => {
@@ -108,7 +123,17 @@ export default function Benefits() {
         <Title style={{ color: theme.colors.primary }}>Mis beneficios</Title>
       </View>
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+              tintColor={theme.colors.primary}
+            />
+          }
+        >
           <Portal>
             <Modal
               visible={visible}
@@ -168,12 +193,12 @@ export default function Benefits() {
                 )}
                 {!isLoading &&
                   !error &&
-                  benefitList &&
-                  benefitList.length === 0 && (
+                  formatedBenefitList &&
+                  formatedBenefitList.length === 0 && (
                     <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
                   )}
-                {benefitList &&
-                  benefitList.map((benefit) => (
+                {formatedBenefitList &&
+                  formatedBenefitList.map((benefit) => (
                     <CardProfile
                       key={benefit.id}
                       title={benefit.name}
@@ -195,7 +220,7 @@ export default function Benefits() {
           </Button>
           <Button
             mode="contained-tonal"
-            onPress={showModal}
+            onPress={() => setVisible(true)}
             disabled={
               !benefitAssignmentListStore ||
               benefitAssignmentListStore.length == 0

@@ -32,7 +32,17 @@ const UserCustomerPutSchema = z.object({
   userId: z.string().optional(),
 });
 
+const UserCustomerPutResponseSchema = z.object({
+  id: z.string(),
+  pointsCurrent: z.number(),
+  pointsTotal: z.number(),
+  userId: z.string(),
+});
+
 export type UserCustomer = z.infer<typeof UserCustomerSchema>;
 export type UserCustomerPost = z.infer<typeof UserCustomerPostSchema>;
 export type UserCustomerPut = z.infer<typeof UserCustomerPutSchema>;
 export type UserPointsHistory = z.infer<typeof UserPointsHistorySchema>;
+export type UserCustomerPutResponse = z.infer<
+  typeof UserCustomerPutResponseSchema
+>;

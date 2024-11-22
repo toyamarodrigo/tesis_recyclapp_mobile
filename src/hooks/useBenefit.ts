@@ -5,31 +5,20 @@ import {
   BenefitPost,
   BenefitPut,
   BenefitPutResponse,
-  BenefitUser,
 } from "@models/benefit.type";
 import { benefitApi } from "@api/api.benefit";
 import { Alert } from "react-native";
 
 const useBenefitList = () => {
-  const { data, isSuccess, error, isLoading } = useQuery({
-    queryKey: benefitKeys.benefit.list().queryKey,
-    queryFn: benefitKeys.benefit.list().queryFn,
+  return useQuery({
+    ...benefitKeys.benefit.list(),
   });
-
-  return {
-    data,
-    error,
-    isSuccess,
-    isLoading,
-  };
 };
 
 const useBenefitById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    benefitKeys.benefit.detail(id)
-  );
-
-  return { data, error, isError, isLoading };
+  return useQuery({
+    ...benefitKeys.benefit.detail(id),
+  });
 };
 
 const useBenefitListStore = (userId: string) => {
@@ -42,13 +31,10 @@ const useCreateBenefit = () => {
   const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (benefit: BenefitPost) => benefitApi.createBenefit(benefit),
-    onSuccess: (benefit: BenefitPost) => {
-      queryClient.setQueryData(
-        benefitKeys.benefit.storeList(benefit.userStoreId).queryKey,
-        (data: Benefit[]) => {
-          return [...data, benefit];
-        }
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.list().queryKey,
+      });
 
       Alert.alert("Éxito", "Se creó el nuevo beneficio con éxito.");
     },
@@ -71,11 +57,11 @@ const useCreateBenefit = () => {
 
 const useUpdateBenefit = () => {
   const queryClient = useQueryClient();
-  const { mutate, mutateAsync, isPending, isError, error } = useMutation({
+  return useMutation({
     mutationFn: (benefit: BenefitPut) => benefitApi.updateBenefit(benefit),
-    onSuccess: async (benefit: BenefitPutResponse) => {
-      await queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.storeList(benefit.userStoreId).queryKey,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.list().queryKey,
       });
 
       Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
@@ -87,19 +73,11 @@ const useUpdateBenefit = () => {
       );
     },
   });
-
-  return { mutate, mutateAsync, isPending, isError, error };
 };
 
 const useDeleteBenefit = () => {
-  const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess, error } = useMutation({
     mutationFn: (id: string) => benefitApi.deleteBenefit(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
-      });
-    },
   });
 
   return { mutate, isPending, isSuccess, error };

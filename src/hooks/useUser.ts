@@ -1,47 +1,33 @@
 import { userKeys } from "@api/query/user.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@api/api.user";
-import { UserCustomerPost } from "@models/userCustomer.type";
+import { UserCustomerPost, UserCustomerPut } from "@models/userCustomer.type";
 
 const useUserCustomerByClerk = ({ userId }: { userId: string }) => {
-  const { data, isLoading, isError, error } = useQuery({
+  return useQuery({
     ...userKeys.user.customerDetailsClerk(userId),
     enabled: !!userId,
   });
-
-  return {
-    data,
-    isLoading,
-    isError,
-    error,
-  };
 };
 
 const useCreateUserCustomer = () => {
-  const { mutateAsync, isPending, isSuccess, error } = useMutation({
+  return useMutation({
     mutationFn: (user: UserCustomerPost) => userApi.createUserCustomer(user),
   });
-
-  return {
-    mutateAsync,
-    isPending,
-    isSuccess,
-    error,
-  };
 };
 
 const useUpdateUserCustomer = () => {
-  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
-    mutationFn: (data: any) => userApi.updateUserCustomer(data),
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["updateUserCustomer"],
+    mutationFn: (data: UserCustomerPut) => userApi.updateUserCustomer(data),
+    onSuccess: (userCustomer) => {
+      queryClient.invalidateQueries({
+        queryKey: userKeys.user.customerDetailsClerk(userCustomer.userId)
+          .queryKey,
+      });
+    },
   });
-
-  return {
-    mutate,
-    mutateAsync,
-    isPending,
-    isSuccess,
-    error,
-  };
 };
 
 const useDeleteUserCustomer = () => {
@@ -59,8 +45,7 @@ const useDeleteUserCustomer = () => {
 
 const useUserStoreByClerk = ({ userId }: { userId: string }) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: userKeys.user.storeDetailsClerk(userId).queryKey,
-    queryFn: userKeys.user.storeDetailsClerk(userId).queryFn,
+    ...userKeys.user.storeDetailsClerk(userId),
     enabled: !!userId,
   });
 

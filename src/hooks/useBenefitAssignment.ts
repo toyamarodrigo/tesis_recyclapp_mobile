@@ -5,19 +5,10 @@ import {
   BenefitAssignmentPut,
 } from "@models/benefitAssignment.type";
 import { benefitAssignmentApi } from "@api/api.benefitAssignment";
+import { benefitKeys } from "@api/query/benefit.factory";
 
 const useBenefitAssignmentList = () => {
-  const { data, isSuccess, error, isLoading } = useQuery({
-    queryKey: benefitAssignmentKeys.benefitAssignment.list().queryKey,
-    queryFn: benefitAssignmentKeys.benefitAssignment.list().queryFn,
-  });
-
-  return {
-    data,
-    error,
-    isSuccess,
-    isLoading,
-  };
+  return useQuery({ ...benefitAssignmentKeys.benefitAssignment.list() });
 };
 
 const useBenefitAssignmentById = (id: string) => {
@@ -46,50 +37,30 @@ const useBenefitAssignmentByStoreBenefits = (benefitIds: string[]) => {
 
 const useCreateBenefitAssignment = () => {
   const queryClient = useQueryClient();
-  const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
+  return useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPost) =>
       benefitAssignmentApi.createBenefitAssignment(benefitAssignment),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: benefitAssignmentKeys.benefitAssignment.list().queryKey,
+        queryKey: benefitKeys.benefit.list().queryKey,
       });
     },
   });
-
-  return {
-    mutate,
-    mutateAsync,
-    isPending,
-    isSuccess,
-    error,
-  };
 };
 
 const useUpdateBenefitAssignment = () => {
-  const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPut) =>
       benefitAssignmentApi.updateBenefitAssignment(benefitAssignment),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitAssignmentKeys.benefitAssignment.list().queryKey,
-      });
-    },
   });
 
   return { mutate, mutateAsync, isPending, isError, error };
 };
 
 const useDeleteBenefitAssignment = () => {
-  const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess, error } = useMutation({
     mutationFn: (id: string) =>
       benefitAssignmentApi.deleteBenefitAssignment(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitAssignmentKeys.benefitAssignment.list().queryKey,
-      });
-    },
   });
 
   return { mutate, isPending, isSuccess, error };

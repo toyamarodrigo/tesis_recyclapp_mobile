@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet, Alert } from "react-native";
+import { ScrollView, View, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import {
   Text,
@@ -23,10 +23,8 @@ import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
 import { useUser } from "@clerk/clerk-expo";
 
 export default function Benefits() {
-  const { user, isLoaded } = useUser();
-  if (!isLoaded || !user?.id) {
-    return null;
-  }
+  const { user, isSignedIn } = useUser();
+  if (!isSignedIn) return null;
   const { isLoading, error, data: benefitList } = useBenefitList();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
@@ -38,15 +36,13 @@ export default function Benefits() {
     string | null
   >(null);
 
-  const hideModal = () => {
-    setVisible(false);
-  };
+  const hideModal = () => setVisible(false);
 
   const showModal = (benefit: Benefit) => {
     setSelectedBenefit(benefit);
     setVisible(true);
   };
-
+  
   const confirmPoints = async () => {
     if (selectedBenefit && userCustomer) {
       const benefitAssignmentData: BenefitAssignmentPost = {

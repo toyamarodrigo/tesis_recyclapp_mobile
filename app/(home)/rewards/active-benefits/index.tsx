@@ -23,10 +23,8 @@ import {
 import { useBenefitStore } from "@stores/useBenefitStore";
 
 export default function ActiveBenefits() {
-  const { user, isLoaded } = useUser();
-  if (!isLoaded || !user?.id) {
-    return null;
-  }
+  const { user, isSignedIn } = useUser();
+  if (!isSignedIn || !user?.id) return null;
   const { isLoading, error, data: benefitList } = useBenefitList();
   const { setCurrentBenefitCustomer } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
@@ -39,19 +37,14 @@ export default function ActiveBenefits() {
   const { data: userCustomer, isLoading: userLoading } = useUserCustomerByClerk(
     { userId: user.id }
   );
-  if (!userCustomer) {
-    return null;
-  }
+  if (!userCustomer) return null;
   const { data: benefitAssignmentList, isLoading: benefitAssignmentLoading } =
     useBenefitAssignmentByUserCustomerId(userCustomer.id);
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
 
-  const hideModal = () => {
-    setVisible(false);
-  };
-
+  const hideModal = () => setVisible(false);
   const showModal = (benefit: Benefit) => {
     setSelectedBenefit(benefit);
     setVisible(true);
@@ -105,14 +98,6 @@ export default function ActiveBenefits() {
       }
     }
   };
-
-  console.log(
-    "!isLoading && userCustomer && benefitList && benefitAssignmentList",
-    isLoading,
-    userCustomer,
-    benefitList,
-    benefitAssignmentList
-  );
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>

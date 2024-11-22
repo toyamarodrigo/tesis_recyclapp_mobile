@@ -76,9 +76,7 @@ export const benefitAssignmentApi = {
         benefitAssignment
       );
 
-      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
-      console.log("benefitAssignmentUpdate", result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(

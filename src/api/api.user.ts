@@ -5,6 +5,7 @@ import {
   UserCustomer,
   UserCustomerPost,
   UserCustomerPut,
+  UserCustomerPutResponse,
 } from "@models/userCustomer.type";
 import { UserStore, UserStorePost, UserStorePut } from "@models/userStore.type";
 
@@ -79,14 +80,14 @@ export const userApi = {
       throw new Error("Unknown error");
     }
   },
-  updateUserCustomer: async (user: any) => {
+  updateUserCustomer: async (user: UserCustomerPut) => {
     try {
-      const result = await axios.put<UserCustomerPut>(
+      const result = await axios.put<UserCustomerPutResponse>(
         `${backendApiConfig.baseURL}/userCustomer/${user.id}`,
         user
       );
 
-      return result;
+      return result.data
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(

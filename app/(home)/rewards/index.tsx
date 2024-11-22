@@ -12,6 +12,7 @@ import { theme, useAppTheme } from "src/theme";
 import { mockedHistoricalPoints } from "@constants/data.constant";
 import { useUserCustomerByClerk } from "@hooks/useUser";
 import { useUser } from "@clerk/clerk-expo";
+import { transformDate } from "@utils/helpers";
 
 export default function Rewards() {
   const { user, isLoaded } = useUser();
@@ -19,25 +20,24 @@ export default function Rewards() {
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
   const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
-  //TODO HACER HOOK PARA BENEFITS POR USER
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
       <FlatList
-        data={mockedHistoricalPoints}
+        data={userCustomer?.pointsHistory}
         renderItem={({ item }) => (
           <HistoricalPointItem
-            points={item.points}
-            date={item.date}
-            description={item.description}
+            points={item.pointsChange}
+            date={transformDate(item.createdAt)}
+            description={item.description || ""}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.flatListContent}
         ListHeaderComponent={
           <View style={styles.main}>
-            <Title style={styles.title}>Mis puntos totales</Title>
-            <Text style={styles.score}>{userCustomer?.pointsTotal}</Text>
+            <Title style={styles.title}>Puntos disponibles</Title>
+            <Text style={styles.score}>{userCustomer?.pointsCurrent}</Text>
             <Divider
               style={{
                 borderColor: theme.colors.inverseOnSurface,
@@ -74,7 +74,9 @@ export default function Rewards() {
               />
             </View>
 
-            <Text style={styles.historyTitle}>Historial de puntos</Text>
+            <Text style={styles.historyTitle}>
+              Historial de puntos ({userCustomer && userCustomer.pointsTotal})
+            </Text>
           </View>
         }
       />
@@ -102,6 +104,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme.colors.primary,
     marginBottom: 20,
+  },
+  scoreHeader: {
+    margin: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: theme.colors.tertiary,
+    padding: 10,
+    borderRadius: 20,
+  },
+  scoreAvailable: {
+    fontSize: 18,
+    color: theme.colors.primary,
   },
   circleContainer: {
     flexDirection: "row",

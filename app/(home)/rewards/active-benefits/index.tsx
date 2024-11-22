@@ -42,9 +42,8 @@ export default function ActiveBenefits() {
   if (!userCustomer) {
     return null;
   }
-  const { data: benefitAssignmentList } = useBenefitAssignmentByUserCustomerId(
-    userCustomer.id
-  );
+  const { data: benefitAssignmentList, isLoading: benefitAssignmentLoading } =
+    useBenefitAssignmentByUserCustomerId(userCustomer.id);
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
@@ -106,6 +105,14 @@ export default function ActiveBenefits() {
       }
     }
   };
+
+  console.log(
+    "!isLoading && userCustomer && benefitList && benefitAssignmentList",
+    isLoading,
+    userCustomer,
+    benefitList,
+    benefitAssignmentList
+  );
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
@@ -174,15 +181,17 @@ export default function ActiveBenefits() {
           </Button>
         </Modal>
       </Portal>
-      {(isLoading || userLoading) && (
+      {(isLoading || userLoading || benefitAssignmentLoading) && (
         <ActivityIndicator color={theme.colors.primary} size={"large"} />
       )}
       {error && (
         <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
       )}
-      {!isLoading && !error && benefitAssignmentList?.length == 0 && (
-        <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
-      )}
+      {!isLoading &&
+        !benefitAssignmentLoading &&
+        benefitAssignmentList?.length == 0 && (
+          <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
+        )}
       {!isLoading && userCustomer && benefitList && benefitAssignmentList
         ? benefitList
             .filter((benefit) =>

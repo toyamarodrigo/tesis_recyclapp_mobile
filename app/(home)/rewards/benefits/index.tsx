@@ -65,10 +65,6 @@ export default function Benefits() {
       await createBenefitAssignment(benefitAssignmentData);
       await updateUserCustomer(userData);
       await updateBenefit(benefitData);
-      Alert.alert(
-        "Éxito",
-        "Se restauraron los puntos del beneficio con éxito."
-      );
     }
     hideModal();
   };

@@ -1,7 +1,4 @@
-import {
-  MD3LightTheme as DefaultTheme,
-  useTheme,
-} from "react-native-paper";
+import { MD3LightTheme as DefaultTheme, useTheme } from "react-native-paper";
 
 export const theme = {
   ...DefaultTheme,
@@ -11,7 +8,7 @@ export const theme = {
     onPrimary: "rgb(255, 255, 255)",
     primaryContainer: "rgb(128, 253, 136)",
     onPrimaryContainer: "rgb(0, 33, 5)",
-    secondary: "rgb(82, 99, 79)",
+    secondary: "#4CAF50",
     onSecondary: "rgb(255, 255, 255)",
     secondaryContainer: "rgb(213, 232, 207)",
     onSecondaryContainer: "rgb(16, 31, 16)",

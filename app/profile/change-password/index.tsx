@@ -6,7 +6,6 @@ import { Link, useRouter } from "expo-router";
 import { useAppTheme } from "src/theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserStore } from "@stores/useUserStore";
 import { PasswordInput } from "@components/PasswordInput";
 import { useUser } from "@clerk/clerk-expo";
 
@@ -45,7 +44,6 @@ const formSchema = z
 export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { user } = useUserStore();
   const { user: userClerk } = useUser();
   const {
     control,
@@ -87,10 +85,6 @@ export default function ChangePassword() {
     reset();
     router.push("/profile");
   };
-
-  if (!user) {
-    onCancel();
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>

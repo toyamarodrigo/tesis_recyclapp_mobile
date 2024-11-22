@@ -1,54 +1,140 @@
-import { colors } from "@constants/colors.constant";
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useCallback, useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { View, StyleSheet, FlatList, Dimensions } from "react-native";
+import { CircleLink } from "@features/rewards/components/circle-link";
+import { HistoricalPointItem } from "@features/rewards/components/historical-point-item";
+import {
+  MaterialCommunityIcons,
+  FontAwesome5,
+  Ionicons,
+} from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, Title, Divider, ActivityIndicator } from "react-native-paper";
+import { theme, useAppTheme } from "src/theme";
+import { useUserCustomerByClerk } from "@hooks/useUser";
+import { useUser } from "@clerk/clerk-expo";
+import { transformDate } from "@utils/helpers";
 
-const Rewards = () => {
-    // ref
-    const bottomSheetRef = useRef<BottomSheet>(null);
+export default function Rewards() {
+  const { user, isSignedIn } = useUser();
+  if (!isSignedIn || !user?.id) return null;
+  const theme = useAppTheme();
+  const screenWidth = Dimensions.get("window").width;
+  const { data: userCustomer, isLoading } = useUserCustomerByClerk({
+    userId: user.id,
+  });
 
-    // callbacks
-    const handleSheetChanges = useCallback((index: number) => {
-      console.log('handleSheetChanges', index);
-    }, []);
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={['10%', '50%', '90%']}
-        onChange={handleSheetChanges}
-      >
-        <BottomSheetView>
-          <Text>Hello World</Text>
-        </BottomSheetView>
-      </BottomSheet>
-    </GestureHandlerRootView>
+    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      {isLoading && (
+        <ActivityIndicator color={theme.colors.primary} size={"large"} />
+      )}
+      <FlatList
+        data={userCustomer?.pointsHistory}
+        renderItem={({ item }) => (
+          <HistoricalPointItem
+            points={item.pointsChange}
+            date={transformDate(item.createdAt)}
+            description={item.description || ""}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.flatListContent}
+        ListHeaderComponent={
+          <View style={styles.main}>
+            <Title style={styles.title}>Puntos disponibles</Title>
+            <Text style={styles.score}>{userCustomer?.pointsCurrent}</Text>
+            <Divider
+              style={{
+                borderColor: theme.colors.inverseOnSurface,
+                borderRadius: 10,
+                borderWidth: 1,
+                width: screenWidth * 0.5,
+                marginBottom: 30,
+              }}
+            />
+            <View style={styles.circleContainer}>
+              <CircleLink
+                color={theme.colors.secondary}
+                href="/locations"
+                text="Locales verdes"
+                icon={
+                  <MaterialCommunityIcons
+                    name="store"
+                    size={24}
+                    color="white"
+                  />
+                }
+              />
+              <CircleLink
+                color={theme.colors.primary}
+                href="/rewards/benefits"
+                text="Beneficios ofrecidos"
+                icon={<FontAwesome5 name="gift" size={24} color="white" />}
+              />
+              <CircleLink
+                color={theme.colors.tertiary}
+                href="/rewards/active-benefits"
+                text="Mis beneficios"
+                icon={<Ionicons name="star" size={24} color="white" />}
+              />
+            </View>
+
+            <Text style={styles.historyTitle}>
+              Historial de puntos ({userCustomer && userCustomer.pointsTotal})
+            </Text>
+          </View>
+        }
+      />
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: colors.gray[50],
+    backgroundColor: theme.colors.background,
   },
   main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
+    padding: 24,
+    alignItems: "center",
   },
   title: {
-    fontSize: 64,
+    fontSize: 28,
     fontWeight: "bold",
+    marginBottom: 16,
+    color: theme.colors.primary,
   },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
+  score: {
+    fontSize: 48,
+    fontWeight: "bold",
+    color: theme.colors.primary,
+    marginBottom: 20,
+  },
+  scoreHeader: {
+    margin: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: theme.colors.tertiary,
+    padding: 10,
+    borderRadius: 20,
+  },
+  scoreAvailable: {
+    fontSize: 18,
+    color: theme.colors.primary,
+  },
+  circleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 40,
+  },
+  historyTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    marginBottom: 16,
+    color: theme.colors.primary,
+  },
+  flatListContent: {
+    paddingHorizontal: 24,
   },
 });
-
-export default Rewards;

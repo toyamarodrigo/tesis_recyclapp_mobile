@@ -2,27 +2,7 @@ import React from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, List, IconButton } from "react-native-paper";
 import { router } from "expo-router";
-
-const nonCompostableItems = [
-  "Hojas o ramitas de nogal negro",
-  "Cenizas de carbón o carbón vegetal",
-  "Productos lácteos",
-  "Plantas enfermas",
-  "Grasas, manteca o aceites",
-  "Huesos y restos de carne o pescado",
-  "Desechos de mascotas",
-  "Recortes de jardín tratados con pesticidas químicos",
-  "Plásticos",
-  "Metales",
-  "Vidrio",
-  "Telas sintéticas",
-  "Madera tratada",
-  "Papel de color o brillante",
-  "Pegatinas o etiquetas",
-  "Hojas de secadora",
-  "Colillas de cigarrillos",
-  "Cartón recubierto",
-];
+import { nonCompostableItems } from "@constants/data.constant";
 
 export default function NonCompostableItems() {
   return (

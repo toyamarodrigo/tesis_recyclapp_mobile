@@ -193,3 +193,94 @@ export const mockNews: News[] = [
     source: "https://www.example.com",
   },
 ];
+
+export const mockedHistoricalPoints = [
+  {
+    id: 1,
+    points: 100,
+    date: "2023-04-15",
+    description: "Compra en Local Verde",
+  },
+  { id: 2, points: -50, date: "2023-04-10", description: "Canje de beneficio" },
+  {
+    id: 3,
+    points: 75,
+    date: "2023-04-05",
+    description: "Reciclaje en punto verde",
+  },
+  {
+    id: 4,
+    points: 200,
+    date: "2023-03-30",
+    description: "Compra en Local Verde",
+  },
+  {
+    id: 5,
+    points: -100,
+    date: "2023-03-25",
+    description: "Canje de beneficio",
+  },
+];
+
+export const nonCompostableItems = [
+  "Hojas o ramitas de nogal negro",
+  "Cenizas de carbón o carbón vegetal",
+  "Productos lácteos",
+  "Plantas enfermas",
+  "Grasas, manteca o aceites",
+  "Huesos y restos de carne o pescado",
+  "Desechos de mascotas",
+  "Recortes de jardín tratados con pesticidas químicos",
+  "Plásticos",
+  "Metales",
+  "Vidrio",
+  "Telas sintéticas",
+  "Madera tratada",
+  "Papel de color o brillante",
+  "Pegatinas o etiquetas",
+  "Hojas de secadora",
+  "Colillas de cigarrillos",
+  "Cartón recubierto",
+];
+
+export const compostableItems = [
+  "Restos de frutas y verduras",
+  "Posos y filtros de café",
+  "Bolsitas de té (sin grapas)",
+  "Cáscaras de huevo",
+  "Cáscaras de frutos secos",
+  "Rollos de cartón",
+  "Papel limpio",
+  "Recortes de jardín",
+  "Recortes de césped",
+  "Plantas de interior",
+  "Heno y paja",
+  "Hojas",
+  "Aserrín",
+  "Virutas de madera",
+  "Trapos de algodón y lana",
+  "Pelusa de secadora y aspiradora",
+  "Pelo y pelaje",
+  "Cenizas de chimenea",
+];
+
+export const BenefitTypeList = [
+  {
+    id: "DISCOUNT",
+    name: "DESCUENTO",
+  },
+  {
+    id: "PRODUCT",
+    name: "PRODUCTO GRATIS",
+  },
+  {
+    id: "DOUBLEPRODUCT",
+    name: "2 * 1",
+  },
+];
+
+export enum BenefitType {
+  DISCOUNT = "DISCOUNT",
+  PRODUCT = "PRODUCT",
+  DOUBLEPRODUCT = "DOUBLEPRODUCT",
+}

@@ -3,41 +3,18 @@ import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { theme } from "src/theme";
 import { Link, useRouter } from "expo-router";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import { useUserStore } from "@stores/useUserStore";
 import { useBenefitStore } from "@stores/useBenefitStore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Fragment, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
-
-const BenefitSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-});
-
-const BenefitTypeList = [
-  {
-    id: "DISCOUNT",
-    name: "DESCUENTO",
-  },
-  {
-    id: "PRODUCT",
-    name: "PRODUCTO GRATIS",
-  },
-  {
-    id: "DOUBLEPRODUCT",
-    name: "2 * 1",
-  },
-];
-
-enum BenefitType {
-  DISCOUNT = "DISCOUNT",
-  PRODUCT = "PRODUCT",
-  DOUBLEPRODUCT = "DOUBLEPRODUCT",
-}
+import { useUserStoreByClerk } from "@hooks/useUser";
+import { BenefitType, BenefitTypeList } from "@constants/data.constant";
+import { useUser } from "@clerk/clerk-expo";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = {
   id: string | null;
@@ -57,61 +34,44 @@ const formSchema = z.object({
   pointsCost: z.coerce.number().min(100).max(1000),
 });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        name: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
+function addMonths(date: Date, months: number): Date {
+  const nuevaFecha = new Date(date);
+  nuevaFecha.setMonth(nuevaFecha.getMonth() + months);
+  return nuevaFecha;
+}
 
 export default function NewBenefits() {
-  const { userStore } = useUserStore();
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
   const { currentBenefit, clearCurrentBenefit } = useBenefitStore();
   const router = useRouter();
-  function addMonths(date: Date, months: number): Date {
-    const nuevaFecha = new Date(date);
-    nuevaFecha.setMonth(nuevaFecha.getMonth() + months);
-    return nuevaFecha;
-  }
   const currentDate = new Date();
   const newDate = addMonths(currentDate, 3);
   const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
   const [selectedDate, setSelectedDate] = useState(newDate);
-  const { mutate: createBenefit } = useCreateBenefit();
-  const { mutate: editBenefit } = useUpdateBenefit();
+  const { mutateAsync: createBenefit } = useCreateBenefit();
+  const { mutateAsync: editBenefit } = useUpdateBenefit();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const {
+    control,
+    reset,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: {
+      name: currentBenefit ? currentBenefit.name : "",
+      type: currentBenefit ? currentBenefit.type : BenefitType.DISCOUNT,
+      endDate: currentBenefit ? currentBenefit.endDate : newDate,
+      quantity: currentBenefit ? currentBenefit.quantity : 1,
+      pointsCost: currentBenefit ? currentBenefit.pointsCost : 100,
+    },
+  });
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -132,12 +92,12 @@ export default function NewBenefits() {
     router.push("/profile/benefits");
   };
 
-  const handleCreate = (benefit: BenefitPost) => {
-    createBenefit(benefit);
+  const handleCreate = async (benefit: BenefitPost) => {
+    await createBenefit(benefit);
   };
 
-  const handleEdit = (benefit: BenefitPut) => {
-    editBenefit(benefit);
+  const handleEdit = async (benefit: BenefitPut) => {
+    await editBenefit(benefit);
   };
 
   const onSubmit = (data: FormValues) => {
@@ -164,25 +124,6 @@ export default function NewBenefits() {
 
     handleCancel();
   };
-
-  const {
-    control,
-    reset,
-    setValue,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<FormValues>({
-    resolver,
-    mode: "onBlur",
-    reValidateMode: "onChange",
-    defaultValues: {
-      name: currentBenefit ? currentBenefit.name : "",
-      type: currentBenefit ? currentBenefit.type : BenefitType.DISCOUNT,
-      endDate: currentBenefit ? currentBenefit.endDate : newDate,
-      quantity: currentBenefit ? currentBenefit.quantity : 1,
-      pointsCost: currentBenefit ? currentBenefit.pointsCost : 100,
-    },
-  });
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>

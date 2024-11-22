@@ -10,11 +10,9 @@ import { mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
-import { useEffect } from "react";
-import { User } from "@models/user.type";
-import { useUserStore } from "@stores/useUserStore";
-import { useUserById } from "@hooks/useUser";
 import { useAdvertisementList } from "@hooks/useAdvertisement";
+import { IMAGE } from "@constants/image.constant";
+import { NoDataCard } from "@components/NoDataCard";
 
 // TODO: make custom hook to fetch news
 const fetchNews = async () => {
@@ -23,32 +21,9 @@ const fetchNews = async () => {
 };
 
 const Home = () => {
-  const { user: userClerk } = useUser();
-  const { initializeUser } = useUserStore();
-  const { data: userById } = useUserById();
-
+  const { user: userClerk, isLoaded } = useUser();
+  if (!userClerk || !isLoaded) return null;
   const { data: ads, isPending: adsPending } = useAdvertisementList();
-
-  useEffect(() => {
-    if (userClerk && userById) {
-      const userLocal: User = {
-        id: userClerk.id,
-        mail: userClerk.primaryEmailAddress?.emailAddress ?? "",
-        name: userClerk.firstName ?? "",
-        surname: userClerk.lastName ?? "",
-        username: userClerk.username ?? "",
-        userType: userById?.userType,
-      };
-
-      if (userById.userType == "STORE") {
-        initializeUser(userLocal, userById.UserStore, undefined);
-      } else {
-        initializeUser(userLocal, undefined, userById.UserCustomer);
-      }
-    }
-  }, [userClerk, userById]);
-
-  // TODO: fetch news from API
   const { data: news, isPending: newsPending } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
@@ -72,24 +47,36 @@ const Home = () => {
     <ScrollView style={{ backgroundColor: theme.colors.background }}>
       <SignedIn>
         <View style={styles.container}>
-          <Carousel
-            title="Consejos Ecológicos"
-            data={ads}
-            renderItem={(item) => (
-              <AdCard item={item} onPress={handleAdPress} />
-            )}
-            isPending={adsPending}
-            height={250}
-          />
-          <Carousel
-            title="Últimas Noticias"
-            data={news}
-            renderItem={(item) => (
-              <NewsCard item={item} onPress={handleNewsPress} />
-            )}
-            isPending={newsPending}
-            height={250}
-          />
+          {ads && ads.length ? (
+            <Carousel
+              title="Nuestras tiendas"
+              data={ads}
+              renderItem={(item) => (
+                <AdCard item={item} onPress={handleAdPress} />
+              )}
+              isPending={adsPending}
+              height={250}
+            />
+          ) : (
+            <View style={styles.noDataContainer}>
+              <NoDataCard image={IMAGE.AD_GENERIC} />
+            </View>
+          )}
+          {!newsPending && news && news.length > 0 ? (
+            <Carousel
+              title="Últimas Noticias"
+              data={news}
+              renderItem={(item) => (
+                <NewsCard item={item} onPress={handleNewsPress} />
+              )}
+              isPending={newsPending}
+              height={250}
+            />
+          ) : (
+            <View style={styles.noDataContainer}>
+              <NoDataCard image={IMAGE.NEWS_GENERIC} />
+            </View>
+          )}
         </View>
       </SignedIn>
       <SignedOut>
@@ -160,6 +147,11 @@ const styles = StyleSheet.create({
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",
     padding: 10,
+  },
+  noDataContainer: {
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 50,
   },
 });
 

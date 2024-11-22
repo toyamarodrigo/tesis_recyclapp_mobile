@@ -1,9 +1,10 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
-import { greenPointApi, type TransformedGreenPoint } from '@api/api.greenPoint';
+import { useState, useMemo, useRef, useCallback } from "react";
+import { greenPointApi } from "@api/api.greenPoint";
 import type MapView from "react-native-maps";
 import { useUserLocation } from "@hooks/useUserLocation";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import type { FlashList } from "@shopify/flash-list";
+import { TransformedGreenPoint } from "@models/greenPoint.type";
 
 export type SortOrder = "asc" | "desc";
 
@@ -13,8 +14,12 @@ export const useMapLogic = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: greenPoints = [], isPending, error } = useQuery({
-    queryKey: ['greenPoints'],
+  const {
+    data: greenPoints = [],
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ["greenPoints"],
     queryFn: greenPointApi.getGreenPoint,
   });
 
@@ -33,7 +38,8 @@ export const useMapLogic = () => {
   }, [greenPoints, sortOrder, searchQuery]);
 
   const mapRef = useRef<MapView>(null);
-  const [selectedMarker, setSelectedMarker] = useState<TransformedGreenPoint | null>(null);
+  const [selectedMarker, setSelectedMarker] =
+    useState<TransformedGreenPoint | null>(null);
 
   const centerMapOnMarker = useCallback((marker: TransformedGreenPoint) => {
     setSelectedMarker(marker);

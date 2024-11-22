@@ -1,24 +1,28 @@
 import { z } from "zod";
-import { UserSchema } from "./user.type";
-import { BenefitSchema } from "./benefit.type";
+
+const UserPointsHistorySchema = z.object({
+  id: z.number(),
+  userCustomerId: z.string(),
+  userId: z.string(),
+  pointsChange: z.number(),
+  previousPointsCurrent: z.number(),
+  newPointsCurrent: z.number(),
+  previousPointsTotal: z.number(),
+  newPointsTotal: z.number(),
+  description: z.string().optional(),
+  createdAt: z.string(),
+});
 
 export const UserCustomerSchema = z.object({
   id: z.string(),
   pointsCurrent: z.number(),
   pointsTotal: z.number(),
   userId: z.string(),
-  User: z.object({ id: z.boolean() }),
-  benefitsActive: z.array(BenefitSchema),
-  benefitsHistory: z.array(BenefitSchema),
+  pointsHistory: z.array(UserPointsHistorySchema).optional(),
 });
 
 const UserCustomerPostSchema = z.object({
-  pointsCurrent: z.number(),
-  pointsTotal: z.number(),
   userId: z.string(),
-  User: z.object({ id: z.boolean() }),
-  benefitsActive: z.array(BenefitSchema),
-  benefitsHistory: z.array(BenefitSchema),
 });
 
 const UserCustomerPutSchema = z.object({
@@ -26,21 +30,19 @@ const UserCustomerPutSchema = z.object({
   pointsCurrent: z.number().optional(),
   pointsTotal: z.number().optional(),
   userId: z.string().optional(),
-  User: z.object({ id: z.boolean() }),
-  benefitsActive: z.array(BenefitSchema),
-  benefitsHistory: z.array(BenefitSchema),
+});
+
+const UserCustomerPutResponseSchema = z.object({
+  id: z.string(),
+  pointsCurrent: z.number(),
+  pointsTotal: z.number(),
+  userId: z.string(),
 });
 
 export type UserCustomer = z.infer<typeof UserCustomerSchema>;
 export type UserCustomerPost = z.infer<typeof UserCustomerPostSchema>;
 export type UserCustomerPut = z.infer<typeof UserCustomerPutSchema>;
-
-// model UserCustomer {
-//   id              String    @id @default(cuid())
-//   pointsCurrent   Int       @default(0)
-//   pointsTotal     Int       @default(0)
-//   userId          String    @unique
-//   User            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   benefitsActive  Benefit[] @relation("benefitsActive")
-//   benefitsHistory Benefit[] @relation("benefitsHistory")
-// }
+export type UserPointsHistory = z.infer<typeof UserPointsHistorySchema>;
+export type UserCustomerPutResponse = z.infer<
+  typeof UserCustomerPutResponseSchema
+>;

@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import {
   Button,
   Text,
@@ -16,38 +16,38 @@ import { useUserStore } from "@stores/useUserStore";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IMAGE } from "@constants/image.constant";
-import { USER_TYPE } from "@constants/enum.constant";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import ImageUploader from "@components/ImageUploader";
+import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
-  const { signOut, isLoaded } = useAuth();
-  const { user, profileImage, setProfileImage } = useUserStore();
-  const [deleteVisible, setDeleteVisible] = React.useState(false);
-  const [logoutVisible, setLogoutVisible] = React.useState(false);
+  const { signOut, isSignedIn, userId, isLoaded } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
+  if (!userLoaded || !user?.id) return null;
+  const { profileImage, setProfileImage } = useUserStore();
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
   const theme = useAppTheme();
-  const router = useRouter();
 
-  //TODO DELETE PENDING UNTIL POSTS IS DONE
+  const showModalDelete = () => setDeleteVisible(true);
+  const showModalLogout = () => setLogoutVisible(true);
+
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
+
+  const logout = async () => {
+    await signOut();
+  };
+
   useEffect(() => {
     if (user) {
       const timestamp = `?timestamp=${Date.now()}`;
       const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
-
-      console.log("urlImageUser", urlImage);
       setProfileImage(urlImage);
     }
   }, []);
 
-  const showModalDelete = () => setDeleteVisible(true);
-  const showModalLogout = () => setLogoutVisible(true);
-  const logout = async () => {
-    setLogoutVisible(false);
-    setDeleteVisible(false);
-    await signOut();
-    router.replace("/(auth)/sign-in");
-    return null;
-  };
+  if (!userId || !isSignedIn || !isLoaded)
+    return <Redirect href="/(auth)/sign-in" />;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -227,7 +227,7 @@ const Profile = () => {
                 right={(props) => <List.Icon {...props} icon="chevron-right" />}
               />
             </Link>
-            {user?.userType == USER_TYPE.STORE && (
+            {userStore && (
               <Link href="/profile/benefits" asChild>
                 <List.Item
                   title="Mis beneficios"

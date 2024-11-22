@@ -11,11 +11,10 @@ import {
   Icon,
 } from "react-native-paper";
 import { useAppTheme } from "src/theme";
-import { useUserStore } from "@stores/useUserStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
-import { USER_TYPE } from "@constants/enum.constant";
 import { useUser } from "@clerk/clerk-expo";
+import { useUserStoreByClerk } from "@hooks/useUser";
 
 type FormValues = {
   name: string;
@@ -82,8 +81,9 @@ export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
   const router = useRouter();
-  const { user, userStore, initializeUser } = useUserStore();
-  const { user: userClerk } = useUser();
+  const { user, isSignedIn } = useUser();
+  if (!isSignedIn || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const {
     control,
@@ -96,24 +96,18 @@ export default function PersonalInfo() {
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
-      name: user?.name ?? "",
-      surname: user?.surname ?? "",
+      name: user?.firstName ?? "",
+      surname: user?.lastName ?? "",
       username: user?.username ?? "",
     },
   });
 
   const onSubmit = async (formData: FormValues) => {
-    if (user && userClerk) {
+    if (user) {
       try {
-        await userClerk.update({
+        await user.update({
           firstName: formData.name,
           lastName: formData.surname,
-          username: formData.username,
-        });
-        initializeUser({
-          ...user,
-          name: formData.name,
-          surname: formData.surname,
           username: formData.username,
         });
         Alert.alert(
@@ -228,7 +222,7 @@ export default function PersonalInfo() {
             </Text>
           )}
 
-          {user?.userType == USER_TYPE.STORE && (
+          {userStore && (
             <View>
               <View
                 style={{

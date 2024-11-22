@@ -1,25 +1,47 @@
 import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Text, TextInput, View, StyleSheet, Alert } from "react-native";
-import { Button } from "react-native-paper";
-import React from "react";
+import { Text, View, StyleSheet, Alert } from "react-native";
+import { Button, TextInput } from "react-native-paper";
 import { theme } from "src/theme";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+type FormValues = {
+  emailAddress: string;
+  password: string;
+};
+
+const formSchema = z.object({
+  emailAddress: z.string().email("Ingrese un email válido"),
+  password: z.string().min(1, "La contraseña es requerida"),
+});
 
 export default function SignInScreen() {
-  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const { signIn, setActive, isLoaded } = useSignIn();
 
-  const onSignInPress = React.useCallback(async () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      emailAddress: "",
+      password: "",
+    },
+  });
+
+  const onSignInPress = async (data: FormValues) => {
     if (!isLoaded) {
       return;
     }
 
     try {
       const signInAttempt = await signIn.create({
-        identifier: emailAddress,
-        password,
+        identifier: data.emailAddress,
+        password: data.password,
       });
 
       if (signInAttempt.status === "complete") {
@@ -35,33 +57,58 @@ export default function SignInScreen() {
       }
       console.error(JSON.stringify(err, null, 2));
     }
-  }, [isLoaded, emailAddress, password]);
+  };
 
   return (
     <View style={styles.containerLogin}>
-      <TextInput
-        autoCapitalize="none"
-        value={emailAddress}
-        placeholder="Mail"
-        onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-        style={styles.textStyle}
+      <Controller
+        control={control}
+        name="emailAddress"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            autoCapitalize="none"
+            value={value}
+            placeholder="Mail"
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={!!errors.emailAddress}
+            style={styles.textStyle}
+          />
+        )}
       />
-      <TextInput
-        value={password}
-        placeholder="Contraseña"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-        style={styles.textStyle}
+      {errors.emailAddress && (
+        <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
+      )}
+
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            value={value}
+            placeholder="Contraseña"
+            secureTextEntry={true}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={!!errors.password}
+            style={styles.textStyle}
+          />
+        )}
       />
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password.message}</Text>
+      )}
+
       <View style={styles.buttonBox}>
         <Button
-          onPress={onSignInPress}
+          onPress={handleSubmit(onSignInPress)}
           buttonColor={theme.colors.secondaryContainer}
           textColor={theme.colors.onSecondaryContainer}
         >
           <Text style={styles.text}>Ingresar</Text>
         </Button>
       </View>
+
       <View style={styles.buttonBox}>
         <Link href="/(auth)/password-reset" asChild>
           <Button
@@ -72,6 +119,7 @@ export default function SignInScreen() {
           </Button>
         </Link>
       </View>
+
       <View style={{ flex: 1 }} />
       <View style={styles.textOptions}>
         <Text style={styles.text}>¿No tienes cuenta?</Text>
@@ -120,5 +168,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignContent: "center",
     justifyContent: "center",
+  },
+  errorText: {
+    color: theme.colors.error,
+    marginLeft: 10,
+    fontSize: 14,
   },
 });

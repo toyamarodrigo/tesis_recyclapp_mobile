@@ -11,5 +11,9 @@ export const addressKeys = createQueryKeyStore({
       queryKey: ["address", "detail", id],
       queryFn: () => addressApi.getAddressById(id),
     }),
+    addressesClerk: (id: string) => ({
+      queryKey: ["addressClerk", id],
+      queryFn: () => addressApi.getAddressClerkId(id),
+    }),
   },
 });

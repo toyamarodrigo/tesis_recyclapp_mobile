@@ -1,28 +1,8 @@
-import React from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
-import { Text, List, IconButton } from 'react-native-paper';
-import { router } from 'expo-router';
-
-const compostableItems = [
-  "Restos de frutas y verduras",
-  "Posos y filtros de café",
-  "Bolsitas de té (sin grapas)",
-  "Cáscaras de huevo",
-  "Cáscaras de frutos secos",
-  "Rollos de cartón",
-  "Papel limpio",
-  "Recortes de jardín",
-  "Recortes de césped",
-  "Plantas de interior",
-  "Heno y paja",
-  "Hojas",
-  "Aserrín",
-  "Virutas de madera",
-  "Trapos de algodón y lana",
-  "Pelusa de secadora y aspiradora",
-  "Pelo y pelaje",
-  "Cenizas de chimenea"
-];
+import React from "react";
+import { ScrollView, View, StyleSheet } from "react-native";
+import { Text, List, IconButton } from "react-native-paper";
+import { router } from "expo-router";
+import { compostableItems } from "@constants/data.constant";
 
 export default function CompostableItems() {
   return (
@@ -42,7 +22,9 @@ export default function CompostableItems() {
           <List.Item
             key={item}
             title={<Text style={styles.listItemText}>{item}</Text>}
-            left={props => <List.Icon {...props} icon="leaf" color="#1B5E20" />}
+            left={(props) => (
+              <List.Icon {...props} icon="leaf" color="#1B5E20" />
+            )}
           />
         ))}
       </List.Section>
@@ -55,8 +37,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingTop: 16,
     paddingHorizontal: 16,
   },
@@ -65,10 +47,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: "bold",
+    color: "#1B5E20",
     flex: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   listItemText: {
     flexShrink: 1,

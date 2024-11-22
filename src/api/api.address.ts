@@ -10,7 +10,6 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/addresses`
       );
 
-      console.log(result.data);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -35,6 +34,22 @@ export const addressApi = {
       throw new Error("Unknown error");
     }
   },
+  getAddressClerkId: async (id: string) => {
+    try {
+      const result = await axios.get<Address[]>(
+        `${backendApiConfig.baseURL}/addressesByUser/${id}`
+      );
+
+      return result.data;
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        throw new Error(e.message);
+      }
+
+      throw new Error("Unknown error");
+    }
+  },
+
   createAddress: async (address: AddressPost) => {
     try {
       const result = await axios.post<Address>(
@@ -42,9 +57,7 @@ export const addressApi = {
         address
       );
 
-      Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(
@@ -68,9 +81,7 @@ export const addressApi = {
         address
       );
 
-      Alert.alert("Éxito", "Se actualizó la dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(
@@ -93,9 +104,7 @@ export const addressApi = {
         `${backendApiConfig.baseURL}/address/${id}`
       );
 
-      Alert.alert("Éxito", "Se eliminó la dirección con éxito.");
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(

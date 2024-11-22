@@ -1,6 +1,4 @@
 import * as z from "zod";
-import { GreenPointSchema } from "./greenPoint.type";
-import { UserSchema } from "./user.type";
 
 export const AddressSchema = z.object({
   id: z.string(),
@@ -12,10 +10,8 @@ export const AddressSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   greenPointId: z.string().optional(),
-  userId: z.string().optional(),
-  isArchived: z.boolean(), // Changed from z.string() to z.boolean()
-  GreenPoint: z.object({ id: z.string() }).optional(),
-  User: z.object({ id: z.string() }).optional(),
+  userId: z.string(),
+  isArchived: z.boolean(),
 });
 
 const AddressPostSchema = z.object({
@@ -27,10 +23,8 @@ const AddressPostSchema = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   greenPointId: z.string().optional(),
-  userId: z.string().optional(),
+  userId: z.string(),
   isArchived: z.boolean().optional(),
-  GreenPoint: GreenPointSchema.pick({ id: true }).optional(),
-  User: UserSchema.pick({ id: true }).optional(),
 });
 
 const AddressPutSchema = z.object({
@@ -45,8 +39,6 @@ const AddressPutSchema = z.object({
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
   isArchived: z.boolean().optional(),
-  GreenPoint: GreenPointSchema.pick({ id: true }).optional(),
-  User: UserSchema.pick({ id: true }).optional(),
 });
 
 export type Address = z.infer<typeof AddressSchema>;

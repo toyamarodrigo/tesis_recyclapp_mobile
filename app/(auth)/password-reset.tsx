@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useAuth, useSignIn } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { Fragment, useState } from "react";
+import { useSignIn } from "@clerk/clerk-expo";
 import { View, ScrollView, StyleSheet, TextInput, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Title } from "react-native-paper";
@@ -13,20 +12,7 @@ export default function PasswordReset() {
   const [successfulCreation, setSuccessfulCreation] = useState(false);
   const [secondFactor, setSecondFactor] = useState(false);
   const [error, setError] = useState("");
-
-  const router = useRouter();
-  const { isSignedIn } = useAuth();
-  const { isLoaded, signIn, setActive } = useSignIn();
-
-  if (!isLoaded) {
-    return null;
-  }
-
-  // If the user is already signed in,
-  // redirect them to the home page
-  if (isSignedIn) {
-    router.push("/");
-  }
+  const { signIn, setActive } = useSignIn();
 
   // Send the password reset code to the user's email
   async function create(e: React.FormEvent) {
@@ -92,7 +78,7 @@ export default function PasswordReset() {
         <Title>¿Olvidaste la contraseña?</Title>
         <View style={styles.containerLogin}>
           {!successfulCreation && (
-            <>
+            <Fragment>
               <TextInput
                 keyboardType="email-address"
                 value={email}
@@ -110,11 +96,11 @@ export default function PasswordReset() {
                 </Button>
               </View>
               {error && <Text style={{ color: "red" }}>{error}</Text>}
-            </>
+            </Fragment>
           )}
 
           {successfulCreation && (
-            <>
+            <Fragment>
               <TextInput
                 placeholder="Contraseña"
                 secureTextEntry
@@ -139,7 +125,7 @@ export default function PasswordReset() {
                 </Button>
               </View>
               {error && <Text style={{ color: "red" }}>{error}</Text>}
-            </>
+            </Fragment>
           )}
 
           {secondFactor && (

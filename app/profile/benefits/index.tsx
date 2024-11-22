@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardProfile from "@components/CardProfile";
 import { Link, useRouter } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View, RefreshControl } from "react-native";
 import {
   Button,
   Modal,
@@ -14,27 +14,63 @@ import {
 } from "react-native-paper";
 import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
+import { useBenefitListStore, useUpdateBenefit } from "@hooks/useBenefit";
 import { useBenefitStore } from "@stores/useBenefitStore";
-import { Benefit, BenefitPut } from "@models/benefit.type";
+import { Benefit } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
+import { useUser } from "@clerk/clerk-expo";
+import { useUserStoreByClerk } from "@hooks/useUser";
+import {
+  useBenefitAssignmentByStoreBenefits,
+  useUpdateBenefitAssignment,
+} from "@hooks/useBenefitAssignment";
 
 export default function Benefits() {
-  const { isLoading, error, data: benefitList } = useBenefitList();
-  const { setCurrentBenefit } = useBenefitStore();
+  const { user, isLoaded } = useUser();
+  if (!isLoaded || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
+  if (!userStore) return null;
+  const [refreshing, setRefreshing] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const router = useRouter();
-  const showModal = () => setVisible(true);
-  const { mutate: updateBenefit } = useUpdateBenefit();
+  const { setCurrentBenefit } = useBenefitStore();
+  const { mutateAsync: updateBenefit } = useUpdateBenefit();
+  const {
+    isLoading,
+    error,
+    data: benefitList,
+    refetch,
+  } = useBenefitListStore(userStore.id);
 
-  const handleDelete = (benefit: Benefit) => {
-    const removeBenefit: BenefitPut = {
+  const benefitIds = benefitList
+    ? benefitList.map((benefit) => benefit.id)
+    : [];
+
+  const formatedBenefitList = benefitList?.filter(
+    (benefit) => !benefit.isArchived && benefit.isActive
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const { data: benefitAssignmentListStore } =
+    useBenefitAssignmentByStoreBenefits(benefitIds);
+  const { mutate: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
+
+  const handleDelete = async (benefit: Benefit) => {
+    const removeBenefit = {
       id: benefit.id,
       isActive: false,
       isArchived: true,
     };
-    updateBenefit(removeBenefit);
+    await updateBenefit(removeBenefit);
   };
 
   const handleEdit = (benefit: Benefit) => {
@@ -47,13 +83,35 @@ export default function Benefits() {
     setCode("");
   };
   const changeCode = (text: string) => {
-    if (text.length > 10) return;
-    setCode(text);
+    setCode(text.toUpperCase());
   };
+
   const confirmCode = () => {
-    console.log(code);
-    //TODO validar el funcionamiento del codigo
-    hideModal();
+    if (!benefitList) return;
+    const getByCode = benefitAssignmentListStore?.find(
+      (benefit) => benefit.generatedCode == code
+    );
+
+    if (!getByCode) {
+      Alert.alert(
+        "Error",
+        "No hay beneficios otorgados con ese código. Intente nuevamente."
+      );
+    } else {
+      const benefitExchanged = benefitList.find(
+        (benefit) => benefit.id == getByCode.benefitId
+      );
+
+      updateBenefitAssignemnt({
+        id: getByCode.id,
+        isActive: false,
+      });
+      hideModal();
+      Alert.alert(
+        "¡Cambio exitoso!",
+        `Se realizó la recepción del código del beneficio ${benefitExchanged?.name} correctamente. No olvides avisarle al cliente que ya puede cerrar su pantalla del código. ¡Muchas gracias por tus servicios!`
+      );
+    }
   };
 
   return (
@@ -65,7 +123,17 @@ export default function Benefits() {
         <Title style={{ color: theme.colors.primary }}>Mis beneficios</Title>
       </View>
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+              tintColor={theme.colors.primary}
+            />
+          }
+        >
           <Portal>
             <Modal
               visible={visible}
@@ -90,7 +158,7 @@ export default function Benefits() {
                   mode="outlined"
                   label="Ingrese el código"
                   placeholder="Código de intercambio"
-                  value={code}
+                  value={code.toUpperCase()}
                   onChangeText={(text) => changeCode(text)}
                 />
                 <Button
@@ -125,12 +193,12 @@ export default function Benefits() {
                 )}
                 {!isLoading &&
                   !error &&
-                  benefitList &&
-                  benefitList.length === 0 && (
+                  formatedBenefitList &&
+                  formatedBenefitList.length === 0 && (
                     <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
                   )}
-                {benefitList &&
-                  benefitList.map((benefit) => (
+                {formatedBenefitList &&
+                  formatedBenefitList.map((benefit) => (
                     <CardProfile
                       key={benefit.id}
                       title={benefit.name}
@@ -150,8 +218,18 @@ export default function Benefits() {
           >
             Agregar beneficio
           </Button>
-          <Button mode="contained-tonal" onPress={showModal}>
-            Recibir código
+          <Button
+            mode="contained-tonal"
+            onPress={() => setVisible(true)}
+            disabled={
+              !benefitAssignmentListStore ||
+              benefitAssignmentListStore.length == 0
+            }
+          >
+            {!benefitAssignmentListStore ||
+            benefitAssignmentListStore.length == 0
+              ? "No hay beneficios a recibir"
+              : "Recibir código"}
           </Button>
         </View>
       </View>

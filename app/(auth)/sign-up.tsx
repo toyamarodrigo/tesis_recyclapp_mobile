@@ -1,14 +1,14 @@
-import * as React from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
-import { useSignUp, useUser } from "@clerk/clerk-expo";
+import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
+import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { theme } from "src/theme";
 import { Button, TextInput } from "react-native-paper";
 import { z } from "zod";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { PasswordInput } from "@components/PasswordInput";
-import { useCreateUser } from "@hooks/useUser";
-import { useUserStore } from "@stores/useUserStore";
+import { useCreateUserCustomer } from "@hooks/useUser";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Fragment, useState } from "react";
 
 type FormValues = {
   emailAddress: string;
@@ -55,63 +55,19 @@ const formSchema = z
     path: ["repeatPassword"],
   });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        firstName: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
-  const [pendingVerification, setPendingVerification] = React.useState(false);
-  const [code, setCode] = React.useState("");
-  const { mutate: createUserDB } = useCreateUser();
-  const { initializeUser } = useUserStore();
-  const [localUser, setLocalUser] = React.useState<any>();
-  const { user } = useUser();
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
+  const { mutateAsync: createUserDB } = useCreateUserCustomer();
 
-  // console.log(user);
   const {
     control,
-    reset,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver,
+    resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
@@ -125,17 +81,6 @@ export default function SignUpScreen() {
   });
 
   const onSubmit = async (formData: FormValues) => {
-    const userData = {
-      name: formData.firstName,
-      surname: formData.lastName,
-      mail: formData.emailAddress,
-      username: formData.username,
-    };
-
-    const data = { userData };
-
-    // console.log(data);
-
     onSignUpPress(formData);
   };
 
@@ -153,14 +98,6 @@ export default function SignUpScreen() {
         firstName: formData.firstName,
         lastName: formData.lastName,
       });
-
-      setLocalUser({
-        mail: formData.emailAddress,
-        password: formData.password,
-        username: formData.username,
-        name: formData.firstName,
-        surname: formData.lastName,
-      });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
     } catch (err: any) {
       // See https://clerk.com/docs/custom-flows/error-handling
@@ -170,18 +107,26 @@ export default function SignUpScreen() {
   };
 
   const onPressVerify = async () => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
 
+      if (completeSignUp.status !== "complete") {
+        Alert.alert("Código inválido. Por favor, intenta nuevamente.");
+        return;
+      }
+
+      if (!completeSignUp.createdUserId) throw new Error("User not created");
+
+      await createUserDB({
+        userId: completeSignUp.createdUserId,
+      });
+
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        initializeUser(localUser);
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));
@@ -372,7 +317,7 @@ export default function SignUpScreen() {
         </ScrollView>
       )}
       {pendingVerification && (
-        <>
+        <Fragment>
           <Text style={styles.text}>
             Ingresa el código de 6 dígitos que fue enviado a tu casilla para
             confirmar la creación de la cuenta.
@@ -392,7 +337,7 @@ export default function SignUpScreen() {
               <Text style={styles.text}>Verificar email</Text>
             </Button>
           </View>
-        </>
+        </Fragment>
       )}
     </View>
   );

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { UserStoreSchema } from "./userStore.type";
 import { UserCustomerSchema } from "./userCustomer.type";
 
 export const BenefitSchema = z.object({
@@ -38,7 +37,7 @@ const BenefitPutSchema = z.object({
   endDate: z.coerce.date().optional(), //datetime
   quantity: z.number().optional(),
   pointsCost: z.number().optional(),
-  userStoreId: z.string().optional(),
+  // userStoreId: z.string(),
   isActive: z.boolean().optional(),
   isArchived: z.boolean().optional(),
   userStore: z.object({ id: z.string() }).optional(),
@@ -51,9 +50,22 @@ const BenefitUserSchema = z.object({
   idUser: z.string(),
 });
 
+const BenefitPutResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  pointsCost: z.number(),
+  quantity: z.number(),
+  type: z.string(),
+  userStoreId: z.string(),
+  endDate: z.coerce.date(),
+  isActive: z.boolean(),
+  isArchived: z.boolean(),
+});
+
 export type Benefit = z.infer<typeof BenefitSchema>;
 export type BenefitPost = z.infer<typeof BenefitPostSchema>;
 export type BenefitPut = z.infer<typeof BenefitPutSchema>;
+export type BenefitPutResponse = z.infer<typeof BenefitPutResponseSchema>;
 export type BenefitUser = z.infer<typeof BenefitUserSchema>;
 
 // model Benefit {

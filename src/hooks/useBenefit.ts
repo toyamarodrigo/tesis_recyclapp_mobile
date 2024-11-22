@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { benefitKeys } from "@api/query/benefit.factory";
-import { BenefitPost, BenefitPut, BenefitUser } from "@models/benefit.type";
+import {
+  Benefit,
+  BenefitPost,
+  BenefitPut,
+  BenefitPutResponse,
+  BenefitUser,
+} from "@models/benefit.type";
 import { benefitApi } from "@api/api.benefit";
+import { Alert } from "react-native";
 
 const useBenefitList = () => {
   const { data, isSuccess, error, isLoading } = useQuery({
@@ -25,28 +32,31 @@ const useBenefitById = (id: string) => {
   return { data, error, isError, isLoading };
 };
 
-const useBenefitListStore = (id: string) => {
-  const { data, isSuccess, error, isLoading } = useQuery({
-    queryKey: benefitKeys.benefit.storeList(id).queryKey,
-    queryFn: benefitKeys.benefit.storeList(id).queryFn,
+const useBenefitListStore = (userId: string) => {
+  return useQuery({
+    ...benefitKeys.benefit.storeList(userId),
   });
-
-  return {
-    data,
-    error,
-    isSuccess,
-    isLoading,
-  };
 };
 
 const useCreateBenefit = () => {
   const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isSuccess, error } = useMutation({
     mutationFn: (benefit: BenefitPost) => benefitApi.createBenefit(benefit),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
-      });
+    onSuccess: (benefit: BenefitPost) => {
+      queryClient.setQueryData(
+        benefitKeys.benefit.storeList(benefit.userStoreId).queryKey,
+        (data: Benefit[]) => {
+          return [...data, benefit];
+        }
+      );
+
+      Alert.alert("Éxito", "Se creó el nuevo beneficio con éxito.");
+    },
+    onError: () => {
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al crear el beneficio. Intente nuevamente."
+      );
     },
   });
 
@@ -63,10 +73,18 @@ const useUpdateBenefit = () => {
   const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefit: BenefitPut) => benefitApi.updateBenefit(benefit),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
+    onSuccess: async (benefit: BenefitPutResponse) => {
+      await queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.storeList(benefit.userStoreId).queryKey,
       });
+
+      Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
+    },
+    onError: () => {
+      Alert.alert(
+        "Error",
+        "Ocurrió un problema al actualizar el beneficio. Intente nuevamente."
+      );
     },
   });
 

@@ -81,8 +81,9 @@ export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
   const router = useRouter();
-  const { user } = useUser();
-  const { data: userStore } = useUserStoreByClerk();
+  const { user, isSignedIn } = useUser();
+  if (!isSignedIn || !user?.id) return null;
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const {
     control,

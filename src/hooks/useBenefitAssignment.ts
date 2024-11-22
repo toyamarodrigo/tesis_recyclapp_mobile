@@ -12,27 +12,19 @@ const useBenefitAssignmentList = () => {
 };
 
 const useBenefitAssignmentById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    benefitAssignmentKeys.benefitAssignment.detail(id)
-  );
-
-  return { data, error, isError, isLoading };
+  return useQuery({ ...benefitAssignmentKeys.benefitAssignment.detail(id) });
 };
 
 const useBenefitAssignmentByUserCustomerId = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    benefitAssignmentKeys.benefitAssignment.listClerk(id)
-  );
-
-  return { data, error, isError, isLoading };
+  return useQuery({
+    ...benefitAssignmentKeys.benefitAssignment.listClerk(id),
+  });
 };
 
 const useBenefitAssignmentByStoreBenefits = (benefitIds: string[]) => {
-  const { data, error, isError, isLoading } = useQuery(
-    benefitAssignmentKeys.benefitAssignment.listStore(benefitIds)
-  );
-
-  return { data, error, isError, isLoading };
+  return useQuery({
+    ...benefitAssignmentKeys.benefitAssignment.listStore(benefitIds),
+  });
 };
 
 const useCreateBenefitAssignment = () => {
@@ -49,21 +41,18 @@ const useCreateBenefitAssignment = () => {
 };
 
 const useUpdateBenefitAssignment = () => {
+  const queryClient = useQueryClient();
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPut) =>
       benefitAssignmentApi.updateBenefitAssignment(benefitAssignment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.list().queryKey,
+      });
+    },
   });
 
   return { mutate, mutateAsync, isPending, isError, error };
-};
-
-const useDeleteBenefitAssignment = () => {
-  const { mutate, isPending, isSuccess, error } = useMutation({
-    mutationFn: (id: string) =>
-      benefitAssignmentApi.deleteBenefitAssignment(id),
-  });
-
-  return { mutate, isPending, isSuccess, error };
 };
 
 export {
@@ -72,6 +61,5 @@ export {
   useBenefitAssignmentByUserCustomerId,
   useBenefitAssignmentByStoreBenefits,
   useCreateBenefitAssignment,
-  useDeleteBenefitAssignment,
   useUpdateBenefitAssignment,
 };

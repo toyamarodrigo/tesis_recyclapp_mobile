@@ -3,7 +3,8 @@ import { View, StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
 
 export const NoDataCard = ({ image }: { image: string }) => {
-  const imageUrl = IMAGE.CLOUDINARY_URL + image;
+  const timestamp = `?timestamp=${Date.now()}`;
+  const imageUrl = IMAGE.CLOUDINARY_URL + image + timestamp;
 
   return (
     <Card style={styles.adCard}>

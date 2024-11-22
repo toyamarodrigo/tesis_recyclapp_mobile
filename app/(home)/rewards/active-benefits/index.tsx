@@ -1,4 +1,10 @@
-import { ScrollView, View, StyleSheet, Alert } from "react-native";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import { router } from "expo-router";
 import {
   Text,
@@ -12,7 +18,7 @@ import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
 import DataEmpty from "@components/DataEmpty";
 import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Benefit } from "@models/benefit.type";
 import { useUser } from "@clerk/clerk-expo";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
@@ -25,7 +31,7 @@ import { useBenefitStore } from "@stores/useBenefitStore";
 export default function ActiveBenefits() {
   const { user, isSignedIn } = useUser();
   if (!isSignedIn || !user?.id) return null;
-  const { isLoading, error, data: benefitList } = useBenefitList();
+  const { isPending, error, data: benefitList = [] } = useBenefitList();
   const { setCurrentBenefitCustomer } = useBenefitStore();
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
@@ -43,6 +49,29 @@ export default function ActiveBenefits() {
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { refetch: refetchBenefits } = useBenefitList();
+  const { refetch: refetchUserCustomer } = useUserCustomerByClerk({
+    userId: user.id,
+  });
+  const { refetch: refetchBenefitAssignments } =
+    useBenefitAssignmentByUserCustomerId(userCustomer?.id);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        refetchBenefits(),
+        refetchUserCustomer(),
+        refetchBenefitAssignments(),
+      ]);
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchBenefits, refetchUserCustomer, refetchBenefitAssignments]);
 
   const hideModal = () => setVisible(false);
   const showModal = (benefit: Benefit) => {
@@ -68,10 +97,10 @@ export default function ActiveBenefits() {
 
       //reducir puntos usuario
       await updateUserCustomer(userData);
-      //TODO actualizar el puntos disponibles en esta pagina y en el store
 
       //reducir disponibilidad beneficio
       await updateBenefit(benefitData);
+
       Alert.alert(
         "Éxito",
         "Se restauraron los puntos del beneficio con éxito."
@@ -93,14 +122,36 @@ export default function ActiveBenefits() {
 
         if (currentBenefitAssignment) {
           setCurrentBenefitCustomer(currentBenefitAssignment);
+          await updateBenefitAssignemnt({
+            id: currentBenefitAssignment.id,
+            isActive: false,
+          });
           router.push("/rewards/code-benefit");
         }
       }
     }
   };
 
+  const filteredBenefitList = benefitList?.flatMap((benefit) => {
+    const matchingAssignments =
+      benefitAssignmentList?.filter(
+        (assignment) => assignment.benefitId === benefit.id
+      ) || [];
+    return matchingAssignments.map(() => benefit);
+  });
+
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[theme.colors.primary]}
+          tintColor={theme.colors.primary}
+        />
+      }
+    >
       <View style={styles.header}>
         <IconButton
           icon="chevron-left"
@@ -166,46 +217,48 @@ export default function ActiveBenefits() {
           </Button>
         </Modal>
       </Portal>
-      {(isLoading || userLoading || benefitAssignmentLoading) && (
-        <ActivityIndicator color={theme.colors.primary} size={"large"} />
+      {(isPending || userLoading || benefitAssignmentLoading) && (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator color={theme.colors.primary} size={"large"} />
+        </View>
       )}
       {error && (
-        <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
+        <View style={styles.centerContainer}>
+          <DataEmpty displayText="Ocurrió un problema al mostrar los beneficios. Intente nuevamente." />
+        </View>
       )}
-      {!isLoading &&
+      {!isPending &&
         !benefitAssignmentLoading &&
-        benefitAssignmentList?.length == 0 && (
-          <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
+        (!benefitAssignmentList || benefitAssignmentList.length === 0) && (
+          <View style={styles.centerContainer}>
+            <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
+          </View>
         )}
-      {!isLoading && userCustomer && benefitList && benefitAssignmentList
-        ? benefitList
-            .filter((benefit) =>
-              benefitAssignmentList.some(
-                (assignment) => assignment.benefitId === benefit.id
-              )
-            )
-            .map((benefit) => {
-              const relatedAssignment = benefitAssignmentList.find(
-                (assignment) => assignment.benefitId === benefit.id
-              );
+      {!isPending && userCustomer && filteredBenefitList?.length ? (
+        filteredBenefitList?.map((benefit, index) => {
+          const relatedAssignment = benefitAssignmentList?.find(
+            (assignment) => assignment.benefitId === benefit.id
+          );
 
-              return (
-                <CardBenefit
-                  key={benefit.id}
-                  benefit={benefit}
-                  handlePoints={() => showModal(benefit)}
-                  isActiveBenefit={benefit.isActive}
-                  userPoints={userCustomer.pointsCurrent}
-                  setModalTitle={setModalTitle}
-                  setModalContent={setModalContent}
-                  setSelectedBenefitAssignment={() =>
-                    relatedAssignment &&
-                    setSelectedBenefitAssignment(relatedAssignment.id)
-                  }
-                />
-              );
-            })
-        : null}
+          return (
+            <CardBenefit
+              key={benefit.id + index}
+              benefit={benefit}
+              handlePoints={() => showModal(benefit)}
+              isActiveBenefit={benefit.isActive}
+              userPoints={userCustomer.pointsCurrent}
+              setModalTitle={setModalTitle}
+              setModalContent={setModalContent}
+              setSelectedBenefitAssignment={() =>
+                relatedAssignment &&
+                setSelectedBenefitAssignment(relatedAssignment.id)
+              }
+            />
+          );
+        })
+      ) : (
+        <DataEmpty displayText="Aún no tienes beneficios activos. Puedes canjearlos en 'Beneficios Ofrecidos'." />
+      )}
     </ScrollView>
   );
 }
@@ -226,5 +279,10 @@ const styles = StyleSheet.create({
     color: "#1B5E20",
     flex: 1,
     flexWrap: "wrap",
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { benefitKeys } from "@api/query/benefit.factory";
-import {
-  Benefit,
-  BenefitPost,
-  BenefitPut,
-  BenefitPutResponse,
-} from "@models/benefit.type";
+import { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { benefitApi } from "@api/api.benefit";
 import { Alert } from "react-native";
 
@@ -63,8 +58,6 @@ const useUpdateBenefit = () => {
       queryClient.invalidateQueries({
         queryKey: benefitKeys.benefit.list().queryKey,
       });
-
-      Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
     },
     onError: () => {
       Alert.alert(

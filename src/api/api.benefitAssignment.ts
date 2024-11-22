@@ -1,7 +1,9 @@
 import type {
   BenefitAssignment,
   BenefitAssignmentPost,
+  BenefitAssignmentPostResponse,
   BenefitAssignmentPut,
+  BenefitAssignmentPutResponse,
 } from "@models/benefitAssignment.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
@@ -71,7 +73,7 @@ export const benefitAssignmentApi = {
   },
   createBenefitAssignment: async (benefitAssignment: BenefitAssignmentPost) => {
     try {
-      const result = await axios.post<BenefitAssignmentPost>(
+      const result = await axios.post<BenefitAssignmentPostResponse>(
         `${backendApiConfig.baseURL}/benefitassignment`,
         benefitAssignment
       );
@@ -94,14 +96,13 @@ export const benefitAssignmentApi = {
     }
   },
   updateBenefitAssignment: async (benefitAssignment: BenefitAssignmentPut) => {
-    console.log("update data", benefitAssignment);
     try {
-      const result = await axios.put<BenefitAssignmentPut>(
+      const result = await axios.put<BenefitAssignmentPutResponse>(
         `${backendApiConfig.baseURL}/benefitassignment/${benefitAssignment.id}`,
         benefitAssignment
       );
 
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         Alert.alert(

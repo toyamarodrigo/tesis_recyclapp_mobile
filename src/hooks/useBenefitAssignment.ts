@@ -2,10 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { benefitAssignmentKeys } from "@api/query/benefitAssignment.factory";
 import {
   BenefitAssignmentPost,
+  BenefitAssignmentPostResponse,
   BenefitAssignmentPut,
 } from "@models/benefitAssignment.type";
 import { benefitAssignmentApi } from "@api/api.benefitAssignment";
-import { benefitKeys } from "@api/query/benefit.factory";
+import { Alert } from "react-native";
 
 const useBenefitAssignmentList = () => {
   return useQuery({ ...benefitAssignmentKeys.benefitAssignment.list() });
@@ -32,10 +33,14 @@ const useCreateBenefitAssignment = () => {
   return useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPost) =>
       benefitAssignmentApi.createBenefitAssignment(benefitAssignment),
-    onSuccess: () => {
+    onSuccess: (data: BenefitAssignmentPostResponse) => {
       queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
+        queryKey: benefitAssignmentKeys.benefitAssignment.listClerk(
+          data.userCustomerId
+        ).queryKey,
       });
+
+      Alert.alert("Beneficio canjeado correctamente");
     },
   });
 };
@@ -45,9 +50,11 @@ const useUpdateBenefitAssignment = () => {
   const { mutate, mutateAsync, isPending, isError, error } = useMutation({
     mutationFn: (benefitAssignment: BenefitAssignmentPut) =>
       benefitAssignmentApi.updateBenefitAssignment(benefitAssignment),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: benefitKeys.benefit.list().queryKey,
+        queryKey: benefitAssignmentKeys.benefitAssignment.listClerk(
+          data.userCustomerId
+        ).queryKey,
       });
     },
   });

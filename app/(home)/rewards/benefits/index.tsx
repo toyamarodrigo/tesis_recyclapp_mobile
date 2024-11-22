@@ -32,7 +32,7 @@ export default function Benefits() {
   const { mutateAsync: createBenefitAssignment } = useCreateBenefitAssignment();
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
-  const [selectedBenefitAssignment, setSelectedBenefitAssignment] = useState<
+  const [_, setSelectedBenefitAssignment] = useState<
     string | null
   >(null);
 

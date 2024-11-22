@@ -3,25 +3,17 @@ import { router } from "expo-router";
 import { Text, Button, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 import { useBenefitStore } from "@stores/useBenefitStore";
-import { useUpdateBenefitAssignment } from "@hooks/useBenefitAssignment";
 
 export default function ActiveBenefits() {
   const { currentBenefitCustomer, clearCurrentBenefitCustomer } =
     useBenefitStore();
-  const { mutateAsync: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
 
   const handleBack = async () => {
-    if (currentBenefitCustomer) {
-      await updateBenefitAssignemnt({
-        id: currentBenefitCustomer.id,
-        isActive: false,
-      });
-      Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
-      clearCurrentBenefitCustomer();
-      router.back();
-    }
+    Alert.alert("Éxito", "Se canjeó el beneficio con éxito.");
+    clearCurrentBenefitCustomer();
+    router.back();
   };
-  console.log("currentBenefitCustomer", currentBenefitCustomer);
+  
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
       <View style={styles.header}>

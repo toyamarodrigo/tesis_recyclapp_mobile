@@ -15,6 +15,14 @@ const BenefitAssignmentPostSchema = z.object({
   userCustomerId: z.string(),
 });
 
+const BenefitAssignmentPostResponseSchema = z.object({
+  benefitId: z.string(),
+  generatedCode: z.string(),
+  id: z.string(),
+  isActive: z.boolean(),
+  userCustomerId: z.string(),
+});
+
 const BenefitAssignmentPutSchema = z.object({
   id: z.string(),
   benefitId: z.string().optional(),
@@ -23,16 +31,20 @@ const BenefitAssignmentPutSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+const BenefitAssignmentPutResponseSchema = z.object({
+  benefitId: z.string(),
+  generatedCode: z.string(),
+  id: z.string(),
+  isActive: z.boolean(),
+  userCustomerId: z.string(),
+});
+
 export type BenefitAssignment = z.infer<typeof BenefitAssignmentSchema>;
 export type BenefitAssignmentPost = z.infer<typeof BenefitAssignmentPostSchema>;
+export type BenefitAssignmentPostResponse = z.infer<
+  typeof BenefitAssignmentPostResponseSchema
+>;
 export type BenefitAssignmentPut = z.infer<typeof BenefitAssignmentPutSchema>;
-
-// model BenefitAssignment {
-//   id             String       @id @default(cuid())
-//   benefitId      String
-//   userCustomerId String
-//   generatedCode  String
-//   isActive       Boolean      @default(true)
-//   benefit        Benefit      @relation(fields: [benefitId], references: [id])
-//   userCustomer   UserCustomer @relation(fields: [userCustomerId], references: [id])
-// }
+export type BenefitAssignmentPutResponse = z.infer<
+  typeof BenefitAssignmentPutResponseSchema
+>;

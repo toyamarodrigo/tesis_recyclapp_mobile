@@ -1,47 +1,28 @@
 import { postKeys } from "@api/query/post.factory";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { PostPost, PostPut } from "@models/post.type";
 import { postApi } from "@api/api.post";
+import { PostCreate } from "@models/post.type";
 
 const usePostList = () => {
-  const { data, error, isError, isLoading } = useQuery(postKeys.post.list());
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery({ ...postKeys.post.list() });
 };
 
-const usePostById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    postKeys.post.detail(id)
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useCreatePost = (post: PostPost) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.createPost,
-    mutationKey: [post],
+const usePostListByClerkId = ({ userId }: { userId: string }) => {
+  return useQuery({
+    ...postKeys.post.listByClerkId(userId),
+    enabled: !!userId,
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-const useUpdatePost = (post: PostPut) => {
+const useCreatePost = () => {
+  return useMutation({
+    mutationKey: ["createPost"],
+    mutationFn: (post: PostCreate) => postApi.createPost(post),
+  });
+};
+
+// TODO: type
+const useUpdatePost = (post) => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: postApi.updatePost,
     mutationKey: [post],
@@ -71,7 +52,7 @@ const useDeletePost = (id: string) => {
 
 export {
   usePostList,
-  usePostById,
+  usePostListByClerkId,
   useCreatePost,
   useUpdatePost,
   useDeletePost,

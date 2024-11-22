@@ -1,30 +1,54 @@
-import { StyleSheet, View, Image } from "react-native";
+import { StyleSheet, View, Image, ScrollView } from "react-native";
 import { List, Card, Text, FAB } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { usePostList, usePostListByClerkId } from "@hooks/usePost";
 import { Post } from "@models/post.type";
 import { useAuth } from "@clerk/clerk-expo";
 import { IMAGE } from "@constants/image.constant";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useMaterialProductList } from "@hooks/useMaterialProduct";
+import { MaterialProduct } from "@models/materialProduct.type";
 
 interface MaterialCardProps {
   post: Post;
+  id: string;
+  materials: MaterialProduct[] | undefined;
 }
 
-const MaterialCard = ({ post }: MaterialCardProps) => {
+const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
+  const imageUrl = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${id}.jpg?timestamp=${Date.now()}`;
+  const imageUrl2 = `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${post.materialProductId}.png`;
+  const [image, setImage] = useState<string>(imageUrl2);
+
+  const getMaterialName = (id: string) => {
+    return materials?.find((material) => material.id === id)?.name || "";
+  };
+
+
+  useEffect(() => {
+    (async () => {
+      const test = await axios.get(imageUrl);
+      if (test.status === 200) setImage(imageUrl);
+    })();
+  }, [imageUrl]);
+
   return (
-    <Card style={styles.card}>
+    <Card style={styles.card} onPress={() => router.push(`/feed/${post.id}`)}>
       <Card.Content style={styles.cardContent}>
         <Image
           source={{
-            uri: `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${IMAGE.PAPER_GENERIC}`,
+            uri: image || "",
           }}
           style={styles.cardImage}
         />
         <View style={styles.cardDetails}>
-          <Text variant="titleMedium">Material: {post.materialProductId}</Text>
+          <Text variant="titleMedium">
+            Material: {getMaterialName(post.materialProductId)}
+          </Text>
           <Text variant="bodyMedium">Cantidad: {post.quantity}</Text>
-          <Text variant="bodyMedium">Puntos: {post.pointsAwared}</Text>
+          <Text variant="bodyMedium">Puntos: {post.pointsAwarded}</Text>
           <Text variant="bodyMedium">{post.description}</Text>
         </View>
       </Card.Content>
@@ -37,66 +61,72 @@ const Feed = () => {
   const { userId, isSignedIn } = useAuth();
   if (!isSignedIn) return null;
   const { data: postsByClerkId } = usePostListByClerkId({ userId });
+  const { data: materials } = useMaterialProductList();
   const { data } = usePostList();
 
   const filterPosts = (purpose: "WANT" | "HAVE") => {
     return data?.filter((post) => post.purpouse === purpose) || [];
   };
 
+
   return (
     <View style={styles.container}>
-      <List.Section>
-        <List.Accordion
-          title="Mis Publicaciones"
-          style={{
-            borderRadius: 8,
-            padding: 8,
-            marginBottom: 16,
-            backgroundColor: colors.gray[100],
-          }}
-          left={(props) => {
-            return <List.Icon {...props} icon="post" />;
-          }}
-        >
-          {postsByClerkId?.map((post) => (
-            <MaterialCard key={post.id} post={post} />
-          ))}
-        </List.Accordion>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <List.Section>
+          <List.Accordion
+            title="Mis Publicaciones"
+            style={{
+              borderRadius: 8,
+              padding: 8,
+              marginBottom: 16,
+              backgroundColor: colors.gray[100],
+            }}
+            left={(props) => {
+              return <List.Icon {...props} icon="post" />;
+            }}
+          >
+            {postsByClerkId?.map((post) => (
+              <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+            ))}
+          </List.Accordion>
 
-        <List.Accordion
-          title="Aceptadas - En Progreso"
-          left={(props) => {
-            return <List.Icon {...props} icon="progress-clock" />;
-          }}
-          style={{
-            borderRadius: 8,
-            padding: 8,
-            marginBottom: 16,
-            backgroundColor: colors.purple[100],
-          }}
-        >
-          {postsByClerkId
-            ?.filter((post) => post.isReserved)
-            .map((post) => <MaterialCard key={post.id} post={post} />)}
-        </List.Accordion>
+          <List.Accordion
+            title="Aceptadas - En Progreso"
+            left={(props) => {
+              return <List.Icon {...props} icon="progress-clock" />;
+            }}
+            style={{
+              borderRadius: 8,
+              padding: 8,
+              marginBottom: 16,
+              backgroundColor: colors.purple[100],
+            }}
+          >
+            {postsByClerkId
+              ?.filter((post) => post.isReserved)
+              .map((post) => (
+                <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+              ))}
+          </List.Accordion>
 
-        <List.Accordion
-          title="Materiales publicados"
-          left={(props) => {
-            return <List.Icon {...props} icon="recycle" />;
-          }}
-          style={{
-            borderRadius: 8,
-            padding: 8,
-            marginBottom: 16,
-            backgroundColor: colors.green[100],
-          }}
-        >
-          {filterPosts("HAVE").map((post) => (
-            <MaterialCard key={post.id} post={post} />
-          ))}
-        </List.Accordion>
-      </List.Section>
+          <List.Accordion
+            title="Materiales publicados"
+            left={(props) => {
+              return <List.Icon {...props} icon="recycle" />;
+            }}
+            style={{
+              borderRadius: 8,
+              padding: 8,
+              marginBottom: 16,
+              backgroundColor: colors.green[100],
+            }}
+          >
+            {filterPosts("HAVE").map((post) => (
+              <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+            ))}
+          </List.Accordion>
+        </List.Section>
+      </ScrollView>
 
       <FAB
         icon="plus"
@@ -136,6 +166,9 @@ const styles = StyleSheet.create({
   cardDetails: {
     marginLeft: 12,
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 80,
   },
 });
 

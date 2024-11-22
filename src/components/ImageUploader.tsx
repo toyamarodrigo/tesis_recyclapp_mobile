@@ -76,6 +76,11 @@ export default function ImageUploader({
       formData.append("public_id", publicid);
       formData.append("folder", subfolder);
 
+      console.log("fileInfo", fileInfo);
+      console.log("fileExtension", fileExtension);
+      console.log("fileWithExtension", fileWithExtension);
+
+
       formData.append("file", {
         uri: fileUri,
         type: "image/jpg",

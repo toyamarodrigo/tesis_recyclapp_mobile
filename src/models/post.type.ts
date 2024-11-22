@@ -8,7 +8,7 @@ export const PostSchema = z.object({
   quantity: z.number(),
   description: z.string(),
   purpouse: z.string(),
-  pointsAwared: z.number(),
+  pointsAwarded: z.number(),
   userId: z.string(),
   materialProductId: z.string(),
   isActive: z.boolean(),

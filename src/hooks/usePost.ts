@@ -1,7 +1,7 @@
 import { postKeys } from "@api/query/post.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@api/api.post";
-import { PostCreate } from "@models/post.type";
+import { Post, PostCreate } from "@models/post.type";
 
 const usePostList = () => {
   return useQuery({ ...postKeys.post.list() });
@@ -14,10 +14,23 @@ const usePostListByClerkId = ({ userId }: { userId: string }) => {
   });
 };
 
+const usePostById = ({ id }: { id: string }) => {
+  return useQuery({
+    ...postKeys.post.detail(id),
+    enabled: !!id,
+  });
+};
+
 const useCreatePost = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["createPost"],
     mutationFn: (post: PostCreate) => postApi.createPost(post),
+    onSuccess: (post: Post) => {
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.listByClerkId(post.userId).queryKey,
+      });
+    },
   });
 };
 
@@ -53,6 +66,7 @@ const useDeletePost = (id: string) => {
 export {
   usePostList,
   usePostListByClerkId,
+  usePostById,
   useCreatePost,
   useUpdatePost,
   useDeletePost,

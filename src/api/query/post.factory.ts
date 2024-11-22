@@ -1,6 +1,5 @@
 import { createQueryKeyStore } from "@lukemorales/query-key-factory";
 import { postApi } from "@api/api.post";
-import { PostCreate } from "@models/post.type";
 
 export const postKeys = createQueryKeyStore({
   post: {

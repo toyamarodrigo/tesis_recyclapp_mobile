@@ -17,6 +17,12 @@ export default function FeedLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[postId]"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

@@ -1,5 +1,6 @@
 import { CLOUDINARY } from "@constants/image.constant";
 import axios from "axios";
+import { useState } from "react";
 
 interface CloudinaryUploadOptions {
   publicId: string;
@@ -9,12 +10,14 @@ interface CloudinaryUploadOptions {
 }
 
 export const useCloudinary = () => {
+  const [isUploading, setIsUploading] = useState(false);
   const uploadImage = async ({
     publicId,
-    folder, 
+    folder,
     file,
     fileUri,
   }: CloudinaryUploadOptions) => {
+    setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append("upload_preset", CLOUDINARY.uploadPreset);
@@ -34,8 +37,10 @@ export const useCloudinary = () => {
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error);
       throw new Error("Failed to upload image to Cloudinary");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  return { uploadImage };
+  return { uploadImage, isUploading };
 };

@@ -24,7 +24,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCloudinary } from "@hooks/useImage";
 
 const postSchema = z.object({
-  description: z.string().min(1, { message: "Descripción es requerida" }),
+  description: z
+    .string()
+    .min(1, { message: "Descripción es requerida" })
+    .max(100, { message: "Descripción máxima 100 caracteres" }),
   quantity: z.number().min(1, { message: "Cantidad es requerida" }),
   pointsAwarded: z.number().min(1, { message: "Puntos es requerido" }),
   purpouse: z
@@ -40,7 +43,7 @@ export default function NewPost() {
   const { userId, isLoaded, isSignedIn } = useAuth();
   const [image, setImage] = useState<string | null>(null);
   if (!isLoaded || !isSignedIn) return <Redirect href="/sign-in" />;
-  const { uploadImage } = useCloudinary();
+  const { uploadImage, isUploading } = useCloudinary();
 
   const {
     mutateAsync: createPost,
@@ -87,8 +90,6 @@ export default function NewPost() {
       pointsAwarded: values.purpouse === "WANT" ? 100 : 200,
     };
 
-    console.log("body", body);
-
     const res = await createPost(body);
 
     if (!image) {
@@ -107,6 +108,8 @@ export default function NewPost() {
       folder: `${IMAGE.POST_UPLOAD}`,
       file: fileWithExtension,
     });
+
+    Alert.alert("¡Éxito!", `Se subió la imagen`);
   };
 
   return (
@@ -115,119 +118,126 @@ export default function NewPost() {
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Text>New Post</Text>
+        <Text variant="titleLarge">Nueva publicación</Text>
       </View>
 
-      <View style={{ padding: 16 }}>
-        <Controller
-          control={control}
-          name="materialProductId"
-          render={({ field: { onChange, value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={onChange}
-              buttons={
-                materials?.map((material) => ({
-                  value: material.id,
-                  label: material.name,
-                })) ?? []
-              }
-              style={{ marginBottom: 16 }}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <TextInput
-              label="Description"
-              value={value}
-              onChangeText={onChange}
-              multiline
-              numberOfLines={4}
-              error={!!error}
-              style={{ marginBottom: 16 }}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="quantity"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <TextInput
-              label="Quantity"
-              value={value.toString()}
-              onChangeText={(text) => onChange(parseInt(text) || 0)}
-              keyboardType="numeric"
-              error={!!error}
-              style={{ marginBottom: 16 }}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="purpouse"
-          render={({ field: { onChange, value } }) => (
-            <View style={{ marginBottom: 16 }}>
-              <Text variant="titleMedium" style={{ marginBottom: 8 }}>
-                ¿Lo necesita o lo ofrece?
-              </Text>
-              <RadioButton.Group
-                onValueChange={(newValue) => {
-                  onChange(newValue);
-                  setValue("pointsAwarded", newValue === "WANT" ? 100 : 200);
-                }}
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={{ padding: 16 }}>
+          <Controller
+            control={control}
+            name="materialProductId"
+            render={({ field: { onChange, value } }) => (
+              <SegmentedButtons
                 value={value}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <RadioButton.Item label="Necesito" value="WANT" />
-                  <RadioButton.Item label="Ofrezco" value="HAVE" />
-                </View>
-              </RadioButton.Group>
-            </View>
-          )}
-        />
+                onValueChange={onChange}
+                buttons={
+                  materials?.map((material) => ({
+                    value: material.id,
+                    label: material.name,
+                  })) ?? []
+                }
+                style={{ marginBottom: 16 }}
+              />
+            )}
+          />
 
-        <View style={{ marginBottom: 16 }}>
-          <Text variant="titleMedium" style={{ marginBottom: 8 }}>
-            Imagen
-          </Text>
-          <View style={{ alignItems: "center" }}>
-            {image ? (
-              <View style={{ marginBottom: 8 }}>
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 8,
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <TextInput
+                label="Description"
+                value={value}
+                onChangeText={onChange}
+                multiline
+                numberOfLines={4}
+                error={!!error}
+                style={{ marginBottom: 16 }}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="quantity"
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <TextInput
+                label="Quantity"
+                value={value.toString()}
+                onChangeText={(text) => onChange(parseInt(text) || 0)}
+                keyboardType="numeric"
+                error={!!error}
+                style={{ marginBottom: 16 }}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="purpouse"
+            render={({ field: { onChange, value } }) => (
+              <View style={{ marginBottom: 16 }}>
+                <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+                  ¿Lo necesita o lo ofrece?
+                </Text>
+                <RadioButton.Group
+                  onValueChange={(newValue) => {
+                    onChange(newValue);
+                    setValue("pointsAwarded", newValue === "WANT" ? 100 : 200);
                   }}
-                />
+                  value={value}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <RadioButton.Item label="Necesito" value="WANT" />
+                    <RadioButton.Item label="Ofrezco" value="HAVE" />
+                  </View>
+                </RadioButton.Group>
               </View>
-            ) : null}
-            <Button
-              mode="outlined"
-              onPress={pickImage}
-              icon="camera"
-              style={{ marginTop: 8 }}
-            >
-              {image ? "Cambiar imagen" : "Agregar imagen"}
-            </Button>
+            )}
+          />
+
+          <View style={{ marginBottom: 16 }}>
+            <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+              Imagen
+            </Text>
+            <View style={{ alignItems: "center" }}>
+              {image ? (
+                <View style={{ marginBottom: 8 }}>
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      width: 200,
+                      height: 200,
+                      borderRadius: 8,
+                    }}
+                  />
+                </View>
+              ) : null}
+              <Button
+                mode="outlined"
+                onPress={pickImage}
+                icon="camera"
+                style={{ marginTop: 8 }}
+              >
+                {image ? "Cambiar imagen" : "Agregar imagen"}
+              </Button>
+            </View>
           </View>
+
+          {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
         </View>
 
-        <IconButton
-          icon="check"
-          size={24}
-          onPress={handleSubmit(onSubmit)}
-          loading={isPending}
-        />
-
-        {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
+        <View style={{ padding: 16, backgroundColor: "white" }}>
+          <Button
+            icon="check"
+            mode="contained"
+            onPress={handleSubmit(onSubmit)}
+            loading={isPending || isUploading}
+            disabled={isPending || isUploading}
+          >
+            Publicar
+          </Button>
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -1,19 +1,18 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { router, Link, Redirect } from "expo-router";
+import { router, Link } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
 import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
 import type { Ad, News } from "@models/advertisement.type";
-import { SignedIn, SignedOut, useAuth, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
-import { useEffect } from "react";
-import { useUserStore } from "@stores/useUserStore";
 import { useAdvertisementList } from "@hooks/useAdvertisement";
-import { useUserCustomerByClerk } from "@hooks/useUser";
+import { IMAGE } from "@constants/image.constant";
+import { NoDataCard } from "@components/NoDataCard";
 
 // TODO: make custom hook to fetch news
 const fetchNews = async () => {
@@ -25,8 +24,6 @@ const Home = () => {
   const { user: userClerk, isLoaded } = useUser();
   if (!userClerk || !isLoaded) return null;
   const { data: ads, isPending: adsPending } = useAdvertisementList();
-
-  // TODO: fetch news from API
   const { data: news, isPending: newsPending } = useQuery({
     queryKey: ["news"],
     queryFn: fetchNews,
@@ -50,24 +47,36 @@ const Home = () => {
     <ScrollView style={{ backgroundColor: theme.colors.background }}>
       <SignedIn>
         <View style={styles.container}>
-          <Carousel
-            title="Consejos Ecológicos"
-            data={ads}
-            renderItem={(item) => (
-              <AdCard item={item} onPress={handleAdPress} />
-            )}
-            isPending={adsPending}
-            height={250}
-          />
-          <Carousel
-            title="Últimas Noticias"
-            data={news}
-            renderItem={(item) => (
-              <NewsCard item={item} onPress={handleNewsPress} />
-            )}
-            isPending={newsPending}
-            height={250}
-          />
+          {ads && ads.length ? (
+            <Carousel
+              title="Nuestras tiendas"
+              data={ads}
+              renderItem={(item) => (
+                <AdCard item={item} onPress={handleAdPress} />
+              )}
+              isPending={adsPending}
+              height={250}
+            />
+          ) : (
+            <View style={styles.noDataContainer}>
+              <NoDataCard image={IMAGE.AD_GENERIC} />
+            </View>
+          )}
+          {!newsPending && news && news.length > 0 ? (
+            <Carousel
+              title="Últimas Noticias"
+              data={news}
+              renderItem={(item) => (
+                <NewsCard item={item} onPress={handleNewsPress} />
+              )}
+              isPending={newsPending}
+              height={250}
+            />
+          ) : (
+            <View style={styles.noDataContainer}>
+              <NoDataCard image={IMAGE.NEWS_GENERIC} />
+            </View>
+          )}
         </View>
       </SignedIn>
       <SignedOut>
@@ -138,6 +147,11 @@ const styles = StyleSheet.create({
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",
     padding: 10,
+  },
+  noDataContainer: {
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 50,
   },
 });
 

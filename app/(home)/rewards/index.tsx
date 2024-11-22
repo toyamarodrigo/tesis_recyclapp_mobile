@@ -7,7 +7,7 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, Title, Divider } from "react-native-paper";
+import { Text, Title, Divider, ActivityIndicator } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
 import { useUserCustomerByClerk } from "@hooks/useUser";
 import { useUser } from "@clerk/clerk-expo";
@@ -18,10 +18,15 @@ export default function Rewards() {
   if (!isSignedIn || !user?.id) return null;
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
-  const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
+  const { data: userCustomer, isLoading } = useUserCustomerByClerk({
+    userId: user.id,
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
+      {isLoading && (
+        <ActivityIndicator color={theme.colors.primary} size={"large"} />
+      )}
       <FlatList
         data={userCustomer?.pointsHistory}
         renderItem={({ item }) => (

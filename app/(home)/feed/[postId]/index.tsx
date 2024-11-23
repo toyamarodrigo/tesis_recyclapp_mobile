@@ -29,7 +29,7 @@ export default function DetailPost() {
   const imageUrlPost = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg?timestamp=${Date.now()}`;
   const imageUrlPostMaterial = `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${post?.materialProductId}.png`;
   const imageUrlPostUser = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
-  const [imagePost, setImagePost] = useState<string>(imageUrlPostMaterial);
+  const [imagePost, setImagePost] = useState<string>("");
   const [imagePostUser, setImagePostUser] = useState<string>(imageUrlPostUser);
   const router = useRouter();
 
@@ -129,15 +129,19 @@ export default function DetailPost() {
                 {post?.description}
               </Text>
             </Card.Content>
-            <Card.Cover
-              source={{ uri: imagePost }}
-              style={{
-                margin: 10,
-                width: 350,
-                height: 250,
-                borderRadius: 8,
-              }}
-            />
+            {imagePost ? (
+              <Card.Cover
+                source={{ uri: imagePost }}
+                style={{
+                  margin: 10,
+                  width: 350,
+                  height: 250,
+                  borderRadius: 8,
+                }}
+              />
+            ) : (
+              <ActivityIndicator size="large" />
+            )}
             <Card.Actions style={{ marginBottom: 10 }}>
               {post?.userId == userId && (
                 <Button

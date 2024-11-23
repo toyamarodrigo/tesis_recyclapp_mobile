@@ -1,14 +1,18 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { IMAGE } from "@constants/image.constant";
 import { usePostById } from "@hooks/usePost";
 import { Comment } from "@models/comment.type";
 import { transformDate } from "@utils/helpers";
 import axios from "axios";
+import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Avatar, Card, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 
 export default function CardComment({ comment }: { comment: Comment }) {
+  const { userId, isSignedIn } = useAuth();
+  if (!userId || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   const { data: post } = usePostById({ id: comment.postId });
   const imageComment = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
   const timestamp = `?timestamp=${Date.now()}`;
@@ -54,20 +58,24 @@ export default function CardComment({ comment }: { comment: Comment }) {
               </Text>
             </View>
           </View>
-          <IconButton
-            icon="chat"
-            size={30}
-            onPress={() => console.log("Botón presionado")}
-            iconColor={
-              post?.isArchived
-                ? theme.colors.backdrop
-                : theme.colors.secondaryContainer
-            }
-            containerColor={
-              post?.isArchived ? theme.colors.backdrop : theme.colors.secondary
-            }
-            disabled={post?.isArchived}
-          />
+          {(userId == post?.userId || userId == comment.userId) && (
+            <IconButton
+              icon="chat"
+              size={30}
+              onPress={() => console.log("Botón presionado")}
+              iconColor={
+                post?.isArchived
+                  ? theme.colors.backdrop
+                  : theme.colors.secondaryContainer
+              }
+              containerColor={
+                post?.isArchived
+                  ? theme.colors.backdrop
+                  : theme.colors.secondary
+              }
+              disabled={post?.isArchived}
+            />
+          )}
         </View>
         <Card.Content>
           <Text style={styles.message}>{comment.message}</Text>

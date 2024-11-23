@@ -233,7 +233,9 @@ export default function DetailPost() {
           </Card>
         </View>
         <View style={{ margin: 20 }}>
-          <Text style={styles.grayText}>Comentarios</Text>
+          <Text style={styles.grayText}>
+            Comentarios ({comments?.length ?? 0})
+          </Text>
           {pendingCreateComment && <ActivityIndicator size="small" />}
           {comments?.length ? (
             comments.map((comment) => (

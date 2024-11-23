@@ -1,13 +1,15 @@
 import { IMAGE } from "@constants/image.constant";
+import { usePostById } from "@hooks/usePost";
 import { Comment } from "@models/comment.type";
 import { transformDate } from "@utils/helpers";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Avatar, Card } from "react-native-paper";
+import { Avatar, Card, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 
 export default function CardComment({ comment }: { comment: Comment }) {
+  const { data: post } = usePostById({ id: comment.postId });
   const imageComment = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
   const timestamp = `?timestamp=${Date.now()}`;
   const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${comment.userId}.jpg${timestamp}`;
@@ -28,25 +30,44 @@ export default function CardComment({ comment }: { comment: Comment }) {
 
   return (
     <View style={{ width: "100%" }}>
-      <Card style={{ alignItems: "center", marginVertical: 20 }}>
+      <Card style={{ marginVertical: 20 }}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "space-between",
             padding: 10,
           }}
         >
-          <Avatar.Image
-            size={64}
-            style={{ marginRight: 10 }}
-            source={{
-              uri: imageCommentUser,
-            }}
-          />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.username}>@{comment.username}</Text>
-            <Text style={styles.date}>{transformDate(comment.timestamp)}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Avatar.Image
+              size={64}
+              style={{ marginRight: 10 }}
+              source={{
+                uri: imageCommentUser,
+              }}
+            />
+            <View>
+              <Text style={styles.username}>@{comment.username}</Text>
+              <Text style={styles.date}>
+                {transformDate(comment.timestamp)}
+              </Text>
+            </View>
           </View>
+          <IconButton
+            icon="chat"
+            size={30}
+            onPress={() => console.log("Botón presionado")}
+            iconColor={
+              post?.isArchived
+                ? theme.colors.backdrop
+                : theme.colors.secondaryContainer
+            }
+            containerColor={
+              post?.isArchived ? theme.colors.backdrop : theme.colors.secondary
+            }
+            disabled={post?.isArchived}
+          />
         </View>
         <Card.Content>
           <Text style={styles.message}>{comment.message}</Text>

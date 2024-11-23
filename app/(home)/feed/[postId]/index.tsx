@@ -171,7 +171,8 @@ export default function DetailPost() {
           </Card>
         </View>
         <View style={{ margin: 20 }}>
-          <Text>Comentarios</Text>
+          <Text>Componente de comentarios existentes</Text>
+          <Text>dejar comentario</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

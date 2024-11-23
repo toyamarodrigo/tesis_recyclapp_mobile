@@ -4,6 +4,7 @@ export * from "./api.benefit";
 export * from "./api.benefitAssignment";
 export * from "./api.chat";
 export * from "./api.chatMessage";
+export * from "./api.comment";
 export * from "./api.config";
 export * from "./api.greenPoint";
 export * from "./api.imagen";

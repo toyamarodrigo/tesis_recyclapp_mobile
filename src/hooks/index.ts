@@ -4,6 +4,7 @@ export * from "./useBenefit";
 export * from "./useBenefitAssignment";
 export * from "./useChat";
 export * from "./useChatMessage";
+export * from "./useComment";
 export * from "./useGreenPoint";
 export * from "./useImage";
 export * from "./useMaterialComponent";

@@ -26,13 +26,17 @@ const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
     return materials?.find((material) => material.id === id)?.name || "";
   };
 
-
   useEffect(() => {
     (async () => {
-      const test = await axios.get(imageUrl);
-      if (test.status === 200) setImage(imageUrl);
+      try {
+        const test = await axios.get(imageUrl);
+        if (test.status === 200) setImage(imageUrl);
+        return;
+      } catch (e) {
+        return;
+      }
     })();
-  }, [imageUrl]);
+  }, []);
 
   return (
     <Card style={styles.card} onPress={() => router.push(`/feed/${post.id}`)}>
@@ -62,19 +66,20 @@ const Feed = () => {
   if (!isSignedIn) return null;
   const { data: postsByClerkId } = usePostListByClerkId({ userId });
   const { data: materials } = useMaterialProductList();
-  const { data } = usePostList();
+  const { data: postsList } = usePostList();
 
-  const filterPosts = (purpose: "WANT" | "HAVE") => {
-    return data?.filter((post) => post.purpouse === purpose) || [];
-  };
+  // const filterPosts = (purpose: "WANT" | "HAVE") => {
+  //   return postsList?.filter((post) => post.purpouse === purpose) || [];
+  // };
 
+  //TODO Mis participaciones interaccion del usuario, postcommitment o chat: postclerk o posts
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <List.Section>
           <List.Accordion
-            title="Mis Publicaciones"
+            title={`Mis Publicaciones (${postsByClerkId && postsByClerkId.length})`}
             style={{
               borderRadius: 8,
               padding: 8,
@@ -86,12 +91,17 @@ const Feed = () => {
             }}
           >
             {postsByClerkId?.map((post) => (
-              <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+              <MaterialCard
+                key={post.id}
+                post={post}
+                id={post.id}
+                materials={materials}
+              />
             ))}
           </List.Accordion>
 
           <List.Accordion
-            title="Aceptadas - En Progreso"
+            title={`Mis participaciones (${postsByClerkId && postsByClerkId.length})`}
             left={(props) => {
               return <List.Icon {...props} icon="progress-clock" />;
             }}
@@ -105,12 +115,17 @@ const Feed = () => {
             {postsByClerkId
               ?.filter((post) => post.isReserved)
               .map((post) => (
-                <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+                <MaterialCard
+                  key={post.id}
+                  post={post}
+                  id={post.id}
+                  materials={materials}
+                />
               ))}
           </List.Accordion>
 
           <List.Accordion
-            title="Materiales publicados"
+            title={`Todas las publicaciones (${postsList && postsList.length})`}
             left={(props) => {
               return <List.Icon {...props} icon="recycle" />;
             }}
@@ -121,8 +136,13 @@ const Feed = () => {
               backgroundColor: colors.green[100],
             }}
           >
-            {filterPosts("HAVE").map((post) => (
-              <MaterialCard key={post.id} post={post} id={post.id} materials={materials} />
+            {postsList?.map((post) => (
+              <MaterialCard
+                key={post.id}
+                post={post}
+                id={post.id}
+                materials={materials}
+              />
             ))}
           </List.Accordion>
         </List.Section>

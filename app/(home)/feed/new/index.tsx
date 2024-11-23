@@ -18,7 +18,7 @@ import { getFileExtension } from "@utils/helpers";
 
 import { useCreatePost } from "@hooks/usePost";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { PostCreate } from "@models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCloudinary } from "@hooks/useImage";
@@ -37,12 +37,14 @@ const postSchema = z.object({
     .default("WANT"),
   materialProductId: z.string(),
   userId: z.string(),
+  username: z.string(),
 });
 
 export default function NewPost() {
   const { userId, isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const [image, setImage] = useState<string | null>(null);
-  if (!isLoaded || !isSignedIn) return <Redirect href="/sign-in" />;
+  if (!isLoaded || !isSignedIn || !user) return <Redirect href="/sign-in" />;
   const { uploadImage, isUploading } = useCloudinary();
 
   const {
@@ -61,9 +63,10 @@ export default function NewPost() {
       purpouse: "WANT",
       pointsAwarded: 100,
       userId,
+      username: user.username ?? "",
     },
   });
-
+  //TODO agregar mensajes de error
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -140,7 +143,6 @@ export default function NewPost() {
               />
             )}
           />
-
           <Controller
             control={control}
             name="description"
@@ -171,7 +173,6 @@ export default function NewPost() {
               />
             )}
           />
-
           <Controller
             control={control}
             name="purpouse"
@@ -195,7 +196,6 @@ export default function NewPost() {
               </View>
             )}
           />
-
           <View style={{ marginBottom: 16 }}>
             <Text variant="titleMedium" style={{ marginBottom: 8 }}>
               Imagen
@@ -223,7 +223,6 @@ export default function NewPost() {
               </Button>
             </View>
           </View>
-
           {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
         </View>
 

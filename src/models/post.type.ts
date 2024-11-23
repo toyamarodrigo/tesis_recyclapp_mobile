@@ -24,6 +24,7 @@ const PostCreateSchema = z.object({
   pointsAwarded: z.number(),
   userId: z.string(),
   materialProductId: z.string(),
+  username: z.string(),
 });
 
 // const PostPutSchema = z.object({

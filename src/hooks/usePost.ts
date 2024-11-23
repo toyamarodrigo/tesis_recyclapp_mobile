@@ -1,7 +1,7 @@
 import { postKeys } from "@api/query/post.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@api/api.post";
-import { Post, PostCreate } from "@models/post.type";
+import { Post, PostCreate, PostUpdate } from "@models/post.type";
 
 const usePostList = () => {
   return useQuery({ ...postKeys.post.list() });
@@ -30,23 +30,27 @@ const useCreatePost = () => {
       queryClient.invalidateQueries({
         queryKey: postKeys.post.listByClerkId(post.userId).queryKey,
       });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.list().queryKey,
+      });
     },
   });
 };
 
-// TODO: type
-const useUpdatePost = (post) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.updatePost,
-    mutationKey: [post],
+const useUpdatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["updatePost"],
+    mutationFn: (post: PostUpdate) => postApi.updatePost(post),
+    onSuccess: (post: Post) => {
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.listByClerkId(post.userId).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.list().queryKey,
+      });
+    },
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
 const useDeletePost = (id: string) => {

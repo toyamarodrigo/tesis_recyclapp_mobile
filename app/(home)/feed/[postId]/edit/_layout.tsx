@@ -9,12 +9,6 @@ export default function DetailPostLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="edit"
-        options={{
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

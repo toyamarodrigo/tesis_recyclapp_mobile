@@ -1,4 +1,4 @@
-import { Post, PostCreate } from "@models/post.type";
+import { Post, PostCreate, PostUpdate } from "@models/post.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
@@ -40,17 +40,15 @@ export const postApi = {
     }
   },
   // TODO: type
-  updatePost: async (post) => {
+  updatePost: async (post: PostUpdate) => {
     try {
       const result = await axios.put<Post>(
         `${backendApiConfig.baseURL}/post/${post.id}`,
-        {
-          post,
-        }
+
+        post
       );
 
-      console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         throw new Error(e.message);

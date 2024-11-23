@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import { MaterialProduct } from "@models/materialProduct.type";
+import { theme } from "src/theme";
 
 interface MaterialCardProps {
   post: Post;
@@ -51,8 +52,18 @@ const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
           <Text variant="titleMedium">
             Material: {getMaterialName(post.materialProductId)}
           </Text>
+          <Text
+            variant="bodyMedium"
+            style={{
+              color: post.isActive
+                ? theme.colors.secondary
+                : theme.colors.error,
+            }}
+          >
+            {post.isActive ? "Activa" : "Finalizada"}
+          </Text>
           <Text variant="bodyMedium">Cantidad: {post.quantity}</Text>
-          <Text variant="bodyMedium">Puntos: {post.pointsAwarded}</Text>
+          <Text variant="bodyMedium">Puntos: +{post.pointsAwarded}</Text>
           <Text variant="bodyMedium">{post.description}</Text>
         </View>
       </Card.Content>
@@ -68,18 +79,12 @@ const Feed = () => {
   const { data: materials } = useMaterialProductList();
   const { data: postsList } = usePostList();
 
-  // const filterPosts = (purpose: "WANT" | "HAVE") => {
-  //   return postsList?.filter((post) => post.purpouse === purpose) || [];
-  // };
-
-  //TODO Mis participaciones interaccion del usuario, postcommitment o chat: postclerk o posts
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <List.Section>
           <List.Accordion
-            title={`Mis Publicaciones (${postsByClerkId && postsByClerkId.length})`}
+            title="Mis publicaciones activas"
             style={{
               borderRadius: 8,
               padding: 8,
@@ -90,30 +95,8 @@ const Feed = () => {
               return <List.Icon {...props} icon="post" />;
             }}
           >
-            {postsByClerkId?.map((post) => (
-              <MaterialCard
-                key={post.id}
-                post={post}
-                id={post.id}
-                materials={materials}
-              />
-            ))}
-          </List.Accordion>
-
-          <List.Accordion
-            title={`Mis participaciones (${postsByClerkId && postsByClerkId.length})`}
-            left={(props) => {
-              return <List.Icon {...props} icon="progress-clock" />;
-            }}
-            style={{
-              borderRadius: 8,
-              padding: 8,
-              marginBottom: 16,
-              backgroundColor: colors.purple[100],
-            }}
-          >
             {postsByClerkId
-              ?.filter((post) => post.isReserved)
+              ?.filter((post) => post.isActive)
               .map((post) => (
                 <MaterialCard
                   key={post.id}
@@ -125,7 +108,31 @@ const Feed = () => {
           </List.Accordion>
 
           <List.Accordion
-            title={`Todas las publicaciones (${postsList && postsList.length})`}
+            title="Todas las publicaciones activas"
+            left={(props) => {
+              return <List.Icon {...props} icon="progress-clock" />;
+            }}
+            style={{
+              borderRadius: 8,
+              padding: 8,
+              marginBottom: 16,
+              backgroundColor: colors.purple[100],
+            }}
+          >
+            {postsList
+              ?.filter((post) => post.isActive)
+              .map((post) => (
+                <MaterialCard
+                  key={post.id}
+                  post={post}
+                  id={post.id}
+                  materials={materials}
+                />
+              ))}
+          </List.Accordion>
+
+          <List.Accordion
+            title="Todas las publicaciones"
             left={(props) => {
               return <List.Icon {...props} icon="recycle" />;
             }}

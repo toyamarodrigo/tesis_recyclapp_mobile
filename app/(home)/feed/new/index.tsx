@@ -27,8 +27,11 @@ const postSchema = z.object({
   description: z
     .string()
     .min(1, { message: "Descripción es requerida" })
-    .max(100, { message: "Descripción máxima 100 caracteres" }),
-  quantity: z.number().min(1, { message: "Cantidad es requerida" }),
+    .max(250, { message: "Descripción máxima 250 caracteres" }),
+  quantity: z
+    .number()
+    .min(1, { message: "Cantidad es requerida" })
+    .max(100, { message: "Cantidad máxima: 100 unidades" }),
   pointsAwarded: z.number().min(1, { message: "Puntos es requerido" }),
   purpouse: z
     .enum(["WANT", "HAVE"], {

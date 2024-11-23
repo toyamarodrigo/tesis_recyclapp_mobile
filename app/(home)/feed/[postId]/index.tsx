@@ -98,15 +98,15 @@ export default function DetailPost() {
                   style={{
                     marginTop: 5,
                     fontSize: 16,
-                    color: post?.isReserved
-                      ? theme.colors.error
-                      : theme.colors.secondary,
+                    color: post?.isActive
+                      ? theme.colors.secondary
+                      : theme.colors.error,
                   }}
                 >
                   {post?.isActive
                     ? "Publicación activa"
                     : "Publicación finalizada"}{" "}
-                  {post?.isReserved ? "y reservada" : "y disponible"}
+                  {post?.isReserved ? "y reservada" : "y no reservada"}
                 </Text>
               </View>
             </View>
@@ -143,7 +143,7 @@ export default function DetailPost() {
               <ActivityIndicator size="large" />
             )}
             <Card.Actions style={{ marginBottom: 10 }}>
-              {post?.userId == userId && (
+              {post?.userId == userId && !post.isArchived && (
                 <Button
                   mode="contained"
                   onPress={() => router.push(`/feed/${postId}/edit`)}
@@ -155,16 +155,18 @@ export default function DetailPost() {
                   Editar publicación
                 </Button>
               )}
-              <Button
-                mode="contained"
-                onPress={() => console.log("comentario")}
-                loading={isPending}
-                disabled={isPending}
-                buttonColor={theme.colors.tertiaryContainer}
-                textColor={theme.colors.onTertiaryContainer}
-              >
-                Dejar un comentario
-              </Button>
+              {!post?.isArchived && (
+                <Button
+                  mode="contained"
+                  onPress={() => console.log("comentario")}
+                  loading={isPending}
+                  disabled={isPending}
+                  buttonColor={theme.colors.tertiaryContainer}
+                  textColor={theme.colors.onTertiaryContainer}
+                >
+                  Dejar un comentario
+                </Button>
+              )}
             </Card.Actions>
           </Card>
         </View>

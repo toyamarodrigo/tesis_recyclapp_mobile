@@ -22,7 +22,6 @@ export const postApi = {
 
     return result.data;
   },
-  // TODO: type
   createPost: async (post: PostCreate) => {
     try {
       const result = await axios.post<Post>(
@@ -39,7 +38,6 @@ export const postApi = {
       throw new Error("Unknown error");
     }
   },
-  // TODO: type
   updatePost: async (post: PostUpdate) => {
     try {
       const result = await axios.put<Post>(

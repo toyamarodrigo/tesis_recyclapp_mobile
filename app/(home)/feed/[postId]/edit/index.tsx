@@ -214,8 +214,6 @@ export default function EditablePost() {
       });
 
       Alert.alert("¡Éxito!", `Se subió la imagen`);
-
-      //TODO PROBAR EL CAMBIO DE IMAGEN EN UPDATE
     }
   };
 

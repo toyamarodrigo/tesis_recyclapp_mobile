@@ -1,4 +1,4 @@
-import { Chat, ChatCreate, ChatPut, ChatUnique } from "@models/chat.type";
+import { Chat, ChatCreate, ChatUpdate, ChatUnique } from "@models/chat.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
@@ -40,8 +40,9 @@ export const chatApi = {
       throw new Error("Unknown error");
     }
   },
-  updateChat: async (chat: ChatPut) => {
+  updateChat: async (chat: ChatUpdate) => {
     try {
+      console.log(chat);
       const result = await axios.put<Chat>(
         `${backendApiConfig.baseURL}/chat/${chat.id}`,
         chat

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { Chat, ChatCreate, ChatUnique } from "@models/chat.type";
+import { Chat, ChatCreate, ChatUnique, ChatUpdate } from "@models/chat.type";
 import { chatApi } from "@api/api.chat";
 import { chatKeys } from "@api/query/chat.factory";
 
@@ -39,4 +39,22 @@ const useCreateChat = () => {
   });
 };
 
-export { useChatList, useChatListByUnique, useChatById, useCreateChat };
+const useUpdateChat = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (chat: ChatUpdate) => chatApi.updateChat(chat),
+    onSuccess: (chat: Chat) => {
+      queryClient.invalidateQueries({
+        queryKey: chatKeys.chat.detail(chat.id).queryKey,
+      });
+    },
+  });
+};
+
+export {
+  useChatList,
+  useChatListByUnique,
+  useChatById,
+  useCreateChat,
+  useUpdateChat,
+};

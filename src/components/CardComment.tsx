@@ -93,7 +93,8 @@ export default function CardComment({
             <Text style={styles.date}>{transformDate(comment.timestamp)}</Text>
           </View>
         </View>
-        {(userId == post.userId || userId == comment.userId) && (
+        {((userId === post.userId && userId !== comment.userId) ||
+          (userId === comment.userId && userId !== post.userId)) && (
           <IconButton
             icon="chat"
             size={30}

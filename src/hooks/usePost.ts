@@ -49,6 +49,9 @@ const useUpdatePost = () => {
       queryClient.invalidateQueries({
         queryKey: postKeys.post.list().queryKey,
       });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.detail(post.id).queryKey,
+      });
     },
   });
 };

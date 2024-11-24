@@ -24,7 +24,6 @@ export const commentApi = {
 
     return result.data;
   },
-  // TODO: type
   createComment: async (comment: CommentCreate) => {
     try {
       const result = await axios.post<Comment>(

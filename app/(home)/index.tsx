@@ -14,7 +14,6 @@ import { useAdvertisementList } from "@hooks/useAdvertisement";
 import { IMAGE } from "@constants/image.constant";
 import { NoDataCard } from "@components/NoDataCard";
 
-// TODO: make custom hook to fetch news
 const fetchNews = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return mockNews;

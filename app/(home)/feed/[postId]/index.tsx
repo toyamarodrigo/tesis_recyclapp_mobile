@@ -236,14 +236,15 @@ export default function DetailPost() {
           <Text style={styles.grayText}>
             Comentarios ({comments?.length ?? 0})
           </Text>
-          {pendingCreateComment && <ActivityIndicator size="small" />}
-          {comments?.length ? (
-            comments.map((comment) => (
-              <CardComment comment={comment} key={comment.id} />
-            ))
-          ) : (
-            <Text>Aún no hay comentarios.</Text>
-          )}
+          <View style={{ width: "100%" }}>
+            {comments?.length ? (
+              comments.map((comment) => (
+                <CardComment comment={comment} key={comment.id} />
+              ))
+            ) : (
+              <Text>Aún no hay comentarios.</Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -11,11 +11,15 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import { Avatar, Card, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 
-export default function CardComment({ comment }: { comment: Comment }) {
+export default function CardComment({
+  comment,
+}: {
+  comment: Comment;
+}): JSX.Element {
   const { userId, isSignedIn } = useAuth();
   if (!userId || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   const { data: post } = usePostById({ id: comment.postId });
-  if (!post) return router.back();
+  if (!post) return <Redirect href="/(home)/feed" />;
   const imageComment = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
   const timestamp = `?timestamp=${Date.now()}`;
   const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${comment.userId}.jpg${timestamp}`;
@@ -58,8 +62,6 @@ export default function CardComment({ comment }: { comment: Comment }) {
         postId: post.id,
         userCommentId: comment.userId,
         userPostId: post.userId,
-        userCommentUsername: comment.username,
-        userPostUsername: post.username,
       });
       Alert.alert(
         "Nuevo chat",
@@ -69,53 +71,49 @@ export default function CardComment({ comment }: { comment: Comment }) {
   };
 
   return (
-    <View style={{ width: "100%" }}>
-      <Card style={{ marginVertical: 20 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: 10,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <Avatar.Image
-              size={64}
-              style={{ marginRight: 10 }}
-              source={{
-                uri: imageCommentUser,
-              }}
-            />
-            <View>
-              <Text style={styles.username}>@{comment.username}</Text>
-              <Text style={styles.date}>
-                {transformDate(comment.timestamp)}
-              </Text>
-            </View>
+    <Card style={{ marginVertical: 20 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: 10,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+          <Avatar.Image
+            size={64}
+            style={{ marginRight: 10 }}
+            source={{
+              uri: imageCommentUser,
+            }}
+          />
+          <View>
+            <Text style={styles.username}>@{comment.username}</Text>
+            <Text style={styles.date}>{transformDate(comment.timestamp)}</Text>
           </View>
-          {(userId == post.userId || userId == comment.userId) && (
-            <IconButton
-              icon="chat"
-              size={30}
-              onPress={handleChat}
-              iconColor={
-                post.isArchived
-                  ? theme.colors.backdrop
-                  : theme.colors.secondaryContainer
-              }
-              containerColor={
-                post.isArchived ? theme.colors.backdrop : theme.colors.secondary
-              }
-              disabled={post.isArchived}
-            />
-          )}
         </View>
-        <Card.Content>
-          <Text style={styles.message}>{comment.message}</Text>
-        </Card.Content>
-      </Card>
-    </View>
+        {(userId == post.userId || userId == comment.userId) && (
+          <IconButton
+            icon="chat"
+            size={30}
+            onPress={handleChat}
+            iconColor={
+              post.isArchived
+                ? theme.colors.backdrop
+                : theme.colors.secondaryContainer
+            }
+            containerColor={
+              post.isArchived ? theme.colors.backdrop : theme.colors.secondary
+            }
+            disabled={post.isArchived}
+          />
+        )}
+      </View>
+      <Card.Content>
+        <Text style={styles.message}>{comment.message}</Text>
+      </Card.Content>
+    </Card>
   );
 }
 

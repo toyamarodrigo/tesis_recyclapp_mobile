@@ -6,6 +6,8 @@ export const ChatSchema = z.object({
   postId: z.string(),
   userPostId: z.string(),
   userCommentId: z.string(),
+  userPostUsername: z.string(),
+  userCommentUsername: z.string(),
   startDate: z.string(),
   endDate: z.string().optional(),
   isActive: z.boolean(),
@@ -17,6 +19,8 @@ const ChatPostSchema = z.object({
   postId: z.string(),
   userPostId: z.string(),
   userCommentId: z.string(),
+  userPostUsername: z.string(),
+  userCommentUsername: z.string(),
 });
 
 const ChatPutSchema = z.object({

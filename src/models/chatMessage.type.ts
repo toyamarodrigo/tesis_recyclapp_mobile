@@ -5,9 +5,7 @@ export const ChatMessageSchema = z.object({
   timestamp: z.string(),
   message: z.string(),
   senderId: z.string(),
-  senderUsername: z.string(),
   receiverId: z.string(),
-  receiverUsername: z.string(),
   chatId: z.string(),
   isArchived: z.boolean(),
 });
@@ -15,9 +13,7 @@ export const ChatMessageSchema = z.object({
 const ChatMessagePostSchema = z.object({
   message: z.string(),
   senderId: z.string(),
-  senderUsername: z.string(),
   receiverId: z.string(),
-  receiverUsername: z.string(),
   chatId: z.string(),
 });
 

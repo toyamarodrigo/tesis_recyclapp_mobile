@@ -58,6 +58,8 @@ export default function CardComment({ comment }: { comment: Comment }) {
         postId: post.id,
         userCommentId: comment.userId,
         userPostId: post.userId,
+        userCommentUsername: comment.username,
+        userPostUsername: post.username,
       });
       Alert.alert(
         "Nuevo chat",

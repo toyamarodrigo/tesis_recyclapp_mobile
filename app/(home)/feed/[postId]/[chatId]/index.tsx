@@ -21,7 +21,9 @@ export default function Chatconvo() {
         <Link href={`/feed/${postId}`} asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>Chat</Title>
+        <Title style={{ color: theme.colors.primary }}>
+          Chat @{chat?.userPostUsername} @{chat?.userCommentUsername}
+        </Title>
       </View>
 
       <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>

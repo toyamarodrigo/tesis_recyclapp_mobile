@@ -7,7 +7,7 @@ import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
 export const chatMessageApi = {
-  getChatMessage: async () => {
+  getChatMessages: async () => {
     const result = await axios.get<ChatMessage[]>(
       `${backendApiConfig.baseURL}/chatMessages`
     );
@@ -25,9 +25,8 @@ export const chatMessageApi = {
     try {
       const result = await axios.post<ChatMessage>(
         `${backendApiConfig.baseURL}/chatMessage`,
-        {
-          chatMessage,
-        }
+
+        chatMessage
       );
 
       console.log(result);
@@ -44,9 +43,8 @@ export const chatMessageApi = {
     try {
       const result = await axios.put<ChatMessage>(
         `${backendApiConfig.baseURL}/chatMessage/${chatMessage.id}`,
-        {
-          chatMessage,
-        }
+
+        chatMessage
       );
 
       console.log(result);

@@ -1,12 +1,13 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { IMAGE } from "@constants/image.constant";
+import { useChatListByUnique, useCreateChat } from "@hooks/useChat";
 import { usePostById } from "@hooks/usePost";
 import { Comment } from "@models/comment.type";
 import { transformDate } from "@utils/helpers";
 import axios from "axios";
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { Avatar, Card, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 
@@ -14,11 +15,21 @@ export default function CardComment({ comment }: { comment: Comment }) {
   const { userId, isSignedIn } = useAuth();
   if (!userId || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   const { data: post } = usePostById({ id: comment.postId });
+  if (!post) return router.back();
   const imageComment = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
   const timestamp = `?timestamp=${Date.now()}`;
   const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${comment.userId}.jpg${timestamp}`;
   const [imageCommentUser, setImageCommentUser] =
     useState<string>(imageComment);
+  const { data: chatByUnique } = useChatListByUnique({
+    unique: {
+      postId: post.id,
+      userCommentId: comment.userId,
+      userPostId: post.userId,
+    },
+  });
+  const { mutateAsync: createChat } = useCreateChat();
+  const [redirectChat, setRedirectChat] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -31,6 +42,29 @@ export default function CardComment({ comment }: { comment: Comment }) {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (redirectChat && chatByUnique) {
+      router.push(`/feed/${comment.postId}/${chatByUnique.id}`);
+    }
+  }, [redirectChat, chatByUnique]);
+
+  const handleChat = async () => {
+    setRedirectChat(true);
+    if (chatByUnique) {
+      router.push(`/feed/${comment.postId}/${chatByUnique.id}`);
+    } else {
+      await createChat({
+        postId: post.id,
+        userCommentId: comment.userId,
+        userPostId: post.userId,
+      });
+      Alert.alert(
+        "Nuevo chat",
+        `Se ha iniciado un nuevo chat privado entre @${post.username} y @${comment.username}. Ten precaución al compartir información personal.`
+      );
+    }
+  };
 
   return (
     <View style={{ width: "100%" }}>
@@ -58,22 +92,20 @@ export default function CardComment({ comment }: { comment: Comment }) {
               </Text>
             </View>
           </View>
-          {(userId == post?.userId || userId == comment.userId) && (
+          {(userId == post.userId || userId == comment.userId) && (
             <IconButton
               icon="chat"
               size={30}
-              onPress={() => console.log("Botón presionado")}
+              onPress={handleChat}
               iconColor={
-                post?.isArchived
+                post.isArchived
                   ? theme.colors.backdrop
                   : theme.colors.secondaryContainer
               }
               containerColor={
-                post?.isArchived
-                  ? theme.colors.backdrop
-                  : theme.colors.secondary
+                post.isArchived ? theme.colors.backdrop : theme.colors.secondary
               }
-              disabled={post?.isArchived}
+              disabled={post.isArchived}
             />
           )}
         </View>

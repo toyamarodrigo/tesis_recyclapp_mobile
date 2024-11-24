@@ -1,9 +1,9 @@
-import { Chat, ChatPost, ChatPut } from "@models/chat.type";
+import { Chat, ChatCreate, ChatPut, ChatUnique } from "@models/chat.type";
 import { backendApiConfig } from "./api.config";
 import axios from "axios";
 
 export const chatApi = {
-  getChat: async () => {
+  getChats: async () => {
     const result = await axios.get<Chat[]>(`${backendApiConfig.baseURL}/chats`);
 
     return result.data;
@@ -15,17 +15,23 @@ export const chatApi = {
 
     return result.data;
   },
-  createChat: async (chat: ChatPost) => {
+  getChatByUnique: async (unique: ChatUnique) => {
+    const result = await axios.post<Chat>(
+      `${backendApiConfig.baseURL}/chat/unique`,
+      unique
+    );
+    console.log(result);
+    return result.data;
+  },
+  createChat: async (chat: ChatCreate) => {
     try {
       const result = await axios.post<Chat>(
         `${backendApiConfig.baseURL}/chat`,
-        {
-          chat,
-        }
+        chat
       );
 
       console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         throw new Error(e.message);
@@ -38,13 +44,11 @@ export const chatApi = {
     try {
       const result = await axios.put<Chat>(
         `${backendApiConfig.baseURL}/chat/${chat.id}`,
-        {
-          chat,
-        }
+        chat
       );
 
       console.log(result);
-      return result;
+      return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
         throw new Error(e.message);

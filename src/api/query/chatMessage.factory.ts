@@ -1,11 +1,11 @@
-import { createQueryKeyStore } from "@lukemorales/query-key-factory";
 import { chatMessageApi } from "@api/api.chatMessage";
+import { createQueryKeyStore } from "@lukemorales/query-key-factory";
 
 export const chatMessageKeys = createQueryKeyStore({
   chatMessage: {
     list: () => ({
       queryKey: ["chatMessageList"],
-      queryFn: () => chatMessageApi.getChatMessage(),
+      queryFn: () => chatMessageApi.getChatMessages(),
     }),
     detail: (id: string) => ({
       queryKey: [id],

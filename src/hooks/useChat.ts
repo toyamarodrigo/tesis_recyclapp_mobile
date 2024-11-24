@@ -1,78 +1,42 @@
-import { chatKeys } from "@api/query/chat.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { ChatPost, ChatPut } from "@models/chat.type";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { Chat, ChatCreate, ChatUnique } from "@models/chat.type";
 import { chatApi } from "@api/api.chat";
+import { chatKeys } from "@api/query/chat.factory";
 
 const useChatList = () => {
-  const { data, error, isError, isLoading } = useQuery(chatKeys.chat.list());
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery({ ...chatKeys.chat.list() });
 };
 
-const useChatById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    chatKeys.chat.detail(id)
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useCreateChat = (chat: ChatPost) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: chatApi.createChat,
-    mutationKey: [chat],
+const useChatListByUnique = ({ unique }: { unique: ChatUnique }) => {
+  return useQuery({
+    ...chatKeys.chat.listByUnique(unique),
+    enabled: !!unique,
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-const useUpdateChat = (chat: ChatPut) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: chatApi.updateChat,
-    mutationKey: [chat],
+const useChatById = ({ id }: { id: string }) => {
+  return useQuery({
+    ...chatKeys.chat.detail(id),
+    enabled: !!id,
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-const useDeleteChat = (id: string) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: chatApi.deleteChat,
-    mutationKey: [id],
+const useCreateChat = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["createChat"],
+    mutationFn: (chat: ChatCreate) => chatApi.createChat(chat),
+    onSuccess: (chat: Chat) => {
+      queryClient.invalidateQueries({
+        queryKey: chatKeys.chat.listByUnique({
+          postId: chat.postId,
+          userCommentId: chat.userCommentId,
+          userPostId: chat.userPostId,
+        }).queryKey,
+      });
+    },
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-export {
-  useChatList,
-  useChatById,
-  useCreateChat,
-  useDeleteChat,
-  useUpdateChat,
-};
+export { useChatList, useChatListByUnique, useChatById, useCreateChat };

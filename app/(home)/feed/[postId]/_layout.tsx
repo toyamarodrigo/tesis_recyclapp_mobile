@@ -15,6 +15,12 @@ export default function DetailPostLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[chatId]"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

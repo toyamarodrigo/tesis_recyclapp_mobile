@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-export default function EditablePostLayout() {
+export default function ChatconvoLayout() {
   return (
     <Stack>
       <Stack.Screen

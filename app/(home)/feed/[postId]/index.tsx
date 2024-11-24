@@ -167,8 +167,7 @@ export default function DetailPost() {
                 >
                   {post?.isActive
                     ? "Publicación activa"
-                    : "Publicación finalizada"}{" "}
-                  {post?.isReserved ? "y reservada" : "y no reservada"}
+                    : "Publicación finalizada"}
                 </Text>
               </View>
             </View>

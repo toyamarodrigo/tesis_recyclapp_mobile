@@ -3,6 +3,7 @@ import CardChatMessage from "@components/CardChatMessage";
 import DataEmpty from "@components/DataEmpty";
 import { useChatById } from "@hooks/useChat";
 import { useCreateChatMessage } from "@hooks/useChatMessage";
+import { usePostById } from "@hooks/usePost";
 import { Link, Redirect, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -29,6 +30,7 @@ export default function Chatconvo() {
   const postId = params.postId as string;
   const chatId = params.chatId as string;
   const { data: chat, isFetching, isLoading } = useChatById({ id: chatId });
+  const { data: post } = usePostById({ id: postId });
   const [tempText, setTempText] = useState("");
   const { mutateAsync: createChatMessage } = useCreateChatMessage();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -49,6 +51,10 @@ export default function Chatconvo() {
     }
   };
 
+  const handleConfirmExchange = () => {
+    console.log("messge");
+  };
+
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
@@ -59,11 +65,34 @@ export default function Chatconvo() {
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
-      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
-        <Link href={`/feed/${postId}`} asChild>
-          <IconButton icon="arrow-left" size={24} />
-        </Link>
-        <Title style={{ color: theme.colors.primary }}>Chat privado</Title>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          zIndex: 1,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Link href={`/feed/${postId}`} asChild>
+            <IconButton icon="arrow-left" size={24} />
+          </Link>
+          <Title style={{ color: theme.colors.primary, marginLeft: 8 }}>
+            Chat privado
+          </Title>
+        </View>
+
+        <View style={{ margin: 20 }}>
+          <Button
+            mode="contained"
+            onPress={handleConfirmExchange}
+            style={styles.button}
+            buttonColor={theme.colors.tertiary}
+            textColor={theme.colors.onTertiary}
+          >
+            Código
+          </Button>
+        </View>
       </View>
 
       <ScrollView

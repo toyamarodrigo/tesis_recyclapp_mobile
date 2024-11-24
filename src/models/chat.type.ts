@@ -6,6 +6,7 @@ export const ChatSchema = z.object({
   postId: z.string(),
   userPostId: z.string(),
   userCommentId: z.string(),
+  generatedCode: z.string(),
   startDate: z.string(),
   endDate: z.string().optional(),
   isActive: z.boolean(),

@@ -10,7 +10,6 @@ export const PostSchema = z.object({
   materialProductId: z.string(),
   username: z.string(),
   isActive: z.boolean(),
-  isReserved: z.boolean(),
   isArchived: z.boolean(),
 });
 
@@ -34,7 +33,6 @@ const PostPutSchema = z.object({
   materialProductId: z.string().optional(),
   username: z.string().optional(),
   isActive: z.boolean().optional(),
-  isReserved: z.boolean().optional(),
   isArchived: z.boolean().optional(),
 });
 

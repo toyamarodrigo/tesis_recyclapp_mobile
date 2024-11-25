@@ -1,6 +1,13 @@
 import { Fragment, useState } from "react";
-import { useSignIn } from "@clerk/clerk-expo";
-import { View, ScrollView, StyleSheet, TextInput, Text } from "react-native";
+import { isClerkAPIResponseError, useSignIn } from "@clerk/clerk-expo";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  Text,
+  GestureResponderEvent,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Title } from "react-native-paper";
 import { theme } from "src/theme";
@@ -11,56 +18,55 @@ export default function PasswordReset() {
   const [code, setCode] = useState("");
   const [successfulCreation, setSuccessfulCreation] = useState(false);
   const [secondFactor, setSecondFactor] = useState(false);
-  const [error, setError] = useState("");
-  const { signIn, setActive } = useSignIn();
+  const [error, setError] = useState<string | undefined>(undefined);
+  const { signIn, setActive, isLoaded } = useSignIn();
 
-  // Send the password reset code to the user's email
-  async function create(e: React.FormEvent) {
+  async function create(e: GestureResponderEvent) {
     e.preventDefault();
-    await signIn
-      ?.create({
-        strategy: "reset_password_email_code",
-        identifier: email,
-      })
-      .then(() => {
-        setSuccessfulCreation(true);
-        setError("");
-      })
-      .catch((err) => {
-        console.error("error", err);
-        setError(err);
-      });
+    if (!isLoaded) return;
+    try {
+      await signIn
+        .create({
+          strategy: "reset_password_email_code",
+          identifier: email,
+        })
+        .then(() => {
+          setSuccessfulCreation(true);
+          setError("");
+        });
+    } catch (err: any) {
+      if (isClerkAPIResponseError(err)) {
+        return setError(err.errors[0].longMessage);
+      }
+
+      return setError(err);
+    }
   }
 
-  // Reset the user's password.
-  // Upon successful reset, the user will be
-  // signed in and redirected to the home page
-  async function reset(e: React.FormEvent) {
+  async function reset(e: GestureResponderEvent) {
     e.preventDefault();
-    await signIn
-      ?.attemptFirstFactor({
+    if (!isLoaded) return;
+    try {
+      const result = await signIn.attemptFirstFactor({
         strategy: "reset_password_email_code",
         code,
         password,
-      })
-      .then((result) => {
-        // Check if 2FA is required
-        if (result.status === "needs_second_factor") {
-          setSecondFactor(true);
-          setError("");
-        } else if (result.status === "complete") {
-          // Set the active session to
-          // the newly created session (user is now signed in)
-          setActive({ session: result.createdSessionId });
-          setError("");
-        } else {
-          console.log(result);
-        }
-      })
-      .catch((err) => {
-        console.error("error", err.errors[0].longMessage);
-        setError(err.errors[0].longMessage);
       });
+
+      if (result.status === "needs_second_factor") {
+        setSecondFactor(true);
+        setError("");
+      } else if (result.status === "complete") {
+        setActive({ session: result.createdSessionId });
+        setError("");
+      }
+    } catch (err: any) {
+      if (isClerkAPIResponseError(err)) {
+        return setError(err.errors[0].longMessage);
+      }
+
+      return setError(err);
+    }
   }
 
   return (

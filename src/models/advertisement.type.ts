@@ -23,13 +23,13 @@ export interface Ad {
 }
 
 export interface News {
-  id: string;
+  id: number;
   title: string;
   image: string;
   description: string;
-  source: string;
   extraDescription: {
     type: string;
-    content: string;
+    content: string | string[];
   }[];
+  source: string;
 }

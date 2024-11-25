@@ -1,11 +1,12 @@
 import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
-import { Text, View, StyleSheet, Alert } from "react-native";
+import { Link, router, useRouter } from "expo-router";
+import { Text, View, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { theme } from "src/theme";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Image } from "expo-image";
 
 type FormValues = {
   emailAddress: string;
@@ -13,13 +14,22 @@ type FormValues = {
 };
 
 const formSchema = z.object({
-  emailAddress: z.string().email("Ingrese un email válido"),
+  emailAddress: z
+    .string()
+    .min(1, "El email o nombre de usuario es requerido")
+    .refine((value) => {
+      if (value.includes("@")) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+      return true;
+    }, "El formato del email no es válido"),
   password: z.string().min(1, "La contraseña es requerida"),
 });
 
 export default function SignInScreen() {
-  const router = useRouter();
   const { signIn, setActive, isLoaded } = useSignIn();
+
+  if (!isLoaded) return null;
 
   const {
     control,
@@ -34,9 +44,7 @@ export default function SignInScreen() {
   });
 
   const onSignInPress = async (data: FormValues) => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       const signInAttempt = await signIn.create({
@@ -47,84 +55,97 @@ export default function SignInScreen() {
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");
-      } else {
-        Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
-        console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
       if (isClerkAPIResponseError(err)) {
-        Alert.alert("Error", err.errors[0].longMessage);
+        if (
+          err.errors[0].code === "form_param_format_invalid" ||
+          err.errors[0].code === "form_password_incorrect"
+        ) {
+          return Alert.alert(
+            "Error",
+            "El email o nombre de usuario o la contraseña son inválidos"
+          );
+        }
+
+        return Alert.alert("Error", err.errors[0].longMessage);
       }
-      console.error(JSON.stringify(err, null, 2));
+
+      return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
     }
   };
 
   return (
-    <View style={styles.containerLogin}>
-      <Controller
-        control={control}
-        name="emailAddress"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            autoCapitalize="none"
-            value={value}
-            placeholder="Mail"
-            onChangeText={onChange}
-            onBlur={onBlur}
-            error={!!errors.emailAddress}
-            style={styles.textStyle}
+    <SafeAreaView style={styles.containerLogin}>
+      <View style={styles.contentContainer}>
+        <View style={styles.imageBox}>
+          <Image
+            style={styles.image}
+            source={require("assets/images/icon.png")}
+            contentFit="cover"
           />
+        </View>
+
+        <Controller
+          control={control}
+          name="emailAddress"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              autoCapitalize="none"
+              value={value}
+              placeholder="Email / Usuario"
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={!!errors.emailAddress}
+              style={styles.textStyle}
+            />
+          )}
+        />
+        {errors.emailAddress && (
+          <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
         )}
-      />
-      {errors.emailAddress && (
-        <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
-      )}
 
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            value={value}
-            placeholder="Contraseña"
-            secureTextEntry={true}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            error={!!errors.password}
-            style={styles.textStyle}
-          />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              value={value}
+              placeholder="Contraseña"
+              secureTextEntry={true}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={!!errors.password}
+              style={styles.textStyle}
+            />
+          )}
+        />
+        {errors.password && (
+          <Text style={styles.errorText}>{errors.password.message}</Text>
         )}
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
 
-      <View style={styles.buttonBox}>
-        <Button
-          onPress={handleSubmit(onSignInPress)}
-          buttonColor={theme.colors.secondaryContainer}
-          textColor={theme.colors.onSecondaryContainer}
-        >
-          <Text style={styles.text}>Ingresar</Text>
-        </Button>
-      </View>
-
-      <View style={styles.buttonBox}>
-        <Link href="/(auth)/password-reset" asChild>
+        <View style={styles.buttonBox}>
           <Button
-            buttonColor={theme.colors.errorContainer}
-            textColor={theme.colors.onErrorContainer}
+            onPress={handleSubmit(onSignInPress)}
+            buttonColor={theme.colors.secondaryContainer}
+            textColor={theme.colors.onSecondaryContainer}
           >
-            <Text style={styles.text}>Olvidé mi contraseña</Text>
+            <Text style={styles.text}>Ingresar</Text>
           </Button>
-        </Link>
+        </View>
+
+        <View style={styles.buttonBox}>
+          <Link href="/(auth)/password-reset" asChild>
+            <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
+          </Link>
+        </View>
       </View>
 
-      <View style={{ flex: 1 }} />
-      <View style={styles.textOptions}>
-        <Text style={styles.text}>¿No tienes cuenta?</Text>
+      <View style={styles.registerContainer}>
+        <Text style={styles.textForgot}>¿No tienes cuenta?</Text>
         <Link href="/(auth)/sign-up" asChild>
           <Button
+            style={styles.registerButton}
             buttonColor={theme.colors.tertiaryContainer}
             textColor={theme.colors.onTertiaryContainer}
           >
@@ -132,7 +153,7 @@ export default function SignInScreen() {
           </Button>
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -143,35 +164,54 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 50,
   },
+  contentContainer: {
+    flex: 1,
+  },
+  imageBox: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    backgroundColor: theme.colors.background,
+  },
   textStyle: {
     fontWeight: "500",
     fontSize: 18,
-    borderRadius: 10,
     borderColor: theme.colors.secondaryContainer,
     borderWidth: 1,
-    padding: 10,
-    margin: 10,
+    margin: 8,
     color: theme.colors.onSurfaceVariant,
   },
   buttonBox: {
-    margin: 10,
-    marginTop: 30,
+    margin: 8,
   },
   text: {
-    fontWeight: "500",
+    fontWeight: 500,
     fontSize: 18,
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",
     padding: 10,
   },
-  textOptions: {
-    flex: 1,
-    alignContent: "center",
-    justifyContent: "center",
+  textForgot: {
+    textAlign: "center",
+    fontSize: 16,
+    margin: 8,
   },
   errorText: {
     color: theme.colors.error,
     marginLeft: 10,
     fontSize: 14,
+  },
+  registerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+  registerButton: {
+    margin: 10,
+    width: "100%",
   },
 });

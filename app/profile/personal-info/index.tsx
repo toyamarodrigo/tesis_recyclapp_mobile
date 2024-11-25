@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, ScrollView, Alert } from "react-native";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import React, { useState, useCallback } from "react";
+import { View, ScrollView, Alert, RefreshControl } from "react-native";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
   TextInput,
@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = {
   name: string;
@@ -39,60 +40,22 @@ const formSchema = z.object({
     ),
 });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        name: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
   const theme = useAppTheme();
   const router = useRouter();
   const { user, isSignedIn } = useUser();
   if (!isSignedIn || !user?.id) return null;
-  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
+  const { data: userStore, refetch } = useUserStoreByClerk({ userId: user.id });
 
   const {
     control,
     reset,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver,
+    resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
@@ -130,6 +93,23 @@ export default function PersonalInfo() {
     reset();
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        user.reload(),
+        refetch()
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "No se pudieron actualizar los datos. Intente nuevamente."
+      );
+    } finally {
+      setRefreshing(false);
+    }
+  }, [user, refetch]);
+
   if (!user) {
     onCancel();
     router.push("/profile");
@@ -143,7 +123,17 @@ export default function PersonalInfo() {
         </Link>
         <Title style={{ color: theme.colors.primary }}>Datos personales</Title>
       </View>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
+      >
         <View style={{ width: "100%" }}>
           {/* Name Input */}
           <Controller

@@ -1,35 +1,54 @@
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  RefreshControl,
+} from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { router, Link } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
 import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
-import type { Ad, News } from "@models/advertisement.type";
+import type { Ad } from "@models/advertisement.type";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { mockNews } from "@constants/data.constant";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
 import { useAdvertisementList } from "@hooks/useAdvertisement";
 import { IMAGE } from "@constants/image.constant";
 import { NoDataCard } from "@components/NoDataCard";
-
-// TODO: make custom hook to fetch news
-const fetchNews = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return mockNews;
-};
+import { Result } from "@models/news";
+import { newsApi } from "@api/api.news";
+import { useCallback } from "react";
+import { useState } from "react";
 
 const Home = () => {
   const { user: userClerk, isLoaded } = useUser();
   if (!userClerk || !isLoaded) return null;
-  const { data: ads, isPending: adsPending } = useAdvertisementList();
-  const { data: news, isPending: newsPending } = useQuery({
+  const {
+    data: ads,
+    isPending: adsPending,
+    refetch: refetchAds,
+  } = useAdvertisementList();
+  const {
+    data: news,
+    isPending: newsPending,
+    refetch: refetchNews,
+  } = useQuery({
     queryKey: ["news"],
-    queryFn: fetchNews,
+    queryFn: newsApi.getNews,
   });
 
-  const handleNewsPress = (item: News) => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchAds(), refetchNews()]);
+    setRefreshing(false);
+  }, [refetchAds, refetchNews]);
+
+  const handleNewsPress = (item: Result) => {
     router.push({
       pathname: "/news-detail",
       params: { newsItem: JSON.stringify(item) },
@@ -44,7 +63,17 @@ const Home = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: theme.colors.background }}>
+    <ScrollView
+      style={{ backgroundColor: theme.colors.background }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[theme.colors.primary]} // Android
+          tintColor={theme.colors.primary} // iOS
+        />
+      }
+    >
       <SignedIn>
         <View style={styles.container}>
           {ads && ads.length ? (
@@ -62,10 +91,10 @@ const Home = () => {
               <NoDataCard image={IMAGE.AD_GENERIC} />
             </View>
           )}
-          {!newsPending && news && news.length > 0 ? (
+          {!newsPending && news && news.results.length > 0 ? (
             <Carousel
               title="Últimas Noticias"
-              data={news}
+              data={news.results}
               renderItem={(item) => (
                 <NewsCard item={item} onPress={handleNewsPress} />
               )}

@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { theme } from "src/theme";
 import { Button, TextInput } from "react-native-paper";
@@ -85,9 +85,7 @@ export default function SignUpScreen() {
   };
 
   const onSignUpPress = async (formData: FormValues) => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       setPendingVerification(true);
@@ -99,10 +97,12 @@ export default function SignUpScreen() {
         lastName: formData.lastName,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-    } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        return Alert.alert("Error", err.errors[0].longMessage);
+      }
+
+      return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
     }
   };
 
@@ -115,26 +115,24 @@ export default function SignUpScreen() {
       });
 
       if (completeSignUp.status !== "complete") {
-        Alert.alert("Código inválido. Por favor, intenta nuevamente.");
-        return;
+        return Alert.alert("Código inválido. Por favor, intenta nuevamente.");
       }
 
-      if (!completeSignUp.createdUserId) throw new Error("User not created");
+      if (!completeSignUp.createdUserId)
+        return Alert.alert("Error", "Usuario no creado");
 
       await createUserDB({
         userId: completeSignUp.createdUserId,
       });
 
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
-        router.replace("/");
-      } else {
-        console.error(JSON.stringify(completeSignUp, null, 2));
-      }
+      await setActive({ session: completeSignUp.createdSessionId });
+      router.replace("/");
     } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        return Alert.alert("Error", err.errors[0].longMessage);
+      }
+
+      return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
     }
   };
 

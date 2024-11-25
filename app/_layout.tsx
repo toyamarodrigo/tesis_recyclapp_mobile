@@ -56,48 +56,50 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={theme}>
-          <ClerkLoaded>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen
-                name="(auth)"
-                options={{
-                  title: "",
+    <PaperProvider>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <QueryClientProvider client={queryClient}>
+          <PaperProvider theme={theme}>
+            <ClerkLoaded>
+              <Stack
+                screenOptions={{
                   headerShown: false,
                 }}
-              />
-              <Stack.Screen
-                name="(home)"
-                options={{
-                  title: "",
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="news-detail"
-                options={{ headerShown: false, presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="ads-detail"
-                options={{ headerShown: false, presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="profile"
-                options={{
-                  title: "",
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </ClerkLoaded>
-        </PaperProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
+              >
+                <Stack.Screen
+                  name="(auth)"
+                  options={{
+                    title: "",
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="(home)"
+                  options={{
+                    title: "",
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="news-detail"
+                  options={{ headerShown: false, presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="ads-detail"
+                  options={{ headerShown: false, presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="profile"
+                  options={{
+                    title: "",
+                    headerShown: false,
+                  }}
+                />
+              </Stack>
+            </ClerkLoaded>
+          </PaperProvider>
+        </QueryClientProvider>
+      </ClerkProvider>
+    </PaperProvider>
   );
 }

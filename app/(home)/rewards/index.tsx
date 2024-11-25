@@ -1,4 +1,10 @@
-import { View, StyleSheet, FlatList, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  RefreshControl,
+} from "react-native";
 import { CircleLink } from "@features/rewards/components/circle-link";
 import { HistoricalPointItem } from "@features/rewards/components/historical-point-item";
 import {
@@ -6,28 +12,43 @@ import {
   FontAwesome5,
   Ionicons,
 } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Title, Divider, ActivityIndicator } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
 import { useUserCustomerByClerk } from "@hooks/useUser";
 import { useUser } from "@clerk/clerk-expo";
 import { transformDate } from "@utils/helpers";
+import { useCallback, useState } from "react";
 
 export default function Rewards() {
   const { user, isSignedIn } = useUser();
   if (!isSignedIn || !user?.id) return null;
   const theme = useAppTheme();
   const screenWidth = Dimensions.get("window").width;
-  const { data: userCustomer, isLoading } = useUserCustomerByClerk({
+  const {
+    data: userCustomer,
+    isLoading,
+    refetch,
+  } = useUserCustomerByClerk({
     userId: user.id,
   });
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <View style={styles.container}>
       {isLoading && (
         <ActivityIndicator color={theme.colors.primary} size={"large"} />
       )}
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={userCustomer?.pointsHistory}
         renderItem={({ item }) => (
           <HistoricalPointItem
@@ -84,7 +105,7 @@ export default function Rewards() {
           </View>
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

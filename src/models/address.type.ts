@@ -44,18 +44,3 @@ const AddressPutSchema = z.object({
 export type Address = z.infer<typeof AddressSchema>;
 export type AddressPost = z.infer<typeof AddressPostSchema>;
 export type AddressPut = z.infer<typeof AddressPutSchema>;
-
-// model Address {
-//   id           String      @id @default(cuid())
-//   street       String      @db.VarChar(50) //calle y numero
-//   flat         String      @db.VarChar(10) //dpto?
-//   city         String      @db.VarChar(50) //barrio/localidad
-//   state        String      @db.VarChar(50) //provincia/CABA
-//   latitude     Float
-//   longitude    Float
-//   greenPointId String?     @unique
-//   userId       String?
-//   isArchived   Boolean     @default(false)
-//   GreenPoint   GreenPoint? @relation(fields: [greenPointId], references: [id])
-//   User         User?       @relation(fields: [userId], references: [id])
-// }

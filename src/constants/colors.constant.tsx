@@ -1,16 +1,14 @@
 export const colors = {
   gray: {
-    //50: "#f9fafa",
-    50: "#ffffff", // blanco cards & highlight = gray.50
-    //50: "#FDFEFE ",
-    75: "#FBFCFC ", // blanco background = gray.75
-    100: "#f1f1f2", // gris claro background = gray.100
+    50: "#ffffff",
+    75: "#FBFCFC ",
+    100: "#f1f1f2",
     200: "#e7e7e8",
-    300: "#d3d4d5", // gris oscuro background = gray.300
-    400: "#abadaf", // PROBAR gris claro texto = gray.400
-    500: "#7d7f83", // gris oscuro texto = gray.500
+    300: "#d3d4d5",
+    400: "#abadaf",
+    500: "#7d7f83",
     600: "#52555a",
-    700: "#33373d", // header = gray.700
+    700: "#33373d",
     800: "#1d2025",
     900: "#171a1d",
   },
@@ -30,7 +28,7 @@ export const colors = {
     50: "#fdfaf6",
     100: "#f9ebdb",
     200: "#f1d4b1",
-    300: "#e6b273", // botón orange.300
+    300: "#e6b273",
     400: "#dc9239",
     500: "#c37b24",
     600: "#a5681e",
@@ -43,22 +41,22 @@ export const colors = {
     100: "#fbf9ea",
     200: "#f4eec2",
     300: "#ece192",
-    400: "#dfce4b", // PROBAR yellow.300
+    400: "#dfce4b",
     500: "#bba922",
     600: "#95871c",
     700: "#746915",
     800: "#574f10",
     900: "#48410d",
-    950: "#FFDC64", // amarillo detalles
+    950: "#FFDC64",
   },
   green: {
     50: "#f5fdf9",
-    100: "#c6f5e0", //verde claro = green.100
+    100: "#c6f5e0",
     200: "#83e9bb",
     300: "#28d889",
     400: "#23bd78",
     500: "#1ea367",
-    600: "#198755", //verde oscuro = green.600
+    600: "#198755",
     700: "#136942",
     800: "#105636",
     900: "#0d472d",
@@ -66,10 +64,10 @@ export const colors = {
   teal: {
     50: "#f1fcfc",
     100: "#c0f1f4",
-    200: "#84e4e9", // PROBAR celeste = teal.200
+    200: "#84e4e9",
     300: "#2dd1da",
     400: "#22b2ba",
-    500: "#1d979e", // celeste botón = teal.500
+    500: "#1d979e",
     600: "#187b80",
     700: "#125f64",
     800: "#0f5053",
@@ -78,7 +76,7 @@ export const colors = {
   cyan: {
     50: "#f4fbfd",
     100: "#d0eef7",
-    200: "#bae7f3", // PROBAR celeste = cyan.200
+    200: "#bae7f3",
     300: "#a2deee",
     400: "#53c2e1",
     500: "#2ab4d9",
@@ -123,7 +121,4 @@ export const colors = {
     800: "#7d1745",
     900: "#5d1133",
   },
-  // https://palette.saas-ui.dev/
-  // primary #6d28d9
-  // gray tint #1f2937
 };

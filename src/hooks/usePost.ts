@@ -1,78 +1,65 @@
 import { postKeys } from "@api/query/post.factory";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { PostPost, PostPut } from "@models/post.type";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@api/api.post";
+import { Post, PostCreate, PostUpdate } from "@models/post.type";
 
 const usePostList = () => {
-  const { data, error, isError, isLoading } = useQuery(postKeys.post.list());
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
+  return useQuery({ ...postKeys.post.list() });
 };
 
-const usePostById = (id: string) => {
-  const { data, error, isError, isLoading } = useQuery(
-    postKeys.post.detail(id)
-  );
-
-  return {
-    data,
-    error,
-    isError,
-    isLoading,
-  };
-};
-
-const useCreatePost = (post: PostPost) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.createPost,
-    mutationKey: [post],
+const usePostListByClerkId = ({ userId }: { userId: string }) => {
+  return useQuery({
+    ...postKeys.post.listByClerkId(userId),
+    enabled: !!userId,
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-const useUpdatePost = (post: PostPut) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.updatePost,
-    mutationKey: [post],
+const usePostById = ({ id }: { id: string }) => {
+  return useQuery({
+    ...postKeys.post.detail(id),
+    enabled: !!id,
   });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
 };
 
-const useDeletePost = (id: string) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.deletePost,
-    mutationKey: [id],
+const useCreatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["createPost"],
+    mutationFn: (post: PostCreate) => postApi.createPost(post),
+    onSuccess: (post: Post) => {
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.listByClerkId(post.userId).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.list().queryKey,
+      });
+    },
   });
+};
 
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
+const useUpdatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["updatePost"],
+    mutationFn: (post: PostUpdate) => postApi.updatePost(post),
+    onSuccess: (post: Post) => {
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.listByClerkId(post.userId).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.list().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.post.detail(post.id).queryKey,
+      });
+    },
+  });
 };
 
 export {
   usePostList,
+  usePostListByClerkId,
   usePostById,
   useCreatePost,
   useUpdatePost,
-  useDeletePost,
 };

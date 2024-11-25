@@ -10,6 +10,19 @@ export default function FeedLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="new"
+        options={{
+          title: "Publicación",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="[postId]"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

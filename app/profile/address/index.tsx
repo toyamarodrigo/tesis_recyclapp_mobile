@@ -24,11 +24,12 @@ export default function Addresses() {
   if (!isLoaded || !user?.id) return null;
   const { mutateAsync: updateAddress } = useUpdateAddress();
   const {
-    data: addressList,
-    error,
-    isLoading,
+    data: addressList = [],
+    isPending,
     refetch,
+    isError,
   } = useAddressClerkId(user.id);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -39,8 +40,8 @@ export default function Addresses() {
 
   const hasAddresses =
     addressList &&
-    addressList.length > 0 &&
-    addressList.some((address) => !address.isArchived);
+    addressList?.length > 0 &&
+    addressList?.some((address) => !address.isArchived);
 
   const handleDelete = async (address: Address) => {
     const removeAddress: AddressPut = {
@@ -78,16 +79,16 @@ export default function Addresses() {
           <View style={{ flex: 1, alignItems: "flex-start", width: "100%" }}>
             <View style={{ width: "100%" }}>
               <View style={{ marginBottom: 20 }}>
-                {isLoading && (
+                {isPending && (
                   <ActivityIndicator
                     color={theme.colors.primary}
                     size={"large"}
                   />
                 )}
-                {error && (
+                {isError && (
                   <DataEmpty displayText="Ocurrió un problema al mostrar las direcciones. Intente nuevamente." />
                 )}
-                {!isLoading && !error && !hasAddresses && (
+                {!isPending && !isError && !hasAddresses && (
                   <DataEmpty displayText="Aún no tienes direcciones creadas. Puedes agregar una a continuación." />
                 )}
                 {hasAddresses &&

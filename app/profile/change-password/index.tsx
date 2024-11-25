@@ -1,6 +1,6 @@
 import { Alert, ScrollView, View } from "react-native";
 import { z } from "zod";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Button, Text, Title, IconButton } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
 import { useAppTheme } from "src/theme";

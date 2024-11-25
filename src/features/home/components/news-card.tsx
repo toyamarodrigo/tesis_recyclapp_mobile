@@ -1,10 +1,20 @@
+import { Result } from "@models/news";
 import { View, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 
-export const NewsCard = ({ item, onPress }) => (
+export const NewsCard = ({
+  item,
+  onPress,
+}: {
+  item: Result;
+  onPress: (item: Result) => void;
+}) => (
   <Card style={styles.newsCard} onPress={() => onPress(item)}>
     <View style={styles.cardContent}>
-      <Card.Cover source={{ uri: item.image }} style={styles.newsImage} />
+      <Card.Cover
+        source={{ uri: item?.image_url || "" }}
+        style={styles.newsImage}
+      />
       <View style={styles.newsOverlay}>
         <Text variant="titleMedium" style={styles.newsTitle}>
           {item.title}

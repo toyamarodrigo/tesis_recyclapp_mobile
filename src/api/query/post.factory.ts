@@ -5,7 +5,11 @@ export const postKeys = createQueryKeyStore({
   post: {
     list: () => ({
       queryKey: ["postList"],
-      queryFn: () => postApi.getPost(),
+      queryFn: () => postApi.getPosts(),
+    }),
+    listByClerkId: (userId: string) => ({
+      queryKey: ["postListByClerkId", userId],
+      queryFn: () => postApi.getPostByClerkId(userId),
     }),
     detail: (id: string) => ({
       queryKey: [id],

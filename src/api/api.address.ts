@@ -49,7 +49,6 @@ export const addressApi = {
       throw new Error("Unknown error");
     }
   },
-
   createAddress: async (address: AddressPost) => {
     try {
       const result = await axios.post<Address>(

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import {
   Button,
   Text,
@@ -21,20 +21,20 @@ import ImageUploader from "@components/ImageUploader";
 import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
-  const { signOut, isSignedIn, userId, isLoaded } = useAuth();
+  const { signOut, isLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   if (!userLoaded || !user?.id) return null;
   const { profileImage, setProfileImage } = useUserStore();
-  const [deleteVisible, setDeleteVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
   const theme = useAppTheme();
 
-  const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
 
   const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const logout = async () => {
+    // es necesario volver a home antes de cerrar sesión por que sino clerk tira un error
+    router.replace("/");
     await signOut();
   };
 
@@ -45,9 +45,6 @@ const Profile = () => {
       setProfileImage(urlImage);
     }
   }, []);
-
-  if (!userId || !isSignedIn || !isLoaded)
-    return <Redirect href="/(auth)/sign-in" />;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -64,59 +61,6 @@ const Profile = () => {
         }}
       >
         <Portal>
-          <Modal
-            visible={deleteVisible}
-            onDismiss={() => setDeleteVisible(false)}
-            contentContainerStyle={{
-              backgroundColor: "white",
-              padding: 20,
-            }}
-          >
-            <View
-              style={{
-                padding: 10,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
-                Eliminar cuenta
-              </Text>
-              <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
-                ¿Estás seguro de que quieres eliminar tu cuenta?
-              </Text>
-              <Text
-                style={{
-                  color: theme.colors.error,
-                  fontWeight: "600",
-                  fontSize: 16,
-                  padding: 10,
-                }}
-              >
-                Esta acción es IRREVERSIBLE.
-              </Text>
-            </View>
-            <Button
-              mode="contained"
-              onPress={() => setDeleteVisible(false)}
-              buttonColor={theme.colors.outline}
-              style={{
-                margin: 10,
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => console.log("Despedite de tu cuenta maquina")}
-              buttonColor={theme.colors.error}
-              style={{
-                margin: 10,
-              }}
-            >
-              Eliminar
-            </Button>
-          </Modal>
           <Modal
             visible={logoutVisible}
             onDismiss={() => setLogoutVisible(false)}
@@ -268,13 +212,6 @@ const Profile = () => {
             textColor={theme.colors.secondary}
           >
             Cerrar sesión
-          </Button>
-          <Button
-            mode="text"
-            onPress={() => showModalDelete()}
-            textColor={theme.colors.error}
-          >
-            Eliminar cuenta
           </Button>
         </View>
       </ScrollView>

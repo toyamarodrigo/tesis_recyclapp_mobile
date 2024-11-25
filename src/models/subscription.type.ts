@@ -34,13 +34,3 @@ const SubscriptionPutSchema = z.object({
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 export type SubscriptionPost = z.infer<typeof SubscriptionPostSchema>;
 export type SubscriptionPut = z.infer<typeof SubscriptionPutSchema>;
-
-// model Subscription {
-//   id             String          @id @default(cuid())
-//   name           String          @unique @db.Citext
-//   amount         Float
-//   duration       Int
-//   isArchived     Boolean         @default(false)
-//   advertisements Advertisement[]
-//   userStores     UserStore[]
-// }

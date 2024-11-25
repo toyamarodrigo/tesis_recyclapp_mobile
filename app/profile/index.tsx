@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, router } from "expo-router";
 import {
   Button,
   Text,
@@ -21,20 +21,20 @@ import ImageUploader from "@components/ImageUploader";
 import { useUserStoreByClerk } from "@hooks/useUser";
 
 const Profile = () => {
-  const { signOut, isSignedIn, userId, isLoaded } = useAuth();
+  const { signOut, isLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   if (!userLoaded || !user?.id) return null;
   const { profileImage, setProfileImage } = useUserStore();
-  const [deleteVisible, setDeleteVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
   const theme = useAppTheme();
 
-  const showModalDelete = () => setDeleteVisible(true);
   const showModalLogout = () => setLogoutVisible(true);
 
   const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const logout = async () => {
+    // es necesario volver a home antes de cerrar sesión por que sino clerk tira un error
+    router.replace("/");
     await signOut();
   };
 
@@ -45,9 +45,6 @@ const Profile = () => {
       setProfileImage(urlImage);
     }
   }, []);
-
-  if (!userId || !isSignedIn || !isLoaded)
-    return <Redirect href="/(auth)/sign-in" />;
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>

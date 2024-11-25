@@ -1,5 +1,5 @@
 import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
+import { Link, router, useRouter } from "expo-router";
 import { Text, View, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { theme } from "src/theme";
@@ -14,13 +14,22 @@ type FormValues = {
 };
 
 const formSchema = z.object({
-  emailAddress: z.string().email("Ingrese un email válido"),
+  emailAddress: z
+    .string()
+    .min(1, "El email o nombre de usuario es requerido")
+    .refine((value) => {
+      if (value.includes("@")) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+      return true;
+    }, "El formato del email no es válido"),
   password: z.string().min(1, "La contraseña es requerida"),
 });
 
 export default function SignInScreen() {
-  const router = useRouter();
   const { signIn, setActive, isLoaded } = useSignIn();
+
+  if (!isLoaded) return null;
 
   const {
     control,
@@ -49,6 +58,16 @@ export default function SignInScreen() {
       }
     } catch (err: any) {
       if (isClerkAPIResponseError(err)) {
+        if (
+          err.errors[0].code === "form_param_format_invalid" ||
+          err.errors[0].code === "form_password_incorrect"
+        ) {
+          return Alert.alert(
+            "Error",
+            "El email o nombre de usuario o la contraseña son inválidos"
+          );
+        }
+
         return Alert.alert("Error", err.errors[0].longMessage);
       }
 
@@ -73,7 +92,7 @@ export default function SignInScreen() {
           <TextInput
             autoCapitalize="none"
             value={value}
-            placeholder="Mail"
+            placeholder="Email / Usuario"
             onChangeText={onChange}
             onBlur={onBlur}
             error={!!errors.emailAddress}

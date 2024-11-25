@@ -3,18 +3,18 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { Card, Text, IconButton } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { Fragment } from "react";
-import type { News } from "@models/advertisement.type";
+import type { Result } from "@models/news";
 
 const NewsDetail = () => {
   const { newsItem } = useLocalSearchParams();
-  const selectedNews = JSON.parse(newsItem as string) as News;
+  const selectedNews = JSON.parse(newsItem as string) as Result;
   const isPresented = router.canGoBack();
 
   return (
     <Fragment>
       <View style={styles.modalImageContainer}>
         <Card.Cover
-          source={{ uri: selectedNews.image }}
+          source={{ uri: selectedNews.image_url || "" }}
           style={styles.modalImage}
         />
         {!isPresented && (
@@ -36,21 +36,13 @@ const NewsDetail = () => {
         <Text variant="bodyMedium" style={styles.modalDescription}>
           {selectedNews.description}
         </Text>
-        {selectedNews.extraDescription.map((element, index) => (
-          <Text
-            key={`${element.type}-${index}`}
-            variant="bodyMedium"
-            style={styles.modalExtraDescription}
-          >
-            {element.content}
-          </Text>
-        ))}
         <Text
           variant="bodyMedium"
           style={styles.modalSource}
-          onPress={() => Linking.openURL(selectedNews.source)}
+          onPress={() => Linking.openURL(selectedNews.link)}
         >
-          Ver más en {selectedNews.source}
+          Articulo completo en{" "}
+          <Text style={styles.modalSourceLink}>{selectedNews.link}</Text>
         </Text>
       </View>
     </Fragment>
@@ -98,6 +90,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: colors.green[700],
     fontWeight: "bold",
+  },
+  modalSourceLink: {
+    fontStyle: "italic",
+    textDecorationLine: "underline",
+    textDecorationColor: colors.green[700],
   },
 });
 

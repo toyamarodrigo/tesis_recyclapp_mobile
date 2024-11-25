@@ -21,15 +21,3 @@ export interface Ad {
   image: string;
   text: string;
 }
-
-export interface News {
-  id: number;
-  title: string;
-  image: string;
-  description: string;
-  extraDescription: {
-    type: string;
-    content: string | string[];
-  }[];
-  source: string;
-}

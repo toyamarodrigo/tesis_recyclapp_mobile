@@ -77,73 +77,75 @@ export default function SignInScreen() {
 
   return (
     <SafeAreaView style={styles.containerLogin}>
-      <View style={styles.imageBox}>
-        <Image
-          style={styles.image}
-          source={require("assets/images/icon.png")}
-          contentFit="cover"
+      <View style={styles.contentContainer}>
+        <View style={styles.imageBox}>
+          <Image
+            style={styles.image}
+            source={require("assets/images/icon.png")}
+            contentFit="cover"
+          />
+        </View>
+
+        <Controller
+          control={control}
+          name="emailAddress"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              autoCapitalize="none"
+              value={value}
+              placeholder="Email / Usuario"
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={!!errors.emailAddress}
+              style={styles.textStyle}
+            />
+          )}
         />
-      </View>
-
-      <Controller
-        control={control}
-        name="emailAddress"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            autoCapitalize="none"
-            value={value}
-            placeholder="Email / Usuario"
-            onChangeText={onChange}
-            onBlur={onBlur}
-            error={!!errors.emailAddress}
-            style={styles.textStyle}
-          />
+        {errors.emailAddress && (
+          <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
         )}
-      />
-      {errors.emailAddress && (
-        <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
-      )}
 
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            value={value}
-            placeholder="Contraseña"
-            secureTextEntry={true}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            error={!!errors.password}
-            style={styles.textStyle}
-          />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              value={value}
+              placeholder="Contraseña"
+              secureTextEntry={true}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={!!errors.password}
+              style={styles.textStyle}
+            />
+          )}
+        />
+        {errors.password && (
+          <Text style={styles.errorText}>{errors.password.message}</Text>
         )}
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
 
-      <View style={styles.buttonBox}>
-        <Button
-          onPress={handleSubmit(onSignInPress)}
-          buttonColor={theme.colors.secondaryContainer}
-          textColor={theme.colors.onSecondaryContainer}
-        >
-          <Text style={styles.text}>Ingresar</Text>
-        </Button>
+        <View style={styles.buttonBox}>
+          <Button
+            onPress={handleSubmit(onSignInPress)}
+            buttonColor={theme.colors.secondaryContainer}
+            textColor={theme.colors.onSecondaryContainer}
+          >
+            <Text style={styles.text}>Ingresar</Text>
+          </Button>
+        </View>
+
+        <View style={styles.buttonBox}>
+          <Link href="/(auth)/password-reset" asChild>
+            <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
+          </Link>
+        </View>
       </View>
 
-      <View style={styles.buttonBox}>
-        <Link href="/(auth)/password-reset" asChild>
-          <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
-        </Link>
-      </View>
-
-      <View style={{ flex: 1 }} />
-      <View style={styles.textOptions}>
+      <View style={styles.registerContainer}>
         <Text style={styles.textForgot}>¿No tienes cuenta?</Text>
         <Link href="/(auth)/sign-up" asChild>
           <Button
+            style={styles.registerButton}
             buttonColor={theme.colors.tertiaryContainer}
             textColor={theme.colors.onTertiaryContainer}
           >
@@ -161,6 +163,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     padding: 10,
     paddingTop: 50,
+  },
+  contentContainer: {
+    flex: 1,
   },
   imageBox: {
     alignItems: "center",
@@ -194,15 +199,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     margin: 8,
   },
-  textOptions: {
-    flex: 1,
-    alignContent: "center",
-    justifyContent: "center",
-    padding: 10,
-  },
   errorText: {
     color: theme.colors.error,
     marginLeft: 10,
     fontSize: 14,
+  },
+  registerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+  registerButton: {
+    margin: 10,
+    width: "100%",
   },
 });

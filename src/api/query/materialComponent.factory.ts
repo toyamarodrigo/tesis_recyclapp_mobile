@@ -7,9 +7,5 @@ export const materialComponentKeys = createQueryKeyStore({
       queryKey: ["materialComponentList"],
       queryFn: () => materialComponentApi.getMaterialComponent(),
     }),
-    detail: (id: string) => ({
-      queryKey: [id],
-      queryFn: () => materialComponentApi.getMaterialComponentById(id),
-    }),
   },
 });

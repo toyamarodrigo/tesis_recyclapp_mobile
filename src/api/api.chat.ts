@@ -20,7 +20,6 @@ export const chatApi = {
       `${backendApiConfig.baseURL}/chat/unique`,
       unique
     );
-    console.log(result);
     return result.data;
   },
   createChat: async (chat: ChatCreate) => {
@@ -30,7 +29,6 @@ export const chatApi = {
         chat
       );
 
-      console.log(result);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -42,13 +40,11 @@ export const chatApi = {
   },
   updateChat: async (chat: ChatUpdate) => {
     try {
-      console.log(chat);
       const result = await axios.put<Chat>(
         `${backendApiConfig.baseURL}/chat/${chat.id}`,
         chat
       );
 
-      console.log(result);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {
@@ -58,26 +54,4 @@ export const chatApi = {
       throw new Error("Unknown error");
     }
   },
-  deleteChat: async (id: string) => {
-    try {
-      const result = await axios.delete<Chat>(
-        `${backendApiConfig.baseURL}/chat/${id}`
-      );
-
-      console.log(result);
-      return result;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        throw new Error(e.message);
-      }
-
-      throw new Error("Unknown error");
-    }
-  },
 };
-
-// router.get("/chats", chatController.getChats);
-// router.get("/chat/:id", chatController.getChat);
-// router.post("/chat", chatController.createChat);
-// router.put("/chat/:id", chatController.updateChat);
-// router.delete("/chat/:id", chatController.deleteChat);

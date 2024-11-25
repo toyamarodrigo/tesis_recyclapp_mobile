@@ -41,8 +41,3 @@ export const commentApi = {
     }
   },
 };
-
-// router.get("/comments", commentController.getComments);
-// router.get("/comment/:id", commentController.getComment);
-// router.get("/comments/post/:id", commentController.getCommentsByPostId);
-// router.comment("/comment", commentController.createComment);

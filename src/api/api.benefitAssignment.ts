@@ -119,28 +119,4 @@ export const benefitAssignmentApi = {
       throw new Error("Unknown error");
     }
   },
-  deleteBenefitAssignment: async (id: string) => {
-    try {
-      const result = await axios.delete<BenefitAssignment>(
-        `${backendApiConfig.baseURL}/benefitassignment/${id}`
-      );
-
-      Alert.alert("Éxito", "Se desasignó el beneficio con éxito.");
-      return result;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        Alert.alert(
-          "Error",
-          "Ocurrió un problema al desasignar el beneficio. Intente nuevamente."
-        );
-        throw new Error(e.message);
-      }
-
-      Alert.alert(
-        "Error",
-        "Ocurrió un problema al desasignar el beneficio. Intente nuevamente."
-      );
-      throw new Error("Unknown error");
-    }
-  },
 };

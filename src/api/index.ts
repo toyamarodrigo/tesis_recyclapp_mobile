@@ -11,6 +11,4 @@ export * from "./api.imagen";
 export * from "./api.materialComponent";
 export * from "./api.materialProduct";
 export * from "./api.post";
-export * from "./api.rating";
-export * from "./api.subscription";
 export * from "./api.user";

@@ -24,7 +24,6 @@ export const chatMessageApi = {
         chatMessage
       );
 
-      console.log(result);
       return result.data;
     } catch (e) {
       if (axios.isAxiosError(e)) {

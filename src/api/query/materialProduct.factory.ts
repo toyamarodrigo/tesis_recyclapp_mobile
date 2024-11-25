@@ -14,9 +14,5 @@ export const materialProductKeys = createQueryKeyStore({
       queryKey: ["materialProductsList"],
       queryFn: () => materialProductApi.getMaterialProducts(),
     }),
-    detail: (id: string) => ({
-      queryKey: [id],
-      queryFn: () => materialProductApi.getMaterialProductById(id),
-    }),
   },
 });

@@ -7,8 +7,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
-    "postinstall": "node postinstall.js"
+    "web": "expo start --web"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.3.2",

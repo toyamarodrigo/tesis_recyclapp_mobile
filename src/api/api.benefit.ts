@@ -89,28 +89,4 @@ export const benefitApi = {
       throw new Error("Unknown error");
     }
   },
-  deleteBenefit: async (id: string) => {
-    try {
-      const result = await axios.delete<Benefit>(
-        `${backendApiConfig.baseURL}/benefit/${id}`
-      );
-
-      Alert.alert("Éxito", "Se eliminó el beneficio con éxito.");
-      return result;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        Alert.alert(
-          "Error",
-          "Ocurrió un problema al eliminar el beneficio. Intente nuevamente."
-        );
-        throw new Error(e.message);
-      }
-
-      Alert.alert(
-        "Error",
-        "Ocurrió un problema al eliminar el beneficio. Intente nuevamente."
-      );
-      throw new Error("Unknown error");
-    }
-  },
 };

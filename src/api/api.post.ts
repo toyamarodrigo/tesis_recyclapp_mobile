@@ -55,26 +55,4 @@ export const postApi = {
       throw new Error("Unknown error");
     }
   },
-  deletePost: async (id: string) => {
-    try {
-      const result = await axios.delete<Post>(
-        `${backendApiConfig.baseURL}/post/${id}`
-      );
-
-      console.log(result);
-      return result;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        throw new Error(e.message);
-      }
-
-      throw new Error("Unknown error");
-    }
-  },
 };
-
-// router.get("/posts", postController.getPosts);
-// router.get("/post/:id", postController.getPost);
-// router.post("/post", postController.createPost);
-// router.put("/post/:id", postController.updatePost);
-// router.delete("/post/:id", postController.deletePost);

@@ -42,30 +42,19 @@ export default function ImageUploader({
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      console.log("Imagen seleccionada:", result.assets[0].uri);
       setImage(result.assets[0].uri);
-    } else {
-      console.log("No se seleccionó ninguna imagen o se canceló la selección.");
     }
   };
 
   useEffect(() => {
-    if (image) {
-      console.log("Nueva imagen:", image);
-      uploadImage();
-    }
+    if (image) uploadImage();
   }, [image]);
 
   const uploadImage = async () => {
-    if (!image) {
-      Alert.alert("Error", "Selecciona una imagen primero.");
-      return;
-    }
+    if (!image) return Alert.alert("Error", "Selecciona una imagen primero.");
 
     try {
-      const deletedddd = await imageApi.deleteImage({ public_id: public_id });
-      console.log("deletedddd", deletedddd);
-
+      await imageApi.deleteImage({ public_id: public_id });
       const fileInfo = await FileSystem.getInfoAsync(image);
       const fileUri = fileInfo.uri;
       const fileExtension = getFileExtension(image);
@@ -75,11 +64,6 @@ export default function ImageUploader({
       formData.append("upload_preset", CLOUDINARY.uploadPreset);
       formData.append("public_id", publicid);
       formData.append("folder", subfolder);
-
-      console.log("fileInfo", fileInfo);
-      console.log("fileExtension", fileExtension);
-      console.log("fileWithExtension", fileWithExtension);
-
 
       formData.append("file", {
         uri: fileUri,
@@ -93,8 +77,7 @@ export default function ImageUploader({
 
       const refreshedUrl = `${response.data.secure_url}${timestamp}`;
       Alert.alert("¡Éxito!", `Se subió la imagen`);
-      console.log("refreshedUrl", refreshedUrl);
-      setProfileImage(refreshedUrl); //revisar para reutilizar
+      setProfileImage(refreshedUrl);
 
       setImage(null);
     } catch (error) {

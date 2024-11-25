@@ -17,12 +17,9 @@ const useCreateAddress = () => {
     mutationKey: ["createAddress"],
     mutationFn: (address: AddressPost) => addressApi.createAddress(address),
     onSuccess: (data) => {
-      queryClient.setQueryData(
-        addressKeys.address.addressesClerk(data.userId).queryKey,
-        (old: Address[]) => {
-          return [...old, data];
-        }
-      );
+      queryClient.invalidateQueries({
+        queryKey: addressKeys.address.addressesClerk(data.userId).queryKey,
+      });
 
       Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
     },

@@ -30,37 +30,16 @@ const useUpdateUserCustomer = () => {
   });
 };
 
-const useDeleteUserCustomer = () => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: (id: string) => userApi.deleteUserCustomer(id),
-  });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
-};
-
 const useUserStoreByClerk = ({ userId }: { userId: string }) => {
-  const { data, isLoading, isError, error } = useQuery({
+  return useQuery({
     ...userKeys.user.storeDetailsClerk(userId),
     enabled: !!userId,
   });
-
-  return {
-    data,
-    isLoading,
-    isError,
-    error,
-  };
 };
 
 export {
   useUserCustomerByClerk,
   useCreateUserCustomer,
   useUpdateUserCustomer,
-  useDeleteUserCustomer,
   useUserStoreByClerk,
 };

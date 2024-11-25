@@ -15,13 +15,6 @@ const useCommentListByPostId = ({ postId }: { postId: string }) => {
   });
 };
 
-const useCommentById = ({ id }: { id: string }) => {
-  return useQuery({
-    ...commentKeys.comment.detail(id),
-    enabled: !!id,
-  });
-};
-
 const useCreateComment = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,9 +28,4 @@ const useCreateComment = () => {
   });
 };
 
-export {
-  useCommentList,
-  useCommentListByPostId,
-  useCommentById,
-  useCreateComment,
-};
+export { useCommentList, useCommentListByPostId, useCreateComment };

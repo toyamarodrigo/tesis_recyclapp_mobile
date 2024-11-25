@@ -2,7 +2,6 @@ import { postKeys } from "@api/query/post.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@api/api.post";
 import { Post, PostCreate, PostUpdate } from "@models/post.type";
-import { Alert } from "react-native";
 
 const usePostList = () => {
   return useQuery({ ...postKeys.post.list() });
@@ -57,25 +56,10 @@ const useUpdatePost = () => {
   });
 };
 
-const useDeletePost = (id: string) => {
-  const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: postApi.deletePost,
-    mutationKey: [id],
-  });
-
-  return {
-    mutate,
-    isPending,
-    isError,
-    error,
-  };
-};
-
 export {
   usePostList,
   usePostListByClerkId,
   usePostById,
   useCreatePost,
   useUpdatePost,
-  useDeletePost,
 };

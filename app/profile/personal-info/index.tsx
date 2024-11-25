@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, ScrollView, Alert } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, ScrollView, Alert, RefreshControl } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -42,11 +42,12 @@ const formSchema = z.object({
 
 export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
   const theme = useAppTheme();
   const router = useRouter();
   const { user, isSignedIn } = useUser();
   if (!isSignedIn || !user?.id) return null;
-  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
+  const { data: userStore, refetch } = useUserStoreByClerk({ userId: user.id });
 
   const {
     control,
@@ -92,6 +93,23 @@ export default function PersonalInfo() {
     reset();
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        user.reload(),
+        refetch()
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "No se pudieron actualizar los datos. Intente nuevamente."
+      );
+    } finally {
+      setRefreshing(false);
+    }
+  }, [user, refetch]);
+
   if (!user) {
     onCancel();
     router.push("/profile");
@@ -105,7 +123,17 @@ export default function PersonalInfo() {
         </Link>
         <Title style={{ color: theme.colors.primary }}>Datos personales</Title>
       </View>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
+      >
         <View style={{ width: "100%" }}>
           {/* Name Input */}
           <Controller

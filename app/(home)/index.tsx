@@ -1,4 +1,10 @@
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  RefreshControl,
+} from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { router, Link } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
@@ -14,15 +20,33 @@ import { IMAGE } from "@constants/image.constant";
 import { NoDataCard } from "@components/NoDataCard";
 import { Result } from "@models/news";
 import { newsApi } from "@api/api.news";
+import { useCallback } from "react";
+import { useState } from "react";
 
 const Home = () => {
   const { user: userClerk, isLoaded } = useUser();
   if (!userClerk || !isLoaded) return null;
-  const { data: ads, isPending: adsPending } = useAdvertisementList();
-  const { data: news, isPending: newsPending } = useQuery({
+  const {
+    data: ads,
+    isPending: adsPending,
+    refetch: refetchAds,
+  } = useAdvertisementList();
+  const {
+    data: news,
+    isPending: newsPending,
+    refetch: refetchNews,
+  } = useQuery({
     queryKey: ["news"],
     queryFn: newsApi.getNews,
   });
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchAds(), refetchNews()]);
+    setRefreshing(false);
+  }, [refetchAds, refetchNews]);
 
   const handleNewsPress = (item: Result) => {
     router.push({
@@ -39,7 +63,17 @@ const Home = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: theme.colors.background }}>
+    <ScrollView
+      style={{ backgroundColor: theme.colors.background }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[theme.colors.primary]} // Android
+          tintColor={theme.colors.primary} // iOS
+        />
+      }
+    >
       <SignedIn>
         <View style={styles.container}>
           {ads && ads.length ? (

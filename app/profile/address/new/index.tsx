@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AddressPost, AddressPut } from "@models/address.type";
 import { useCreateAddress, useUpdateAddress } from "@hooks/useAddress";
 import { useUser } from "@clerk/clerk-expo";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = {
   street: string;
@@ -34,44 +35,6 @@ const formSchema = z.object({
     .regex(/^\d{4}$/, "Debe ser un número de exactamente 4 dígitos"),
 });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        street: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 const prepareAddressData = (
   formData: FormValues,
   userId: string
@@ -84,13 +47,6 @@ const prepareAddressData = (
     userId: userId,
     isArchived: false,
   };
-
-  if (formData.flat?.trim()) {
-    return {
-      ...addressData,
-      flat: formData.flat,
-    };
-  }
 
   return addressData;
 };
@@ -125,7 +81,6 @@ export default function NewAddress() {
   const onSubmit = async (formData: FormValues) => {
     try {
       const addressData = prepareAddressData(formData, user.id);
-
       if (currentAddress) {
         await handleEdit({
           ...addressData,
@@ -147,18 +102,15 @@ export default function NewAddress() {
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver,
+    resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
-      street: currentAddress ? currentAddress.street : "",
-      flat:
-        currentAddress && currentAddress.flat != null
-          ? currentAddress.flat
-          : "",
-      city: currentAddress ? currentAddress.city : "",
-      state: currentAddress ? currentAddress.state : "",
-      postalCode: currentAddress ? currentAddress.postalCode : "",
+      street: currentAddress?.street || "",
+      flat: currentAddress?.flat || "",
+      city: currentAddress?.city || "",
+      state: currentAddress?.state || "",
+      postalCode: currentAddress?.postalCode || "",
     },
   });
 
@@ -169,7 +121,7 @@ export default function NewAddress() {
           <IconButton icon="arrow-left" size={24} />
         </Link>
         <Title style={{ color: theme.colors.primary }}>
-          Dirección {currentAddress ? currentAddress.street : "nueva"}
+          Dirección {currentAddress?.street || "nueva"}
         </Title>
       </View>
       <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>

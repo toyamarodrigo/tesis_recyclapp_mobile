@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, RefreshControl } from "react-native";
 import { router } from "expo-router";
 import {
   Text,
@@ -25,10 +25,10 @@ import { useUser } from "@clerk/clerk-expo";
 export default function Benefits() {
   const { user, isSignedIn } = useUser();
   if (!isSignedIn) return null;
-  const { isLoading, error, data: benefitList } = useBenefitList();
+  const { isLoading, error, data: benefitList, refetch } = useBenefitList();
+  const { data: userCustomer, refetch: refetchUser } = useUserCustomerByClerk({ userId: user.id });
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
-  const { data: userCustomer } = useUserCustomerByClerk({ userId: user.id });
   const { mutateAsync: createBenefitAssignment } = useCreateBenefitAssignment();
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
@@ -64,19 +64,16 @@ export default function Benefits() {
   };
 
   const disablePoints = () => {
-    if (
-      selectedBenefit &&
-      userCustomer &&
-      userCustomer.pointsCurrent < selectedBenefit.pointsCost
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    if (!selectedBenefit || !userCustomer) return false;
+    return userCustomer.pointsCurrent < selectedBenefit.pointsCost;
+  };
+
+  const onRefresh = async () => {
+    await Promise.allSettled([refetch(), refetchUser()]);
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <IconButton
           icon="chevron-left"
@@ -93,7 +90,16 @@ export default function Benefits() {
             Puntos disponibles: {userCustomer && userCustomer.pointsCurrent}
           </Text>
         </View>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={onRefresh}
+              colors={[theme.colors.primary]}
+            />
+          }
+        >
           <Portal>
             <Modal
               visible={visible}
@@ -164,11 +170,15 @@ export default function Benefits() {
             : null}
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    flex: 1,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",

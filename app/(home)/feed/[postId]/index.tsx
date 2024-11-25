@@ -1,5 +1,5 @@
 import { Link, Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { View, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, ScrollView, StyleSheet, Alert, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
@@ -29,7 +29,7 @@ export default function DetailPost() {
   if (!user || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   const params = useLocalSearchParams();
   const postId = params.postId as string;
-  const { data: post, isPending } = usePostById({ id: postId });
+  const { data: post, isPending, refetch: refetchPost } = usePostById({ id: postId });
   const theme = useAppTheme();
   const { data: materials } = useMaterialProductList();
   const imageUrlPost = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg?timestamp=${Date.now()}`;
@@ -38,7 +38,7 @@ export default function DetailPost() {
   const [imagePost, setImagePost] = useState<string>("");
   const [imagePostUser, setImagePostUser] = useState<string>(imageUrlPostUser);
   const router = useRouter();
-  const { data: comments, isPending: isPendingComments } =
+  const { data: comments, isPending: isPendingComments, refetch: refetchComments } =
     useCommentListByPostId({ postId: postId });
   const {
     mutateAsync: createComment,
@@ -48,6 +48,7 @@ export default function DetailPost() {
 
   const [isCommentEditing, setIsCommentEditing] = useState(false);
   const [tempText, setTempText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleConfirm = async () => {
     const commentCreateData: CommentCreate = {
@@ -76,6 +77,12 @@ export default function DetailPost() {
     setIsCommentEditing(false);
   };
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchPost(), refetchComments()]);
+    setRefreshing(false);
+  }, [refetchPost, refetchComments]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -101,7 +108,7 @@ export default function DetailPost() {
   }, [post]);
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <View style={styles.container}>
       <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
@@ -109,7 +116,17 @@ export default function DetailPost() {
         <Title style={{ color: theme.colors.primary }}>Publicación</Title>
       </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]} // Android
+            tintColor={theme.colors.primary} // iOS
+          />
+        }
+      >
         <Portal>
           <Dialog visible={isCommentEditing} onDismiss={handleCancel}>
             <Dialog.Title>Comentar</Dialog.Title>
@@ -246,7 +263,7 @@ export default function DetailPost() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

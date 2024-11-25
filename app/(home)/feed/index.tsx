@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, ScrollView } from "react-native";
+import { StyleSheet, View, Image, ScrollView, RefreshControl } from "react-native";
 import { List, Card, Text, FAB } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { usePostList, usePostListByClerkId } from "@hooks/usePost";
@@ -6,7 +6,7 @@ import { Post } from "@models/post.type";
 import { useAuth } from "@clerk/clerk-expo";
 import { IMAGE } from "@constants/image.constant";
 import { router, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import { MaterialProduct } from "@models/materialProduct.type";
@@ -75,13 +75,35 @@ const Feed = () => {
   const router = useRouter();
   const { userId, isSignedIn } = useAuth();
   if (!isSignedIn) return null;
-  const { data: postsByClerkId } = usePostListByClerkId({ userId });
-  const { data: materials } = useMaterialProductList();
-  const { data: postsList } = usePostList();
+  
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: postsByClerkId, refetch: refetchUserPosts } = usePostListByClerkId({ userId });
+  const { data: materials, refetch: refetchMaterials } = useMaterialProductList();
+  const { data: postsList, refetch: refetchPosts } = usePostList();
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.allSettled([
+      refetchUserPosts(),
+      refetchMaterials(),
+      refetchPosts()
+    ]);
+    setRefreshing(false);
+  }, [refetchUserPosts, refetchMaterials, refetchPosts]);
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.green[500]]} // Android
+            tintColor={colors.green[500]} // iOS
+          />
+        }
+      >
         <List.Section>
           <List.Accordion
             title="Mis publicaciones activas"

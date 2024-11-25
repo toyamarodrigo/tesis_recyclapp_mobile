@@ -25,6 +25,7 @@ import { getFileExtension } from "@utils/helpers";
 import { useCloudinary } from "@hooks/useImage";
 import { IMAGE } from "@constants/image.constant";
 import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type PostValues = {
   id: string;
@@ -58,44 +59,6 @@ const postSchema = z.object({
   username: z.string(),
 });
 
-const resolver: Resolver<PostValues> = async (values) => {
-  try {
-    const validatedData = postSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof PostValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof PostValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        description: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 export default function EditablePost() {
   const params = useLocalSearchParams();
   const postId = params.postId as string;
@@ -122,7 +85,7 @@ export default function EditablePost() {
     formState: { errors },
     handleSubmit,
   } = useForm<PostValues>({
-    resolver,
+    resolver: zodResolver(postSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
@@ -182,10 +145,8 @@ export default function EditablePost() {
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert("Se necesitan permisos para acceder a las fotos.");
-      return;
-    }
+    if (!permissionResult.granted)
+      return Alert.alert("Se necesitan permisos para acceder a las fotos.");
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -197,8 +158,7 @@ export default function EditablePost() {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImage(result.assets[0].uri);
       if (!image) {
-        Alert.alert("Error", "Selecciona una imagen primero.");
-        return;
+        return Alert.alert("Error", "Selecciona una imagen primero.");
       }
 
       const fileInfo = await FileSystem.getInfoAsync(image);

@@ -13,7 +13,7 @@ export default function ActiveBenefits() {
     clearCurrentBenefitCustomer();
     router.back();
   };
-  
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
       <View style={styles.header}>

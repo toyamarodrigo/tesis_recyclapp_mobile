@@ -69,24 +69,26 @@ export default function NewPost() {
       username: user.username ?? "",
     },
   });
-  //TODO agregar mensajes de error
+
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert("Se necesitan permisos para acceder a las fotos.");
-      return;
-    }
+    if (!permissionResult.granted)
+      return Alert.alert("Se necesitan permisos para acceder a las fotos.");
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets[0].uri);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Error al seleccionar la imagen.");
     }
   };
 
@@ -96,26 +98,29 @@ export default function NewPost() {
       pointsAwarded: values.purpouse === "WANT" ? 100 : 200,
     };
 
-    const res = await createPost(body);
+    if (!image) return Alert.alert("Error", "Selecciona una imagen primero.");
 
-    if (!image) {
-      Alert.alert("Error", "Selecciona una imagen primero.");
-      return;
+    try {
+      const res = await createPost(body);
+      if (!res?.id)
+        return Alert.alert("Error", "Error al crear la publicación.");
+
+      const fileInfo = await FileSystem.getInfoAsync(image);
+      const fileUri = fileInfo.uri;
+      const fileExtension = getFileExtension(image);
+      const fileWithExtension = `${res.id}${fileExtension}`;
+
+      await uploadImage({
+        fileUri,
+        publicId: res.id,
+        folder: `${IMAGE.POST_UPLOAD}`,
+        file: fileWithExtension,
+      });
+
+      Alert.alert("¡Éxito!", `Se subió la imagen`);
+    } catch (error) {
+      Alert.alert("Error", "Error al subir la imagen.");
     }
-
-    const fileInfo = await FileSystem.getInfoAsync(image);
-    const fileUri = fileInfo.uri;
-    const fileExtension = getFileExtension(image);
-    const fileWithExtension = `${res.id}${fileExtension}`;
-
-    await uploadImage({
-      fileUri,
-      publicId: res.id,
-      folder: `${IMAGE.POST_UPLOAD}`,
-      file: fileWithExtension,
-    });
-
-    Alert.alert("¡Éxito!", `Se subió la imagen`);
   };
 
   return (

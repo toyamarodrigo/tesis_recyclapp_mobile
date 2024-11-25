@@ -15,8 +15,8 @@ export default function AuthRoutesLayout() {
       <Stack.Screen
         name="sign-in"
         options={{
-          title: "Iniciar sesión",
-          headerShown: true,
+          title: "",
+          headerShown: false,
         }}
       />
       <Stack.Screen

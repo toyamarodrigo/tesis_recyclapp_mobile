@@ -53,11 +53,6 @@ const useUpdatePost = () => {
       queryClient.invalidateQueries({
         queryKey: postKeys.post.detail(post.id).queryKey,
       });
-
-      Alert.alert(
-        "¡Cambio exitoso!",
-        `Se realizó la recepción del código correctamente. Verás +${post?.pointsAwarded} puntos sumados en tu perfil. No olvides avisarle a quien te dio el código que ya puede confirmar el cambio en su pantalla.`
-      );
     },
   });
 };

@@ -1,11 +1,12 @@
 import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Text, View, StyleSheet, Alert } from "react-native";
+import { Text, View, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { theme } from "src/theme";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Image } from "expo-image";
 
 type FormValues = {
   emailAddress: string;
@@ -56,7 +57,15 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={styles.containerLogin}>
+    <SafeAreaView style={styles.containerLogin}>
+      <View style={styles.imageBox}>
+        <Image
+          style={styles.image}
+          source={require("assets/images/icon.png")}
+          contentFit="cover"
+        />
+      </View>
+
       <Controller
         control={control}
         name="emailAddress"
@@ -107,18 +116,13 @@ export default function SignInScreen() {
 
       <View style={styles.buttonBox}>
         <Link href="/(auth)/password-reset" asChild>
-          <Button
-            buttonColor={theme.colors.errorContainer}
-            textColor={theme.colors.onErrorContainer}
-          >
-            <Text style={styles.text}>Olvidé mi contraseña</Text>
-          </Button>
+          <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
         </Link>
       </View>
 
       <View style={{ flex: 1 }} />
       <View style={styles.textOptions}>
-        <Text style={styles.text}>¿No tienes cuenta?</Text>
+        <Text style={styles.textForgot}>¿No tienes cuenta?</Text>
         <Link href="/(auth)/sign-up" asChild>
           <Button
             buttonColor={theme.colors.tertiaryContainer}
@@ -128,7 +132,7 @@ export default function SignInScreen() {
           </Button>
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -139,31 +143,43 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 50,
   },
+  imageBox: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    backgroundColor: theme.colors.background,
+  },
   textStyle: {
     fontWeight: "500",
     fontSize: 18,
-    borderRadius: 10,
     borderColor: theme.colors.secondaryContainer,
     borderWidth: 1,
-    padding: 10,
-    margin: 10,
+    margin: 8,
     color: theme.colors.onSurfaceVariant,
   },
   buttonBox: {
-    margin: 10,
-    marginTop: 30,
+    margin: 8,
   },
   text: {
-    fontWeight: "500",
+    fontWeight: 500,
     fontSize: 18,
     color: theme.colors.onSurfaceVariant,
     textAlign: "center",
     padding: 10,
   },
+  textForgot: {
+    textAlign: "center",
+    fontSize: 16,
+    margin: 8,
+  },
   textOptions: {
     flex: 1,
     alignContent: "center",
     justifyContent: "center",
+    padding: 10,
   },
   errorText: {
     color: theme.colors.error,

@@ -65,59 +65,6 @@ const Profile = () => {
       >
         <Portal>
           <Modal
-            visible={deleteVisible}
-            onDismiss={() => setDeleteVisible(false)}
-            contentContainerStyle={{
-              backgroundColor: "white",
-              padding: 20,
-            }}
-          >
-            <View
-              style={{
-                padding: 10,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
-                Eliminar cuenta
-              </Text>
-              <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
-                ¿Estás seguro de que quieres eliminar tu cuenta?
-              </Text>
-              <Text
-                style={{
-                  color: theme.colors.error,
-                  fontWeight: "600",
-                  fontSize: 16,
-                  padding: 10,
-                }}
-              >
-                Esta acción es IRREVERSIBLE.
-              </Text>
-            </View>
-            <Button
-              mode="contained"
-              onPress={() => setDeleteVisible(false)}
-              buttonColor={theme.colors.outline}
-              style={{
-                margin: 10,
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => console.log("Despedite de tu cuenta maquina")}
-              buttonColor={theme.colors.error}
-              style={{
-                margin: 10,
-              }}
-            >
-              Eliminar
-            </Button>
-          </Modal>
-          <Modal
             visible={logoutVisible}
             onDismiss={() => setLogoutVisible(false)}
             contentContainerStyle={{
@@ -268,13 +215,6 @@ const Profile = () => {
             textColor={theme.colors.secondary}
           >
             Cerrar sesión
-          </Button>
-          <Button
-            mode="text"
-            onPress={() => showModalDelete()}
-            textColor={theme.colors.error}
-          >
-            Eliminar cuenta
           </Button>
         </View>
       </ScrollView>

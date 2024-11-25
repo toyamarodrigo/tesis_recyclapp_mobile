@@ -1,15 +1,15 @@
 import { Stack } from "expo-router";
 
-
-export default function LocationsLayout() { 
+export default function LocationsLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" 
+      <Stack.Screen
+        name="index"
         options={{
           title: "Locations",
           headerShown: false,
         }}
       />
     </Stack>
-  )
+  );
 }

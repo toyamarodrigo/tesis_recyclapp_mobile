@@ -34,9 +34,7 @@ export default function SignInScreen() {
   });
 
   const onSignInPress = async (data: FormValues) => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       const signInAttempt = await signIn.create({
@@ -47,15 +45,13 @@ export default function SignInScreen() {
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");
-      } else {
-        Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
-        console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
       if (isClerkAPIResponseError(err)) {
-        Alert.alert("Error", err.errors[0].longMessage);
+        return Alert.alert("Error", err.errors[0].longMessage);
       }
-      console.error(JSON.stringify(err, null, 2));
+
+      return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");
     }
   };
 

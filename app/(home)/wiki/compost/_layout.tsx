@@ -16,7 +16,7 @@ export default function CompostLayout() {
           title: "Elementos Compostables",
           headerShown: false,
         }}
-      />  
+      />
       <Stack.Screen
         name="non-compostable-items"
         options={{

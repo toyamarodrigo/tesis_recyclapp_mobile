@@ -32,9 +32,7 @@ export default function Benefits() {
   const { mutateAsync: createBenefitAssignment } = useCreateBenefitAssignment();
   const { mutateAsync: updateUserCustomer } = useUpdateUserCustomer();
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
-  const [_, setSelectedBenefitAssignment] = useState<
-    string | null
-  >(null);
+  const [_, setSelectedBenefitAssignment] = useState<string | null>(null);
 
   const hideModal = () => setVisible(false);
 
@@ -42,7 +40,7 @@ export default function Benefits() {
     setSelectedBenefit(benefit);
     setVisible(true);
   };
-  
+
   const confirmPoints = async () => {
     if (selectedBenefit && userCustomer) {
       const benefitAssignmentData: BenefitAssignmentPost = {

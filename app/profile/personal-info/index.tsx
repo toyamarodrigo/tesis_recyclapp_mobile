@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView, Alert } from "react-native";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import {
   TextInput,
@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormValues = {
   name: string;
@@ -39,44 +40,6 @@ const formSchema = z.object({
     ),
 });
 
-const resolver: Resolver<FormValues> = async (values) => {
-  try {
-    const validatedData = formSchema.parse(values);
-    return {
-      values: validatedData,
-      errors: {},
-    };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const errors = error.errors.reduce(
-        (acc, curr) => {
-          const path = curr.path[0] as keyof FormValues;
-          acc[path] = {
-            type: curr.code,
-            message: curr.message,
-          };
-          return acc;
-        },
-        {} as Record<keyof FormValues, { type: string; message: string }>
-      );
-
-      return {
-        values: {},
-        errors: errors,
-      };
-    }
-    return {
-      values: {},
-      errors: {
-        name: {
-          type: "validation",
-          message: "An unexpected error occurred",
-        },
-      },
-    };
-  }
-};
-
 export default function PersonalInfo() {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const theme = useAppTheme();
@@ -88,11 +51,10 @@ export default function PersonalInfo() {
   const {
     control,
     reset,
-    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver,
+    resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {

@@ -37,9 +37,12 @@ export default function HowToRecycleMaterialLayout() {
         ))}
         <Card style={styles.importantInfo}>
           <Card.Content>
-            <Text style={styles.importantInfoTitle}>Información importante:</Text>
+            <Text style={styles.importantInfoTitle}>
+              Información importante:
+            </Text>
             <Text style={styles.importantInfoText}>
-              Siempre asegúrate de que los artículos estén limpios y secos antes de reciclarlos.
+              Siempre asegúrate de que los artículos estén limpios y secos antes
+              de reciclarlos.
             </Text>
           </Card.Content>
         </Card>
@@ -77,34 +80,34 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   stepContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
   },
   stepNumber: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 12,
-    color: '#1B5E20',
+    color: "#1B5E20",
     fontSize: 18,
   },
   stepText: {
     flex: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     fontSize: 18,
     lineHeight: 24,
   },
   importantInfo: {
     marginTop: 24,
     marginBottom: 24,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: "#E8F5E9",
   },
   importantInfoTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1B5E20',
+    fontWeight: "bold",
+    color: "#1B5E20",
     marginBottom: 8,
   },
   importantInfoText: {
     fontSize: 16,
-    color: '#1B5E20',
+    color: "#1B5E20",
   },
 });

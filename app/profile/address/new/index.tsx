@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
 import { Link, useRouter } from "expo-router";

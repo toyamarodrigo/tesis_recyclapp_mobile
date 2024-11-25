@@ -55,7 +55,6 @@ export default function Chatconvo() {
   const { mutateAsync: updateUser } = useUpdateUserCustomer();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  console.log("code", chat?.generatedCode);
   const handleSend = async () => {
     if (chat) {
       await createChatMessage({
@@ -74,15 +73,14 @@ export default function Chatconvo() {
 
   const handleConfirmExchange = () => {
     if (user.id == post?.userId) {
-      setIsPostCode(true);
-    } else {
-      setIsCommentCode(true);
+      return setIsPostCode(true);
     }
+    return setIsCommentCode(true);
   };
 
   const handleConfirmDialog = async () => {
     if (chat?.generatedCode != code.toUpperCase()) {
-      Alert.alert(
+      return Alert.alert(
         "Error",
         "El código ingresado es incorrecto. Intente nuevamente."
       );
@@ -118,10 +116,6 @@ export default function Chatconvo() {
           await updateChat(chatData);
           await updatePost(postData);
           resetDialog();
-          Alert.alert(
-            "¡Cambio exitoso!",
-            `Se realizó la recepción del código correctamente. Verás +${post?.pointsAwarded} puntos sumados en tu perfil. No olvides avisarle a quien te dio el código que ya puede confirmar el cambio en su pantalla.`
-          );
         }
       }
     }

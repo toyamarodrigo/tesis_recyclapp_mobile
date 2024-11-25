@@ -7,8 +7,8 @@ export const ChatSchema = z.object({
   userPostId: z.string(),
   userCommentId: z.string(),
   generatedCode: z.string(),
-  startDate: z.string(),
-  endDate: z.coerce.date().optional(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
   isActive: z.boolean(),
   isArchived: z.boolean(),
   ChatMessage: z.array(ChatMessageSchema),
@@ -22,9 +22,9 @@ const ChatPostSchema = z.object({
 
 const ChatPutSchema = z.object({
   id: z.string(),
-  endDate: z.coerce.date().optional(),
-  isActive: z.boolean().optional(),
-  isArchived: z.boolean().optional(),
+  endDate: z.coerce.date(),
+  isActive: z.boolean(),
+  isArchived: z.boolean(),
 });
 
 const ChatUniqueSchema = z.object({

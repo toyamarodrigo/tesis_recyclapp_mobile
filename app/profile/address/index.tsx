@@ -12,7 +12,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "src/theme";
-import { Address, AddressPut } from "@models/address.type";
+import type { Address, AddressPut } from "@models/address.type";
 import { useUser } from "@clerk/clerk-expo";
 import { useCallback, useState } from "react";
 

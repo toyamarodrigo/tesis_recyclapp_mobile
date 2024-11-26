@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { View, ScrollView, Alert, RefreshControl } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -96,10 +96,7 @@ export default function PersonalInfo() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([
-        user.reload(),
-        refetch()
-      ]);
+      await Promise.all([user.reload(), refetch()]);
     } catch (error) {
       Alert.alert(
         "Error",
@@ -123,7 +120,7 @@ export default function PersonalInfo() {
         </Link>
         <Title style={{ color: theme.colors.primary }}>Datos personales</Title>
       </View>
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={{ flexGrow: 1, padding: 16 }}
         refreshControl={
           <RefreshControl

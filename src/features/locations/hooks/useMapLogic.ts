@@ -4,7 +4,7 @@ import type MapView from "react-native-maps";
 import { useUserLocation } from "@hooks/useUserLocation";
 import { useQuery } from "@tanstack/react-query";
 import type { FlashList } from "@shopify/flash-list";
-import { TransformedGreenPoint } from "@models/greenPoint.type";
+import type { TransformedGreenPoint } from "@models/greenPoint.type";
 
 export type SortOrder = "asc" | "desc";
 

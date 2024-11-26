@@ -21,6 +21,11 @@
       "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile"
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD9wT6IaYQWPY6moXdriGvCEcOUpaC5Pfc"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

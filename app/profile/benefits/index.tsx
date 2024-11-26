@@ -16,7 +16,7 @@ import { theme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBenefitListStore, useUpdateBenefit } from "@hooks/useBenefit";
 import { useBenefitStore } from "@stores/useBenefitStore";
-import { Benefit } from "@models/benefit.type";
+import type { Benefit } from "@models/benefit.type";
 import DataEmpty from "@components/DataEmpty";
 import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
@@ -89,7 +89,7 @@ export default function Benefits() {
   const confirmCode = () => {
     if (!benefitList) return;
     const getByCode = benefitAssignmentListStore?.find(
-      (benefit) => benefit.generatedCode == code
+      (benefit) => benefit.generatedCode === code
     );
 
     if (!getByCode) {
@@ -99,7 +99,7 @@ export default function Benefits() {
       );
     } else {
       const benefitExchanged = benefitList.find(
-        (benefit) => benefit.id == getByCode.benefitId
+        (benefit) => benefit.id === getByCode.benefitId
       );
 
       updateBenefitAssignemnt({
@@ -197,16 +197,15 @@ export default function Benefits() {
                   formatedBenefitList.length === 0 && (
                     <DataEmpty displayText="Aún no tienes beneficios creados. Puedes agregar uno a continuación." />
                   )}
-                {formatedBenefitList &&
-                  formatedBenefitList.map((benefit) => (
-                    <CardProfile
-                      key={benefit.id}
-                      title={benefit.name}
-                      type={"beneficio"}
-                      onDelete={() => handleDelete(benefit)}
-                      onEdit={() => handleEdit(benefit)}
-                    />
-                  ))}
+                {formatedBenefitList?.map((benefit) => (
+                  <CardProfile
+                    key={benefit.id}
+                    title={benefit.name}
+                    type={"beneficio"}
+                    onDelete={() => handleDelete(benefit)}
+                    onEdit={() => handleEdit(benefit)}
+                  />
+                ))}
               </View>
             </View>
           </View>
@@ -223,11 +222,11 @@ export default function Benefits() {
             onPress={() => setVisible(true)}
             disabled={
               !benefitAssignmentListStore ||
-              benefitAssignmentListStore.length == 0
+              benefitAssignmentListStore.length === 0
             }
           >
             {!benefitAssignmentListStore ||
-            benefitAssignmentListStore.length == 0
+            benefitAssignmentListStore.length === 0
               ? "No hay beneficios a recibir"
               : "Recibir código"}
           </Button>

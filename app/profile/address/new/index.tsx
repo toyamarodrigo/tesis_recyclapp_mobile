@@ -6,7 +6,7 @@ import { type Resolver, useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useAddressStore } from "@stores/useAddressStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AddressPost, AddressPut } from "@models/address.type";
+import type { AddressPost, AddressPut } from "@models/address.type";
 import { useCreateAddress, useUpdateAddress } from "@hooks/useAddress";
 import { useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";

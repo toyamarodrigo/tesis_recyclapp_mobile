@@ -9,7 +9,7 @@ import { useBenefitStore } from "@stores/useBenefitStore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Fragment, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BenefitPost, BenefitPut } from "@models/benefit.type";
+import type { BenefitPost, BenefitPut } from "@models/benefit.type";
 import { useCreateBenefit, useUpdateBenefit } from "@hooks/useBenefit";
 import { useUserStoreByClerk } from "@hooks/useUser";
 import { BenefitType, BenefitTypeList } from "@constants/data.constant";
@@ -201,7 +201,7 @@ export default function NewBenefits() {
                 min: { value: 1, message: "Debe ser al menos 1" },
                 max: { value: 100, message: "No debe superar 100" },
                 validate: (value) =>
-                  !isNaN(Number(value)) || "Debe ser un número",
+                  !Number.isNaN(Number(value)) || "Debe ser un número",
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -253,7 +253,7 @@ export default function NewBenefits() {
                 min: { value: 100, message: "Debe ser al menos 100" },
                 max: { value: 1000, message: "No debe superar 1000" },
                 validate: (value) =>
-                  !isNaN(Number(value)) || "Debe ser un número",
+                  !Number.isNaN(Number(value)) || "Debe ser un número",
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -312,7 +312,15 @@ export default function NewBenefits() {
                       value
                         ? Number.isNaN(new Date(value).getTime())
                           ? ""
-                          : `${("0" + new Date(value).getDate()).slice(-2)}-${("0" + (new Date(value).getMonth() + 1)).slice(-2)}-${new Date(value).getFullYear()}`
+                          : `${String(new Date(value).getDate()).padStart(
+                              2,
+                              "0"
+                            )}-${String(
+                              new Date(value).getMonth() + 1
+                            ).padStart(
+                              2,
+                              "0"
+                            )}-${new Date(value).getFullYear()}`
                         : ""
                     }
                     error={!!errors.endDate}

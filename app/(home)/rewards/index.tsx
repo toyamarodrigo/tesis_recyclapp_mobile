@@ -100,7 +100,7 @@ export default function Rewards() {
             </View>
 
             <Text style={styles.historyTitle}>
-              Historial de puntos ({userCustomer && userCustomer.pointsTotal})
+              Historial de puntos ({userCustomer?.pointsTotal})
             </Text>
           </View>
         }

@@ -10,15 +10,14 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { theme } from "src/theme";
 import CardBenefit from "@components/CardBenefit";
 import { useState } from "react";
-import { Benefit } from "@models/benefit.type";
+import type { Benefit } from "@models/benefit.type";
 import { BENEFITTYPETEXT } from "@constants/enum.constant";
 import DataEmpty from "@components/DataEmpty";
 import { useCreateBenefitAssignment } from "@hooks/useBenefitAssignment";
-import { BenefitAssignmentPost } from "@models/benefitAssignment.type";
+import type { BenefitAssignmentPost } from "@models/benefitAssignment.type";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
 import { useUser } from "@clerk/clerk-expo";
 
@@ -87,7 +86,7 @@ export default function Benefits() {
       <View style={{ flex: 1 }}>
         <View style={styles.scoreHeader}>
           <Text style={styles.score}>
-            Puntos disponibles: {userCustomer && userCustomer.pointsCurrent}
+            Puntos disponibles: {userCustomer?.pointsCurrent}
           </Text>
         </View>
         <ScrollView 

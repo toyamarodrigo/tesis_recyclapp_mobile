@@ -1,6 +1,15 @@
 import { useSignIn, isClerkAPIResponseError } from "@clerk/clerk-expo";
-import { Link, router, useRouter } from "expo-router";
-import { Text, View, StyleSheet, Alert, SafeAreaView } from "react-native";
+import { Link, router } from "expo-router";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { theme } from "src/theme";
 import { useForm, Controller } from "react-hook-form";
@@ -56,7 +65,7 @@ export default function SignInScreen() {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
         if (
           err.errors[0].code === "form_param_format_invalid" ||
@@ -77,70 +86,82 @@ export default function SignInScreen() {
 
   return (
     <SafeAreaView style={styles.containerLogin}>
-      <View style={styles.contentContainer}>
-        <View style={styles.imageBox}>
-          <Image
-            style={styles.image}
-            source={require("assets/images/icon.png")}
-            contentFit="cover"
-          />
-        </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "android" ? "padding" : undefined}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === "android" ? -64 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.contentContainer}>
+            <View style={styles.imageBox}>
+              <Image
+                style={styles.image}
+                source={require("assets/images/icon.png")}
+                contentFit="cover"
+              />
+            </View>
 
-        <Controller
-          control={control}
-          name="emailAddress"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              autoCapitalize="none"
-              value={value}
-              placeholder="Email / Usuario"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={!!errors.emailAddress}
-              style={styles.textStyle}
+            <Controller
+              control={control}
+              name="emailAddress"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  autoCapitalize="none"
+                  value={value}
+                  placeholder="Email / Usuario"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.emailAddress}
+                  style={styles.textStyle}
+                />
+              )}
             />
-          )}
-        />
-        {errors.emailAddress && (
-          <Text style={styles.errorText}>{errors.emailAddress.message}</Text>
-        )}
+            {errors.emailAddress && (
+              <Text style={styles.errorText}>
+                {errors.emailAddress.message}
+              </Text>
+            )}
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              value={value}
-              placeholder="Contraseña"
-              secureTextEntry={true}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={!!errors.password}
-              style={styles.textStyle}
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  value={value}
+                  placeholder="Contraseña"
+                  secureTextEntry={true}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={!!errors.password}
+                  style={styles.textStyle}
+                />
+              )}
             />
-          )}
-        />
-        {errors.password && (
-          <Text style={styles.errorText}>{errors.password.message}</Text>
-        )}
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password.message}</Text>
+            )}
 
-        <View style={styles.buttonBox}>
-          <Button
-            onPress={handleSubmit(onSignInPress)}
-            buttonColor={theme.colors.secondaryContainer}
-            textColor={theme.colors.onSecondaryContainer}
-          >
-            <Text style={styles.text}>Ingresar</Text>
-          </Button>
-        </View>
+            <View style={styles.buttonBox}>
+              <Button
+                onPress={handleSubmit(onSignInPress)}
+                buttonColor={theme.colors.secondaryContainer}
+                textColor={theme.colors.onSecondaryContainer}
+              >
+                <Text style={styles.text}>Ingresar</Text>
+              </Button>
+            </View>
 
-        <View style={styles.buttonBox}>
-          <Link href="/(auth)/password-reset" asChild>
-            <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
-          </Link>
-        </View>
-      </View>
-
+            <View style={styles.buttonBox}>
+              <Link href="/(auth)/password-reset" asChild>
+                <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
+              </Link>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <View style={styles.registerContainer}>
         <Text style={styles.textForgot}>¿No tienes cuenta?</Text>
         <Link href="/(auth)/sign-up" asChild>
@@ -161,8 +182,15 @@ const styles = StyleSheet.create({
   containerLogin: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
     padding: 10,
     paddingTop: 50,
+    paddingBottom: 120,
   },
   contentContainer: {
     flex: 1,
@@ -205,10 +233,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   registerContainer: {
+    backgroundColor: theme.colors.background,
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: 20,
     paddingHorizontal: 10,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.outline,
   },
   registerButton: {
     margin: 10,

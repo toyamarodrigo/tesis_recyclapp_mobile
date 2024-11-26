@@ -15,7 +15,7 @@ import {
 } from "react-native-paper";
 import { usePostById, useUpdatePost } from "@hooks/usePost";
 import React, { useEffect, useState } from "react";
-import { type Resolver, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useAppTheme } from "src/theme";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
@@ -67,7 +67,7 @@ export default function EditablePost() {
   const theme = useAppTheme();
   const { mutateAsync: updatePost, isError, error } = useUpdatePost();
   const { data: materials } = useMaterialProductList();
-  const imageUrl = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg?timestamp=${Date.now()}`;
+  const baseImageUrl = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg`;
   const [image, setImage] = useState<string>("");
   const { uploadImage, isUploading } = useCloudinary();
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -114,8 +114,8 @@ export default function EditablePost() {
 
       (async () => {
         try {
-          const test = await axios.get(imageUrl);
-          if (test.status === 200) setImage(imageUrl);
+          const test = await axios.get(baseImageUrl);
+          if (test.status === 200) setImage(baseImageUrl);
           return;
         } catch (e) {
           setImage(
@@ -125,13 +125,13 @@ export default function EditablePost() {
         }
       })();
     }
-  }, [post, reset]);
+  }, [postId, post, reset, baseImageUrl]);
 
   useEffect(() => {
     (async () => {
       try {
-        const test = await axios.get(imageUrl);
-        if (test.status === 200) setImage(imageUrl);
+        const test = await axios.get(baseImageUrl);
+        if (test.status === 200) setImage(baseImageUrl);
         return;
       } catch (e) {
         setImage(
@@ -140,7 +140,7 @@ export default function EditablePost() {
         return;
       }
     })();
-  }, [post]);
+  }, [baseImageUrl, post?.materialProductId]);
 
   const pickImage = async () => {
     const permissionResult =
@@ -173,7 +173,7 @@ export default function EditablePost() {
         file: fileWithExtension,
       });
 
-      Alert.alert("¡Éxito!", `Se subió la imagen`);
+      Alert.alert("¡Éxito!", "Se subió la imagen");
     }
   };
 
@@ -321,7 +321,7 @@ export default function EditablePost() {
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 label="Cantidad"
-                onChangeText={(text) => onChange(parseInt(text) || 0)}
+                onChangeText={(text) => onChange(+text || 0)}
                 onBlur={onBlur}
                 value={value.toString()}
                 keyboardType="numeric"

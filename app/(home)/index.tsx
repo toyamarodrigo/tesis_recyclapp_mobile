@@ -18,7 +18,7 @@ import { theme } from "src/theme";
 import { useAdvertisementList } from "@hooks/useAdvertisement";
 import { IMAGE } from "@constants/image.constant";
 import { NoDataCard } from "@components/NoDataCard";
-import { Result } from "@models/news";
+import type { Result } from "@models/news";
 import { newsApi } from "@api/api.news";
 import { useCallback } from "react";
 import { useState } from "react";
@@ -76,7 +76,7 @@ const Home = () => {
     >
       <SignedIn>
         <View style={styles.container}>
-          {ads && ads.length ? (
+          {ads && ads.length > 0 ? (
             <Carousel
               title="Nuestras tiendas"
               data={ads}

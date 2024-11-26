@@ -1,6 +1,11 @@
 import { Link, Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { View, ScrollView, StyleSheet, Alert, RefreshControl } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import {
   ActivityIndicator,
   IconButton,
@@ -21,7 +26,7 @@ import { IMAGE } from "@constants/image.constant";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-expo";
 import { useCommentListByPostId, useCreateComment } from "@hooks/useComment";
-import { CommentCreate } from "@models/comment.type";
+import type { CommentCreate } from "@models/comment.type";
 import CardComment from "@components/CardComment";
 
 export default function DetailPost() {
@@ -29,17 +34,24 @@ export default function DetailPost() {
   if (!user || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
   const params = useLocalSearchParams();
   const postId = params.postId as string;
-  const { data: post, isPending, refetch: refetchPost } = usePostById({ id: postId });
+  const {
+    data: post,
+    isPending,
+    refetch: refetchPost,
+  } = usePostById({ id: postId });
   const theme = useAppTheme();
   const { data: materials } = useMaterialProductList();
-  const imageUrlPost = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg?timestamp=${Date.now()}`;
+  const baseImageUrlPost = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg`;
   const imageUrlPostMaterial = `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${post?.materialProductId}.png`;
   const imageUrlPostUser = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
   const [imagePost, setImagePost] = useState<string>("");
   const [imagePostUser, setImagePostUser] = useState<string>(imageUrlPostUser);
   const router = useRouter();
-  const { data: comments, isPending: isPendingComments, refetch: refetchComments } =
-    useCommentListByPostId({ postId: postId });
+  const {
+    data: comments,
+    isPending: isPendingComments,
+    refetch: refetchComments,
+  } = useCommentListByPostId({ postId: postId });
   const {
     mutateAsync: createComment,
     isPending: pendingCreateComment,
@@ -86,8 +98,8 @@ export default function DetailPost() {
   useEffect(() => {
     (async () => {
       try {
-        const test = await axios.get(imageUrlPost);
-        if (test.status === 200) setImagePost(imageUrlPost);
+        const test = await axios.get(baseImageUrlPost);
+        if (test.status === 200) setImagePost(baseImageUrlPost);
         return;
       } catch (e) {
         if (post) {
@@ -105,7 +117,7 @@ export default function DetailPost() {
       const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${post.userId}.jpg${timestamp}`;
       setImagePostUser(urlImage);
     }
-  }, [post]);
+  }, [baseImageUrlPost, imageUrlPostMaterial, post]);
 
   return (
     <View style={styles.container}>
@@ -116,7 +128,7 @@ export default function DetailPost() {
         <Title style={{ color: theme.colors.primary }}>Publicación</Title>
       </View>
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={{ flexGrow: 1, padding: 16 }}
         refreshControl={
           <RefreshControl
@@ -193,7 +205,7 @@ export default function DetailPost() {
                 variant="titleLarge"
                 style={{ color: theme.colors.onBackground }}
               >
-                {post?.purpouse == "HAVE" ? "Ofrezco " : "Busco "}
+                {post?.purpouse === "HAVE" ? "Ofrezco " : "Busco "}
                 {materials
                   ?.find((material) => material.id === post?.materialProductId)
                   ?.name.toLowerCase() || "material"}
@@ -221,7 +233,7 @@ export default function DetailPost() {
               <ActivityIndicator size="large" />
             )}
             <Card.Actions style={{ marginBottom: 10 }}>
-              {post?.userId == user.id && !post.isArchived && (
+              {post?.userId === user.id && !post.isArchived && (
                 <Button
                   mode="contained"
                   onPress={() => router.push(`/feed/${postId}/edit`)}

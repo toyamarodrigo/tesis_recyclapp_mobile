@@ -1,15 +1,21 @@
-import { StyleSheet, View, Image, ScrollView, RefreshControl } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { List, Card, Text, FAB } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { usePostList, usePostListByClerkId } from "@hooks/usePost";
-import { Post } from "@models/post.type";
+import type { Post } from "@models/post.type";
 import { useAuth } from "@clerk/clerk-expo";
 import { IMAGE } from "@constants/image.constant";
 import { router, useRouter } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
-import { MaterialProduct } from "@models/materialProduct.type";
+import type { MaterialProduct } from "@models/materialProduct.type";
 import { theme } from "src/theme";
 
 interface MaterialCardProps {
@@ -19,7 +25,7 @@ interface MaterialCardProps {
 }
 
 const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
-  const imageUrl = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${id}.jpg?timestamp=${Date.now()}`;
+  const baseImageUrl = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${id}.jpg`;
   const imageUrl2 = `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${post.materialProductId}.png`;
   const [image, setImage] = useState<string>(imageUrl2);
 
@@ -30,14 +36,16 @@ const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
   useEffect(() => {
     (async () => {
       try {
-        const test = await axios.get(imageUrl);
-        if (test.status === 200) setImage(imageUrl);
+        const cloudinaryImage = await axios.get(
+          `${baseImageUrl}?timestamp=${Date.now()}`
+        );
+        if (cloudinaryImage.status === 200) setImage(baseImageUrl);
         return;
       } catch (e) {
         return;
       }
     })();
-  }, []);
+  }, [baseImageUrl]);
 
   return (
     <Card style={styles.card} onPress={() => router.push(`/feed/${post.id}`)}>
@@ -75,10 +83,12 @@ const Feed = () => {
   const router = useRouter();
   const { userId, isSignedIn } = useAuth();
   if (!isSignedIn) return null;
-  
+
   const [refreshing, setRefreshing] = useState(false);
-  const { data: postsByClerkId, refetch: refetchUserPosts } = usePostListByClerkId({ userId });
-  const { data: materials, refetch: refetchMaterials } = useMaterialProductList();
+  const { data: postsByClerkId, refetch: refetchUserPosts } =
+    usePostListByClerkId({ userId });
+  const { data: materials, refetch: refetchMaterials } =
+    useMaterialProductList();
   const { data: postsList, refetch: refetchPosts } = usePostList();
 
   const onRefresh = useCallback(async () => {
@@ -86,14 +96,14 @@ const Feed = () => {
     await Promise.allSettled([
       refetchUserPosts(),
       refetchMaterials(),
-      refetchPosts()
+      refetchPosts(),
     ]);
     setRefreshing(false);
   }, [refetchUserPosts, refetchMaterials, refetchPosts]);
 
   return (
     <View style={styles.container}>
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl

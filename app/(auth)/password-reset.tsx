@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TextInput,
   Text,
-  GestureResponderEvent,
+  type GestureResponderEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Title } from "react-native-paper";
@@ -34,12 +34,12 @@ export default function PasswordReset() {
           setSuccessfulCreation(true);
           setError("");
         });
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
         return setError(err.errors[0].longMessage);
       }
 
-      return setError(err);
+      return setError(err as string);
     }
   }
 
@@ -60,12 +60,12 @@ export default function PasswordReset() {
         setActive({ session: result.createdSessionId });
         setError("");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
         return setError(err.errors[0].longMessage);
       }
 
-      return setError(err);
+      return setError(err as string);
     }
   }
 

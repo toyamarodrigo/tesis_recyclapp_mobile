@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Link, Redirect, router } from "expo-router";
+import { Link, router } from "expo-router";
 import {
   Button,
   Text,
@@ -44,7 +44,7 @@ const Profile = () => {
       const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
       setProfileImage(urlImage);
     }
-  }, []);
+  }, [user, setProfileImage]);
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>

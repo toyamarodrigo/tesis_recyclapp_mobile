@@ -5,9 +5,9 @@ import { useChatById, useUpdateChat } from "@hooks/useChat";
 import { useCreateChatMessage } from "@hooks/useChatMessage";
 import { usePostById, useUpdatePost } from "@hooks/usePost";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
-import { ChatUpdate } from "@models/chat.type";
-import { PostUpdate } from "@models/post.type";
-import { UserCustomerPut } from "@models/userCustomer.type";
+import type { ChatUpdate } from "@models/chat.type";
+import type { PostUpdate } from "@models/post.type";
+import type { UserCustomerPut } from "@models/userCustomer.type";
 import { Link, Redirect, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -72,56 +72,56 @@ export default function Chatconvo() {
   };
 
   const handleConfirmExchange = () => {
-    if (user.id == post?.userId) {
+    if (user.id === post?.userId) {
       return setIsPostCode(true);
     }
     return setIsCommentCode(true);
   };
 
   const handleConfirmDialog = async () => {
-    if (chat?.generatedCode != code.toUpperCase()) {
+    if (chat?.generatedCode !== code.toUpperCase()) {
       return Alert.alert(
         "Error",
         "El código ingresado es incorrecto. Intente nuevamente."
       );
-    } else {
-      if (chat && post) {
-        const date = new Date();
-        const chatData: ChatUpdate = {
-          id: chat.id,
-          endDate: date,
-          isActive: false,
-          isArchived: true,
-        };
-        const postData: PostUpdate = {
-          id: post.id,
-          isActive: false,
-          isArchived: true,
-        };
+    }
 
-        if (userPostClerk && userCommentClerk) {
-          const userPost: UserCustomerPut = {
-            id: userPostClerk.id,
-            pointsTotal: userPostClerk.pointsTotal + post.pointsAwarded,
-            pointsCurrent: userPostClerk.pointsCurrent + post.pointsAwarded,
-          };
-          const userComment: UserCustomerPut = {
-            id: userCommentClerk.id,
-            pointsTotal: userCommentClerk.pointsTotal + post.pointsAwarded,
-            pointsCurrent: userCommentClerk.pointsCurrent + post.pointsAwarded,
-          };
-          setIsUpdating(true);
-          await updateUser(userPost);
-          await updateUser(userComment);
-          await updateChat(chatData);
-          await updatePost(postData);
-          resetDialog();
+    if (chat && post) {
+      const date = new Date();
+      const chatData: ChatUpdate = {
+        id: chat.id,
+        endDate: date,
+        isActive: false,
+        isArchived: true,
+      };
+      const postData: PostUpdate = {
+        id: post.id,
+        isActive: false,
+        isArchived: true,
+      };
 
-          Alert.alert(
-            "¡Cambio exitoso!",
-            `Se realizó la recepción del código correctamente. Verás +${post?.pointsAwarded} puntos sumados en tu perfil. No olvides avisarle a quien te dio el código que ya puede confirmar el cambio en su pantalla.`
-          );
-        }
+      if (userPostClerk && userCommentClerk) {
+        const userPost: UserCustomerPut = {
+          id: userPostClerk.id,
+          pointsTotal: userPostClerk.pointsTotal + post.pointsAwarded,
+          pointsCurrent: userPostClerk.pointsCurrent + post.pointsAwarded,
+        };
+        const userComment: UserCustomerPut = {
+          id: userCommentClerk.id,
+          pointsTotal: userCommentClerk.pointsTotal + post.pointsAwarded,
+          pointsCurrent: userCommentClerk.pointsCurrent + post.pointsAwarded,
+        };
+        setIsUpdating(true);
+        await updateUser(userPost);
+        await updateUser(userComment);
+        await updateChat(chatData);
+        await updatePost(postData);
+        resetDialog();
+
+        Alert.alert(
+          "¡Cambio exitoso!",
+          `Se realizó la recepción del código correctamente. Verás +${post?.pointsAwarded} puntos sumados en tu perfil. No olvides avisarle a quien te dio el código que ya puede confirmar el cambio en su pantalla.`
+        );
       }
     }
   };
@@ -155,7 +155,7 @@ export default function Chatconvo() {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
-  }, [chat?.ChatMessage]);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -229,7 +229,7 @@ export default function Chatconvo() {
                 <Button
                   onPress={handleConfirmDialog}
                   textColor={theme.colors.primary}
-                  disabled={code == "" || isUpdating}
+                  disabled={!code || isUpdating}
                 >
                   Intercambiar
                 </Button>
@@ -312,7 +312,7 @@ export default function Chatconvo() {
             mode="contained"
             onPress={handleSend}
             style={styles.button}
-            disabled={chat?.isArchived || tempText == "" || isUpdating}
+            disabled={chat?.isArchived || !tempText || isUpdating}
             buttonColor={theme.colors.primary}
             textColor={theme.colors.onPrimary}
           >

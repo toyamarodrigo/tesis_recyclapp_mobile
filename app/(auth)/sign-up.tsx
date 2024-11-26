@@ -127,7 +127,7 @@ export default function SignUpScreen() {
 
       await setActive({ session: completeSignUp.createdSessionId });
       router.replace("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
         return Alert.alert("Error", err.errors[0].longMessage);
       }

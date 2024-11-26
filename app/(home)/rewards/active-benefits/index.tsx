@@ -19,7 +19,7 @@ import CardBenefit from "@components/CardBenefit";
 import DataEmpty from "@components/DataEmpty";
 import { useBenefitList, useUpdateBenefit } from "@hooks/useBenefit";
 import { useCallback, useState } from "react";
-import { Benefit } from "@models/benefit.type";
+import type { Benefit } from "@models/benefit.type";
 import { useUser } from "@clerk/clerk-expo";
 import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
 import {
@@ -110,14 +110,14 @@ export default function ActiveBenefits() {
   };
 
   const handleConfirmModal = async () => {
-    if (modalTitle == "Restaurar puntos") {
+    if (modalTitle === "Restaurar puntos") {
       restorePoints();
       hideModal();
-    } else if (modalTitle == "Generar código") {
+    } else if (modalTitle === "Generar código") {
       hideModal();
       if (selectedBenefitAssignment) {
         const currentBenefitAssignment = benefitAssignmentList?.find(
-          (benefit) => benefit.id == selectedBenefitAssignment
+          (benefit) => benefit.id === selectedBenefitAssignment
         );
 
         if (currentBenefitAssignment) {
@@ -235,14 +235,14 @@ export default function ActiveBenefits() {
           </View>
         )}
       {!isPending && userCustomer && filteredBenefitList?.length ? (
-        filteredBenefitList?.map((benefit, index) => {
+        filteredBenefitList?.map((benefit) => {
           const relatedAssignment = benefitAssignmentList?.find(
             (assignment) => assignment.benefitId === benefit.id
           );
 
           return (
             <CardBenefit
-              key={benefit.id + index}
+              key={`${benefit.id}-${benefit.quantity}`}
               benefit={benefit}
               handlePoints={() => showModal(benefit)}
               isActiveBenefit={benefit.isActive}

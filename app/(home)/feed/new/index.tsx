@@ -1,5 +1,5 @@
-import { Link, Redirect } from "expo-router";
-import { SafeAreaView, View, Image, Alert } from "react-native";
+import { Link, Redirect, router } from "expo-router";
+import { SafeAreaView, View, Image, Alert, ScrollView } from "react-native";
 import {
   IconButton,
   Text,
@@ -19,7 +19,7 @@ import { getFileExtension } from "@utils/helpers";
 import { useCreatePost } from "@hooks/usePost";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { PostCreate } from "@models/index";
+import type { PostCreate } from "@models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCloudinary } from "@hooks/useImage";
 
@@ -117,7 +117,9 @@ export default function NewPost() {
         file: fileWithExtension,
       });
 
-      Alert.alert("¡Éxito!", `Se subió la imagen`);
+      Alert.alert("¡Éxito!", "Se publicó correctamente");
+
+      router.replace("/feed");
     } catch (error) {
       Alert.alert("Error", "Error al subir la imagen.");
     }
@@ -133,106 +135,117 @@ export default function NewPost() {
       </View>
 
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{ padding: 16 }}>
-          <Controller
-            control={control}
-            name="materialProductId"
-            render={({ field: { onChange, value } }) => (
-              <SegmentedButtons
-                value={value}
-                onValueChange={onChange}
-                buttons={
-                  materials?.map((material) => ({
-                    value: material.id,
-                    label: material.name,
-                  })) ?? []
-                }
-                style={{ marginBottom: 16 }}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <TextInput
-                label="Description"
-                value={value}
-                onChangeText={onChange}
-                multiline
-                numberOfLines={4}
-                error={!!error}
-                style={{ marginBottom: 16 }}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="quantity"
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <TextInput
-                label="Quantity"
-                value={value.toString()}
-                onChangeText={(text) => onChange(parseInt(text) || 0)}
-                keyboardType="numeric"
-                error={!!error}
-                style={{ marginBottom: 16 }}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="purpouse"
-            render={({ field: { onChange, value } }) => (
-              <View style={{ marginBottom: 16 }}>
-                <Text variant="titleMedium" style={{ marginBottom: 8 }}>
-                  ¿Lo necesita o lo ofrece?
-                </Text>
-                <RadioButton.Group
-                  onValueChange={(newValue) => {
-                    onChange(newValue);
-                    setValue("pointsAwarded", newValue === "WANT" ? 100 : 200);
-                  }}
+        <ScrollView style={{ flex: 1 }}>
+          <View style={{ padding: 16 }}>
+            <Controller
+              control={control}
+              name="materialProductId"
+              render={({ field: { onChange, value } }) => (
+                <SegmentedButtons
                   value={value}
-                >
-                  <View style={{ flexDirection: "row" }}>
-                    <RadioButton.Item label="Necesito" value="WANT" />
-                    <RadioButton.Item label="Ofrezco" value="HAVE" />
-                  </View>
-                </RadioButton.Group>
-              </View>
-            )}
-          />
-          <View style={{ marginBottom: 16 }}>
-            <Text variant="titleMedium" style={{ marginBottom: 8 }}>
-              Imagen
-            </Text>
-            <View style={{ alignItems: "center" }}>
-              {image ? (
-                <View style={{ marginBottom: 8 }}>
-                  <Image
-                    source={{ uri: image }}
-                    style={{
-                      width: 200,
-                      height: 200,
-                      borderRadius: 8,
+                  onValueChange={onChange}
+                  buttons={
+                    materials?.map((material) => ({
+                      value: material.id,
+                      label: material.name,
+                    })) ?? []
+                  }
+                  style={{ marginBottom: 16 }}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="description"
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <TextInput
+                  label="Description"
+                  value={value}
+                  onChangeText={onChange}
+                  multiline
+                  numberOfLines={4}
+                  error={!!error}
+                  style={{ marginBottom: 16 }}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="quantity"
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <TextInput
+                  label="Quantity"
+                  value={value.toString()}
+                  onChangeText={(text) => onChange(+text || 0)}
+                  keyboardType="numeric"
+                  error={!!error}
+                  style={{ marginBottom: 16 }}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="purpouse"
+              render={({ field: { onChange, value } }) => (
+                <View style={{ marginBottom: 16 }}>
+                  <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+                    ¿Lo necesita o lo ofrece?
+                  </Text>
+                  <RadioButton.Group
+                    onValueChange={(newValue) => {
+                      onChange(newValue);
+                      setValue(
+                        "pointsAwarded",
+                        newValue === "WANT" ? 100 : 200
+                      );
                     }}
-                  />
+                    value={value}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <RadioButton.Item label="Necesito" value="WANT" />
+                      <RadioButton.Item label="Ofrezco" value="HAVE" />
+                    </View>
+                  </RadioButton.Group>
                 </View>
-              ) : null}
-              <Button
-                mode="outlined"
-                onPress={pickImage}
-                icon="camera"
-                style={{ marginTop: 8 }}
-              >
-                {image ? "Cambiar imagen" : "Agregar imagen"}
-              </Button>
+              )}
+            />
+            <View style={{ marginBottom: 16 }}>
+              <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+                Imagen
+              </Text>
+              <View style={{ alignItems: "center" }}>
+                {image ? (
+                  <View style={{ marginBottom: 8 }}>
+                    <Image
+                      source={{ uri: image }}
+                      style={{
+                        width: 200,
+                        height: 200,
+                        borderRadius: 8,
+                      }}
+                    />
+                  </View>
+                ) : null}
+                <Button
+                  mode="outlined"
+                  onPress={pickImage}
+                  icon="camera"
+                  style={{ marginTop: 8 }}
+                >
+                  {image ? "Cambiar imagen" : "Agregar imagen"}
+                </Button>
+              </View>
             </View>
+            {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
           </View>
-          {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
-        </View>
+        </ScrollView>
 
         <View style={{ padding: 16, backgroundColor: "white" }}>
           <Button

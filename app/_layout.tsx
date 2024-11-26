@@ -31,7 +31,7 @@ export default function RootLayout() {
         if (item) {
           console.log(`${key} was used 🔐 \n`);
         } else {
-          console.log("No values stored under key: " + key);
+          console.log(`No values stored under key: ${key}`);
         }
         return item;
       } catch (error) {
@@ -49,7 +49,7 @@ export default function RootLayout() {
     },
   };
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   if (!publishableKey) {
     throw new Error("Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env");

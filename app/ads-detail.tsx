@@ -1,4 +1,4 @@
-import { View, StyleSheet, Linking } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Card, Text, IconButton } from "react-native-paper";
 import { colors } from "@constants/colors.constant";

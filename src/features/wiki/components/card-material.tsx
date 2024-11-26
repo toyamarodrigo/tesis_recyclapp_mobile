@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import type { CardItem } from "@features/wiki/models/card-material.type";
@@ -20,15 +20,16 @@ export const CardMaterial: React.FC<{
     router.push("/wiki/how-to-recycle");
   };
 
+  const isRecyclable = sectionTitle === "Materiales reciclables";
+  const Container = isRecyclable ? TouchableOpacity : View;
+
   return (
-    <TouchableOpacity
+    <Container
       style={[
         styles.card,
-        sectionTitle === "Materiales reciclables"
-          ? styles.recyclableCard
-          : styles.specialWasteCard,
+        isRecyclable ? styles.recyclableCard : styles.specialWasteCard,
       ]}
-      onPress={handlePress}
+      {...(isRecyclable ? { onPress: handlePress } : {})}
     >
       <MaterialCommunityIcons
         name={item.icon}
@@ -37,7 +38,7 @@ export const CardMaterial: React.FC<{
         style={styles.cardIcon}
       />
       <Text style={styles.cardText}>{item.name}</Text>
-    </TouchableOpacity>
+    </Container>
   );
 };
 

@@ -8,7 +8,7 @@ import {
   type NativeSyntheticEvent,
   type NativeScrollEvent,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {
@@ -94,7 +94,7 @@ const Locations = () => {
       <MapView
         ref={mapRef}
         style={styles.map}
-        // TODO: Add Google API key
+        provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: userLocation?.latitude || -34.6037,
           longitude: userLocation?.longitude || -58.3816,

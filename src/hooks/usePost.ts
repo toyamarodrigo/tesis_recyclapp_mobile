@@ -35,6 +35,9 @@ const useCreatePost = () => {
         queryKey: postKeys.post.list().queryKey,
       });
       queryClient.invalidateQueries({
+        queryKey: postKeys.post.detail(post.id).queryKey,
+      });
+      queryClient.invalidateQueries({
         queryKey: userKeys.user.customerDetailsClerk(post.userId).queryKey,
       });
     },

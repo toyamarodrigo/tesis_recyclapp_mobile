@@ -11,7 +11,8 @@ const useChatList = () => {
 const useChatListByUnique = ({ unique }: { unique: ChatUnique }) => {
   return useQuery({
     ...chatKeys.chat.listByUnique(unique),
-    enabled: !!unique,
+    enabled: !!unique.postId && !!unique.userCommentId && !!unique.userPostId,
+    refetchInterval: 5000,
   });
 };
 
@@ -19,6 +20,7 @@ const useChatById = ({ id }: { id: string }) => {
   return useQuery({
     ...chatKeys.chat.detail(id),
     enabled: !!id,
+    refetchInterval: 5000,
   });
 };
 

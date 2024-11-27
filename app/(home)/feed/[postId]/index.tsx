@@ -1,91 +1,89 @@
-import { Link, Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  RefreshControl,
-} from "react-native";
+import { Link, Redirect, router, useLocalSearchParams } from "expo-router";
+import { View, ScrollView, StyleSheet, RefreshControl } from "react-native";
 import {
   ActivityIndicator,
   IconButton,
-  Button,
   Title,
-  Text,
-  Card,
-  Avatar,
   Portal,
   Dialog,
   TextInput,
+  Button,
+  Text,
+  HelperText,
 } from "react-native-paper";
 import { usePostById } from "@hooks/usePost";
 import React, { useEffect, useState } from "react";
-import { theme, useAppTheme } from "src/theme";
+import { theme } from "src/theme";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import { IMAGE } from "@constants/image.constant";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-expo";
 import { useCommentListByPostId, useCreateComment } from "@hooks/useComment";
 import type { CommentCreate } from "@models/comment.type";
-import CardComment from "@components/CardComment";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { PostCard } from "@features/feed/components/post-card";
+import CardComment from "@features/feed/components/card-comment";
+
+const commentSchema = z.object({
+  message: z
+    .string()
+    .min(1, "El comentario no puede estar vacío")
+    .max(250, "El comentario no puede exceder los 250 caracteres"),
+});
+
+type CommentFormData = z.infer<typeof commentSchema>;
 
 export default function DetailPost() {
   const { user, isSignedIn } = useUser();
   if (!user || !isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+
   const params = useLocalSearchParams();
   const postId = params.postId as string;
-  const {
-    data: post,
-    isPending,
-    refetch: refetchPost,
-  } = usePostById({ id: postId });
-  const theme = useAppTheme();
+
+  const { data: post, refetch: refetchPost } = usePostById({ id: postId });
   const { data: materials } = useMaterialProductList();
+  const { data: comments, refetch: refetchComments } = useCommentListByPostId({
+    postId: postId,
+  });
+  const { mutateAsync: createComment, isPending } = useCreateComment();
+
   const baseImageUrlPost = `${IMAGE.CLOUDINARY_URL}${IMAGE.POST_FOLDER}/${postId}.jpg`;
   const imageUrlPostMaterial = `${IMAGE.CLOUDINARY_URL}${IMAGE.UTILS_FOLDER}/${post?.materialProductId}.png`;
   const imageUrlPostUser = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_GENERIC}`;
+
   const [imagePost, setImagePost] = useState<string>("");
   const [imagePostUser, setImagePostUser] = useState<string>(imageUrlPostUser);
-  const router = useRouter();
-  const {
-    data: comments,
-    isPending: isPendingComments,
-    refetch: refetchComments,
-  } = useCommentListByPostId({ postId: postId });
-  const {
-    mutateAsync: createComment,
-    isPending: pendingCreateComment,
-    isError,
-  } = useCreateComment();
-
   const [isCommentEditing, setIsCommentEditing] = useState(false);
-  const [tempText, setTempText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleConfirm = async () => {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CommentFormData>({
+    resolver: zodResolver(commentSchema),
+    defaultValues: {
+      message: "",
+    },
+  });
+
+  const onSubmit = async (data: CommentFormData) => {
     const commentCreateData: CommentCreate = {
       postId: postId,
       userId: user.id,
       username: user.username || "usuario",
-      message: tempText,
+      message: data.message,
     };
     await createComment(commentCreateData);
-    handleCancel();
-    Alert.alert(
-      "¡Operación exitosa!",
-      "Su comentario fue enviado exitosamente."
-    );
-
-    if (isError) {
-      Alert.alert(
-        "Error",
-        "Ocurrió un error al dejar tu comentario. Por favor, intenta nuevamente."
-      );
-    }
+    reset();
+    setIsCommentEditing(false);
   };
 
   const handleCancel = () => {
-    setTempText("");
+    reset();
     setIsCommentEditing(false);
   };
 
@@ -121,7 +119,7 @@ export default function DetailPost() {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+      <View style={styles.header}>
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
@@ -129,13 +127,13 @@ export default function DetailPost() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[theme.colors.primary]} // Android
-            tintColor={theme.colors.primary} // iOS
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
           />
         }
       >
@@ -143,128 +141,72 @@ export default function DetailPost() {
           <Dialog visible={isCommentEditing} onDismiss={handleCancel}>
             <Dialog.Title>Comentar</Dialog.Title>
             <Dialog.Content>
-              <TextInput
-                mode="outlined"
-                value={tempText}
-                onChangeText={setTempText}
-                placeholder="Deja tu comentario aquí..."
-                maxLength={250}
-                multiline
-                style={styles.input}
+              <Controller
+                control={control}
+                name="message"
+                render={({ field: { onChange, value } }) => (
+                  <>
+                    <TextInput
+                      mode="outlined"
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder="Deja tu comentario aquí..."
+                      multiline
+                      style={styles.input}
+                      error={!!errors.message}
+                    />
+                    {errors.message && (
+                      <HelperText type="error">
+                        {errors.message.message}
+                      </HelperText>
+                    )}
+                    <Text style={styles.charCount}>
+                      {value.length}/250 caracteres
+                    </Text>
+                  </>
+                )}
               />
-              <Text style={styles.charCount}>
-                {tempText.length}/250 caracteres
-              </Text>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={handleCancel} style={styles.button}>
+              <Button
+                onPress={handleCancel}
+                style={styles.button}
+                disabled={isPending}
+              >
                 Cancelar
               </Button>
-              <Button onPress={handleConfirm} style={styles.button}>
+              <Button
+                onPress={handleSubmit(onSubmit)}
+                style={styles.button}
+                loading={isPending}
+                disabled={isPending}
+              >
                 Comentar
               </Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
+
         {isPending && <ActivityIndicator size="large" />}
-        <View style={{ width: "100%" }}>
-          <Card style={{ alignItems: "center", marginVertical: 20 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 10,
-              }}
-            >
-              <Avatar.Image
-                size={64}
-                style={{ marginRight: 10 }}
-                source={{
-                  uri: imagePostUser,
-                }}
-              />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.grayText}>@{post?.username}</Text>
-                <Text
-                  style={{
-                    marginTop: 5,
-                    fontSize: 16,
-                    color: post?.isActive
-                      ? theme.colors.secondary
-                      : theme.colors.error,
-                  }}
-                >
-                  {post?.isActive
-                    ? "Publicación activa"
-                    : "Publicación finalizada"}
-                </Text>
-              </View>
-            </View>
-            <Card.Content>
-              <Text
-                variant="titleLarge"
-                style={{ color: theme.colors.onBackground }}
-              >
-                {post?.purpouse === "HAVE" ? "Ofrezco " : "Busco "}
-                {materials
-                  ?.find((material) => material.id === post?.materialProductId)
-                  ?.name.toLowerCase() || "material"}
-                {", unidades: "}
-                {post?.quantity}
-              </Text>
-              <Text
-                variant="bodyMedium"
-                style={{ marginVertical: 10, color: theme.colors.onBackground }}
-              >
-                {post?.description}
-              </Text>
-            </Card.Content>
-            {imagePost ? (
-              <Card.Cover
-                source={{ uri: imagePost }}
-                style={{
-                  margin: 10,
-                  width: 350,
-                  height: 250,
-                  borderRadius: 8,
-                }}
-              />
-            ) : (
-              <ActivityIndicator size="large" />
-            )}
-            <Card.Actions style={{ marginBottom: 10 }}>
-              {post?.userId === user.id && !post.isArchived && (
-                <Button
-                  mode="contained"
-                  onPress={() => router.push(`/feed/${postId}/edit`)}
-                  loading={isPending}
-                  disabled={isPending}
-                  buttonColor={theme.colors.secondaryContainer}
-                  textColor={theme.colors.onSecondaryContainer}
-                >
-                  Editar publicación
-                </Button>
-              )}
-              {!post?.isArchived && (
-                <Button
-                  mode="contained"
-                  onPress={() => setIsCommentEditing(true)}
-                  loading={isPending}
-                  disabled={isPending}
-                  buttonColor={theme.colors.tertiaryContainer}
-                  textColor={theme.colors.onTertiaryContainer}
-                >
-                  Dejar un comentario
-                </Button>
-              )}
-            </Card.Actions>
-          </Card>
+
+        <View style={styles.cardContainer}>
+          <PostCard
+            post={post}
+            imagePost={imagePost}
+            imagePostUser={imagePostUser}
+            materials={materials}
+            isLoading={isPending}
+            userId={user.id}
+            onEdit={() => router.push(`/feed/${postId}/edit`)}
+            onComment={() => setIsCommentEditing(true)}
+          />
         </View>
-        <View style={{ margin: 20 }}>
-          <Text style={styles.grayText}>
+
+        <View style={styles.commentsSection}>
+          <Text style={styles.commentsTitle}>
             Comentarios ({comments?.length ?? 0})
           </Text>
-          <View style={{ width: "100%" }}>
+          <View style={styles.commentsList}>
             {comments?.length ? (
               comments.map((comment) => (
                 <CardComment comment={comment} key={comment.id} />
@@ -283,9 +225,28 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
-  text: {
-    marginBottom: 16,
-    fontSize: 16,
+  header: {
+    flexDirection: "row",
+    zIndex: 1,
+    alignItems: "center",
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 16,
+  },
+  cardContainer: {
+    width: "100%",
+  },
+  commentsSection: {
+    margin: 20,
+  },
+  commentsTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: theme.colors.backdrop,
+  },
+  commentsList: {
+    width: "100%",
   },
   input: {
     height: 100,
@@ -298,10 +259,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginHorizontal: 8,
-  },
-  grayText: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: theme.colors.backdrop,
   },
 });

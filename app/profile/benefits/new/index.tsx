@@ -1,4 +1,4 @@
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { theme } from "src/theme";
@@ -51,8 +51,8 @@ export default function NewBenefits() {
   const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
   const [selectedDate, setSelectedDate] = useState(newDate);
-  const { mutateAsync: createBenefit } = useCreateBenefit();
-  const { mutateAsync: editBenefit } = useUpdateBenefit();
+  const { mutateAsync: createBenefit, isPending: isCreating } = useCreateBenefit();
+  const { mutateAsync: editBenefit, isPending: isEditing } = useUpdateBenefit();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const {
@@ -98,11 +98,13 @@ export default function NewBenefits() {
 
   const handleEdit = async (benefit: BenefitPut) => {
     await editBenefit(benefit);
+    Alert.alert("Éxito", "Se actualizó el beneficio con éxito.");
   };
 
   const onSubmit = (data: FormValues) => {
     const benefitData: BenefitPost = {
       name: data.name,
+      displayName: user?.username ?? "",
       type: data.type,
       endDate: data.endDate,
       quantity: data.quantity,
@@ -351,7 +353,12 @@ export default function NewBenefits() {
         </View>
       </ScrollView>
       <View style={{ padding: 16, gap: 15 }}>
-        <Button mode="contained" onPress={handleSubmit(onSubmit)}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          loading={isCreating || isEditing}
+          disabled={isCreating || isEditing}
+        >
           {currentBenefit ? "Editar beneficio" : "Crear nuevo beneficio"}
         </Button>
         <Button
@@ -359,6 +366,7 @@ export default function NewBenefits() {
           onPress={() => handleCancel()}
           buttonColor={theme.colors.errorContainer}
           textColor={theme.colors.onErrorContainer}
+          disabled={isCreating || isEditing}
         >
           Cancelar
         </Button>

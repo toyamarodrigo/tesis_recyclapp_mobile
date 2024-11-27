@@ -25,7 +25,9 @@ export default function Benefits() {
   const { user, isSignedIn } = useUser();
   if (!isSignedIn) return null;
   const { isLoading, error, data: benefitList, refetch } = useBenefitList();
-  const { data: userCustomer, refetch: refetchUser } = useUserCustomerByClerk({ userId: user.id });
+  const { data: userCustomer, refetch: refetchUser } = useUserCustomerByClerk({
+    userId: user.id,
+  });
   const [visible, setVisible] = useState<boolean>(false);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const { mutateAsync: createBenefitAssignment } = useCreateBenefitAssignment();
@@ -33,6 +35,7 @@ export default function Benefits() {
   const { mutateAsync: updateBenefit } = useUpdateBenefit();
   const [_, setSelectedBenefitAssignment] = useState<string | null>(null);
 
+  console.log("benefitList", benefitList);
   const hideModal = () => setVisible(false);
 
   const showModal = (benefit: Benefit) => {
@@ -89,7 +92,7 @@ export default function Benefits() {
             Puntos disponibles: {userCustomer?.pointsCurrent}
           </Text>
         </View>
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={{ flexGrow: 1, padding: 16 }}
           refreshControl={
             <RefreshControl

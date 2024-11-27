@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { Button, Title, Text, TextInput, IconButton } from "react-native-paper";
 import { theme } from "src/theme";
-import { Link, useRouter } from "expo-router";
+import { Link, router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { useAddressStore } from "@stores/useAddressStore";
@@ -27,6 +27,7 @@ type FormValues = {
   postalCode: string;
   latitude?: number;
   longitude?: number;
+  displayName: string | null;
 };
 
 const formSchema = z.object({
@@ -49,11 +50,13 @@ const formSchema = z.object({
     ),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  displayName: z.string(),
 });
 
 const prepareAddressData = (
   formData: FormValues,
-  userId: string
+  userId: string,
+  displayName: string | null
 ): AddressPost => {
   const addressData: AddressPost = {
     street: formData.street,
@@ -62,6 +65,7 @@ const prepareAddressData = (
     postalCode: formData.postalCode,
     userId: userId,
     isArchived: false,
+    displayName: displayName,
   };
 
   if (formData.latitude !== undefined && formData.longitude !== undefined) {
@@ -74,12 +78,9 @@ const prepareAddressData = (
 
 export default function NewAddress() {
   const { user, isLoaded } = useUser();
-  if (!isLoaded || !user?.id) {
-    return null;
-  }
+  if (!isLoaded || !user?.id) return null;
 
   const { currentAddress, clearCurrentAddress } = useAddressStore();
-  const router = useRouter();
   const { mutateAsync: createAddress, isPending: isLoadingCreate } =
     useCreateAddress();
   const { mutateAsync: editAddress, isPending: isLoadingEdit } =
@@ -101,15 +102,13 @@ export default function NewAddress() {
 
   const onSubmit = async (formData: FormValues) => {
     try {
-      const addressData = prepareAddressData(formData, user.id);
-      console.log("addressData", addressData);
+      const addressData = prepareAddressData(formData, user.id, user.username);
       if (currentAddress) {
         await handleEdit({
           ...addressData,
           id: currentAddress.id,
         });
       } else {
-        console.log("addressData", addressData);
         await handleCreate(addressData);
       }
 
@@ -139,6 +138,7 @@ export default function NewAddress() {
       postalCode: currentAddress?.postalCode || "",
       latitude: currentAddress?.latitude,
       longitude: currentAddress?.longitude,
+      displayName: user.username || null,
     },
   });
 

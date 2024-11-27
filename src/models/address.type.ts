@@ -12,6 +12,7 @@ export const AddressSchema = z.object({
   greenPointId: z.string().optional(),
   userId: z.string(),
   isArchived: z.boolean(),
+  displayName: z.string().nullable(),
 });
 
 const AddressPostSchema = z.object({
@@ -25,6 +26,7 @@ const AddressPostSchema = z.object({
   greenPointId: z.string().optional(),
   userId: z.string(),
   isArchived: z.boolean().optional(),
+  displayName: z.string().nullable(),
 });
 
 const AddressPutSchema = z.object({
@@ -39,6 +41,7 @@ const AddressPutSchema = z.object({
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
   isArchived: z.boolean().optional(),
+  displayName: z.string().nullable(),
 });
 
 export type Address = z.infer<typeof AddressSchema>;

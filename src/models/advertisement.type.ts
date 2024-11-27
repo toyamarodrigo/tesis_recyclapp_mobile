@@ -12,6 +12,7 @@ export const AdvertisementSchema = z.object({
   isArchived: z.boolean(),
   subscription: z.object({ id: z.boolean() }).optional(),
   image: z.string().optional(),
+  displayName: z.string(),
 });
 
 export type Advertisement = z.infer<typeof AdvertisementSchema>;

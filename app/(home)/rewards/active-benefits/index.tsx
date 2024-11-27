@@ -235,14 +235,14 @@ export default function ActiveBenefits() {
           </View>
         )}
       {!isPending && userCustomer && filteredBenefitList?.length ? (
-        filteredBenefitList?.map((benefit) => {
+        filteredBenefitList?.map((benefit, index) => {
           const relatedAssignment = benefitAssignmentList?.find(
             (assignment) => assignment.benefitId === benefit.id
           );
 
           return (
             <CardBenefit
-              key={`${benefit.id}-${benefit.quantity}`}
+              key={`${benefit.id}-${benefit.displayName}-${index}`}
               benefit={benefit}
               handlePoints={() => showModal(benefit)}
               isActiveBenefit={benefit.isActive}

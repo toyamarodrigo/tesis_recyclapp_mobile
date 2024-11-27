@@ -40,9 +40,13 @@ const useUpdateBenefit = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (benefit: BenefitPut) => benefitApi.updateBenefit(benefit),
-    onSuccess: () => {
+    onSuccess: (benefit) => {
+      console.log("benefit", benefit);
       queryClient.invalidateQueries({
         queryKey: benefitKeys.benefit.list().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: benefitKeys.benefit.storeList(benefit.userStoreId).queryKey,
       });
     },
     onError: () => {

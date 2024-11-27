@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import {
   Card,
   IconButton,
@@ -41,32 +41,14 @@ export default function CardProfile({
         <Modal
           visible={visible}
           onDismiss={hideModal}
-          contentContainerStyle={{
-            backgroundColor: "white",
-            padding: 20,
-          }}
+          contentContainerStyle={styles.modalContainer}
         >
-          <View
-            style={{
-              padding: 10,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
-              Eliminar {type}
-            </Text>
-            <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Eliminar {type}</Text>
+            <Text style={styles.modalText}>
               ¿Estás seguro de que quieres continuar con la eliminación?
             </Text>
-            <Text
-              style={{
-                color: theme.colors.error,
-                fontWeight: "600",
-                fontSize: 16,
-                padding: 10,
-              }}
-            >
+            <Text style={styles.modalWarning}>
               Esta acción es IRREVERSIBLE.
             </Text>
           </View>
@@ -74,9 +56,7 @@ export default function CardProfile({
             mode="contained"
             onPress={() => hideModal()}
             buttonColor={theme.colors.outline}
-            style={{
-              margin: 10,
-            }}
+            style={styles.modalButton}
           >
             Cancelar
           </Button>
@@ -84,53 +64,119 @@ export default function CardProfile({
             mode="contained"
             onPress={confirmDelete}
             buttonColor={theme.colors.error}
-            style={{
-              margin: 10,
-            }}
+            style={styles.modalButton}
           >
             Eliminar
           </Button>
         </Modal>
       </Portal>
-      <Card.Title
-        title={title}
-        titleVariant="titleMedium"
-        style={styles.card}
-        right={(props) => (
-          <>
-            <IconButton
-              {...props}
-              icon="delete"
-              onPress={() => {
-                showModal();
-              }}
-            />
-            <IconButton
-              {...props}
-              icon="pencil"
-              onPress={() => {
-                handleEdit();
-              }}
-            />
-          </>
-        )}
-      />
+      <Card style={styles.card}>
+        <Card.Title
+          title={title}
+          titleVariant="titleMedium"
+          titleStyle={styles.cardTitle}
+          right={(props) => (
+            <View style={styles.actionButtons}>
+              <IconButton
+                {...props}
+                icon="delete"
+                onPress={showModal}
+                style={styles.iconButton}
+              />
+              <IconButton
+                {...props}
+                icon="pencil"
+                onPress={handleEdit}
+                style={styles.iconButton}
+              />
+            </View>
+          )}
+        />
+      </Card>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 20,
-    borderRadius: 10,
-    shadowColor: theme.colors.surfaceDisabled,
-    shadowOffset: {
-      height: 5,
-      width: 5,
-    },
-    borderColor: theme.colors.surfaceDisabled,
-    borderWidth: 2,
-    shadowOpacity: 1,
-    shadowRadius: 3,
+    marginVertical: 8,
+    marginHorizontal: 4,
+    borderRadius: 12,
+    backgroundColor: "#ffffff",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#2c3e50",
+  },
+  actionButtons: {
+    flexDirection: "column",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  iconButton: {
+    margin: 4,
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 24,
+    margin: 20,
+    borderRadius: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  modalContent: {
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontWeight: "600",
+    fontSize: 20,
+    paddingBottom: 16,
+    color: "#2c3e50",
+  },
+  modalText: {
+    padding: 10,
+    fontSize: 16,
+    textAlign: "center",
+    color: "#34495e",
+    lineHeight: 24,
+  },
+  modalWarning: {
+    color: theme.colors.error,
+    fontWeight: "600",
+    fontSize: 16,
+    padding: 16,
+  },
+  modalButton: {
+    margin: 8,
+    borderRadius: 8,
   },
 });

@@ -17,7 +17,7 @@ export const AdCard = ({
         )}
         <View style={styles.adOverlay}>
           <Text variant="bodyMedium" style={styles.adText}>
-            {item.title}
+            {item.title} - {item.displayName}
           </Text>
         </View>
       </View>
@@ -50,5 +50,8 @@ const styles = StyleSheet.create({
   },
   adText: {
     color: "white",
+  },
+  adFooter: {
+    padding: 10,
   },
 });

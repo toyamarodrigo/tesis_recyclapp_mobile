@@ -3,11 +3,11 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { Card, Text, IconButton } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { Fragment } from "react";
-import type { Ad } from "@models/advertisement.type";
+import type { Advertisement } from "@models/advertisement.type";
 
 const NewsDetail = () => {
   const { adItem } = useLocalSearchParams();
-  const selectedAd = JSON.parse(adItem as string) as Ad;
+  const selectedAd = JSON.parse(adItem as string) as Advertisement;
   const isPresented = router.canGoBack();
 
   return (
@@ -40,6 +40,11 @@ const NewsDetail = () => {
         </Text>
         <Text variant="bodyMedium" style={styles.modalTitle}>
           {selectedAd.text}
+        </Text>
+      </View>
+      <View style={styles.modalFooter}>
+        <Text variant="bodySmall" style={styles.modalTitle}>
+          {selectedAd.displayName}
         </Text>
       </View>
     </Fragment>
@@ -87,6 +92,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: colors.green[700],
     fontWeight: "bold",
+  },
+  modalFooter: {
+    padding: 20,
   },
 });
 

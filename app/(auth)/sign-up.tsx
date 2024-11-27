@@ -88,7 +88,6 @@ export default function SignUpScreen() {
     if (!isLoaded) return;
 
     try {
-      setPendingVerification(true);
       await signUp.create({
         emailAddress: formData.emailAddress,
         password: formData.password,
@@ -97,9 +96,25 @@ export default function SignUpScreen() {
         lastName: formData.lastName,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPendingVerification(true);
     } catch (err) {
       if (isClerkAPIResponseError(err)) {
-        return Alert.alert("Error", err.errors[0].longMessage);
+        const ERROR_MESSAGES = {
+          email_address:
+            "Este correo electrónico ya está en uso. Por favor, intenta con otro.",
+          username:
+            "Este nombre de usuario ya está en uso. Por favor, intenta con otro.",
+          default: "Ocurrió un error. Por favor, intenta nuevamente.",
+        };
+
+        const message =
+          err.errors[0].code === "form_identifier_exists"
+            ? ERROR_MESSAGES[
+                err.errors[0].meta?.paramName as keyof typeof ERROR_MESSAGES
+              ] || ERROR_MESSAGES.default
+            : ERROR_MESSAGES.default;
+
+        return Alert.alert("Error", message);
       }
 
       return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");

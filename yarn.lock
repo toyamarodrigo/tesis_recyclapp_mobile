@@ -1286,7 +1286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@clerk/localizations@npm:3.7.0":
+"@clerk/localizations@npm:3.7.0, @clerk/localizations@npm:^3.7.0":
   version: 3.7.0
   resolution: "@clerk/localizations@npm:3.7.0"
   dependencies:
@@ -2385,6 +2385,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.20.0"
     "@clerk/clerk-expo": "npm:^2.3.2"
+    "@clerk/localizations": "npm:^3.7.0"
     "@dev-plugins/react-query": "npm:^0.0.6"
     "@expo/metro-runtime": "npm:~4.0.0"
     "@expo/ngrok": "npm:^4.1.0"

@@ -1,13 +1,13 @@
 import { View, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
-import type { Ad } from "@models/advertisement.type";
+import type { Advertisement } from "@models/advertisement.type";
 
 export const AdCard = ({
   item,
   onPress,
 }: {
-  item: Ad;
-  onPress: (item: Ad) => void;
+  item: Advertisement;
+  onPress: (item: Advertisement) => void;
 }) => {
   return (
     <Card style={styles.adCard} onPress={() => onPress(item)}>

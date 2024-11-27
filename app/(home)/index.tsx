@@ -6,12 +6,12 @@ import {
   RefreshControl,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { router, Link } from "expo-router";
+import { router, Link, Redirect } from "expo-router";
 import { AdCard } from "@features/home/components/ad-card";
 import { NewsCard } from "@features/home/components/news-card";
 import { Carousel } from "@features/home/components/carousel";
-import type { Ad } from "@models/advertisement.type";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import type { Advertisement } from "@models/advertisement.type";
+import { SignedIn, SignedOut, useAuth, useUser } from "@clerk/clerk-expo";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { theme } from "src/theme";
@@ -24,8 +24,10 @@ import { useCallback } from "react";
 import { useState } from "react";
 
 const Home = () => {
-  const { user: userClerk, isLoaded } = useUser();
-  if (!userClerk || !isLoaded) return null;
+  const { isSignedIn } = useAuth();
+  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+  const { user: userClerk, isLoaded: userLoaded } = useUser();
+  if (!userLoaded || !userClerk) return null;
   const {
     data: ads,
     isPending: adsPending,
@@ -55,7 +57,7 @@ const Home = () => {
     });
   };
 
-  const handleAdPress = (item: Ad) => {
+  const handleAdPress = (item: Advertisement) => {
     router.push({
       pathname: "/ads-detail",
       params: { adItem: JSON.stringify(item) },

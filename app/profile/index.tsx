@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { Link, router } from "expo-router";
 import {
@@ -11,26 +11,21 @@ import {
   IconButton,
   ActivityIndicator,
 } from "react-native-paper";
-import { useAppTheme } from "src/theme";
-import { useUserStore } from "@stores/useUserStore";
+import { theme } from "src/theme";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IMAGE } from "@constants/image.constant";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import ImageUploader from "@components/ImageUploader";
 import { useUserStoreByClerk } from "@hooks/useUser";
+import { useProfileImage } from "@hooks/useProfileImage";
 
 const Profile = () => {
   const { signOut, isLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
-  if (!userLoaded || !user?.id) return null;
-  const { profileImage, setProfileImage } = useUserStore();
   const [logoutVisible, setLogoutVisible] = useState(false);
-  const theme = useAppTheme();
 
   const showModalLogout = () => setLogoutVisible(true);
-
-  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const logout = async () => {
     // es necesario volver a home antes de cerrar sesión por que sino clerk tira un error
@@ -38,13 +33,11 @@ const Profile = () => {
     await signOut();
   };
 
-  useEffect(() => {
-    if (user) {
-      const timestamp = `?timestamp=${Date.now()}`;
-      const urlImage = `${IMAGE.CLOUDINARY_URL}${IMAGE.USER_FOLDER}/${user.id}.jpg${timestamp}`;
-      setProfileImage(urlImage);
-    }
-  }, [user, setProfileImage]);
+  const profileImageValue = useProfileImage(user?.id);
+
+  const { data: userStore } = useUserStoreByClerk({
+    userId: userLoaded && user?.id ? user?.id : "",
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, height: "100%" }}>
@@ -119,13 +112,13 @@ const Profile = () => {
           )}
           <View style={{ alignItems: "center", marginVertical: 20 }}>
             <View style={{ position: "relative" }}>
-              {profileImage && (
+              {profileImageValue && (
                 <Avatar.Image
                   size={100}
                   source={{
                     uri:
-                      profileImage && profileImage !== ""
-                        ? profileImage
+                      profileImageValue && profileImageValue !== ""
+                        ? profileImageValue
                         : IMAGE.CLOUDINARY_URL + IMAGE.USER_GENERIC,
                   }}
                 />

@@ -11,13 +11,7 @@ export const AdvertisementSchema = z.object({
   paymentCompleted: z.boolean(),
   isArchived: z.boolean(),
   subscription: z.object({ id: z.boolean() }).optional(),
+  image: z.string().optional(),
 });
 
 export type Advertisement = z.infer<typeof AdvertisementSchema>;
-
-export interface Ad {
-  id: string;
-  title: string;
-  image: string;
-  text: string;
-}

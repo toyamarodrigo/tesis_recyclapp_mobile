@@ -18,6 +18,7 @@ import { isClerkAPIResponseError, useUser } from "@clerk/clerk-expo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useRef } from "react";
+import { useUserStoreByClerk } from "@hooks/useUser";
 
 type FormValues = {
   street: string;
@@ -85,6 +86,7 @@ export default function NewAddress() {
     useCreateAddress();
   const { mutateAsync: editAddress, isPending: isLoadingEdit } =
     useUpdateAddress();
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const handleCancel = () => {
     reset();
@@ -102,7 +104,11 @@ export default function NewAddress() {
 
   const onSubmit = async (formData: FormValues) => {
     try {
-      const addressData = prepareAddressData(formData, user.id, user.username);
+      const addressData = prepareAddressData(
+        formData,
+        user.id,
+        userStore?.id ? user.username : null
+      );
       if (currentAddress) {
         await handleEdit({
           ...addressData,

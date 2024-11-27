@@ -33,7 +33,6 @@ export default function CardComment({
     },
   });
   const { mutateAsync: createChat } = useCreateChat();
-  const [redirectChat, setRedirectChat] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -47,18 +46,12 @@ export default function CardComment({
     })();
   }, []);
 
-  useEffect(() => {
-    if (redirectChat && chatByUnique) {
-      router.push(`/feed/${comment.postId}/${chatByUnique.id}`);
-    }
-  }, [redirectChat, chatByUnique]);
-
   const handleChat = async () => {
-    setRedirectChat(true);
     if (chatByUnique) {
       router.push(`/feed/${comment.postId}/${chatByUnique.id}`);
     } else {
-      await createChat({
+      console.log("createChat");
+      const newChat = await createChat({
         postId: post.id,
         userCommentId: comment.userId,
         userPostId: post.userId,
@@ -67,11 +60,16 @@ export default function CardComment({
         "Nuevo chat",
         `Se ha iniciado un nuevo chat privado entre @${post.username} y @${comment.username}. Ten precaución al compartir información personal.`
       );
+
+      router.push(`/feed/${comment.postId}/${newChat.id}`);
     }
   };
 
   return (
-    <Card style={{ marginVertical: 20 }}>
+    <Card
+      style={{ marginVertical: 20, opacity: post.isArchived ? 0.5 : 1 }}
+      disabled={post.isArchived}
+    >
       <View
         style={{
           flexDirection: "row",

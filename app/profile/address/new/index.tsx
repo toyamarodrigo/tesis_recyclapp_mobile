@@ -94,14 +94,6 @@ export default function NewAddress() {
     router.replace("/profile/address");
   };
 
-  const handleCreate = async (address: AddressPost) => {
-    await createAddress(address);
-  };
-
-  const handleEdit = async (address: AddressPut) => {
-    await editAddress(address);
-  };
-
   const onSubmit = async (formData: FormValues) => {
     try {
       const addressData = prepareAddressData(
@@ -110,12 +102,12 @@ export default function NewAddress() {
         userStore?.id ? user.username : null
       );
       if (currentAddress) {
-        await handleEdit({
+        await editAddress({
           ...addressData,
           id: currentAddress.id,
         });
       } else {
-        await handleCreate(addressData);
+        await createAddress(addressData);
       }
 
       handleCancel();

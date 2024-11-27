@@ -13,12 +13,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile"
+      "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD9wT6IaYQWPY6moXdriGvCEcOUpaC5Pfc"
+        }
+      }
     },
     "android": {
       "config": {
@@ -48,9 +51,7 @@
       [
         "expo-asset",
         {
-          "assets": [
-            "./assets/images/icon.png"
-          ]
+          "assets": ["./assets/images/icon.png"]
         }
       ],
       "expo-secure-store"

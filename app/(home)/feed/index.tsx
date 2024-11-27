@@ -6,9 +6,9 @@ import { usePostList, usePostListByClerkId } from "@hooks/usePost";
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
-import { MyActivePosts } from "app/features/feed/components/my-active-posts";
-import { AllActivePosts } from "app/features/feed/components/all-active-posts";
-import { AllPosts } from "app/features/feed/components/all-posts";
+import { MyActivePosts } from "@features/feed/components/my-active-posts";
+import { AllActivePosts } from "@features/feed/components/all-active-posts";
+import { AllPosts } from "@features/feed/components/all-posts";
 
 const Feed = () => {
   const router = useRouter();
@@ -21,6 +21,10 @@ const Feed = () => {
   const { data: materials, refetch: refetchMaterials } =
     useMaterialProductList();
   const { data: postsList, refetch: refetchPosts } = usePostList();
+
+  const postListNotFromUserSignedIn = postsList?.filter(
+    (post) => post.userId !== userId
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -46,7 +50,7 @@ const Feed = () => {
         }
       >
         <MyActivePosts posts={postsByClerkId} materials={materials} />
-        <AllActivePosts posts={postsList} materials={materials} />
+        <AllActivePosts posts={postListNotFromUserSignedIn} materials={materials} />
         <AllPosts posts={postsList} materials={materials} />
       </ScrollView>
 

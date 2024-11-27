@@ -8,7 +8,7 @@ import { useUpdateUserCustomer, useUserCustomerByClerk } from "@hooks/useUser";
 import type { ChatUpdate } from "@models/chat.type";
 import type { PostUpdate } from "@models/post.type";
 import type { UserCustomerPut } from "@models/userCustomer.type";
-import { Link, Redirect, useLocalSearchParams } from "expo-router";
+import { Link, Redirect, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -112,16 +112,24 @@ export default function Chatconvo() {
           pointsCurrent: userCommentClerk.pointsCurrent + post.pointsAwarded,
         };
         setIsUpdating(true);
-        await updateUser(userPost);
-        await updateUser(userComment);
-        await updateChat(chatData);
-        await updatePost(postData);
+        console.log("userPost", userPost);
+        console.log("userComment", userComment);
+        const resUserPost = await updateUser(userPost);
+        console.log("resUserPost", resUserPost);
+        const resUserComment = await updateUser(userComment);
+        console.log("resUserComment", resUserComment);
+        const resChat = await updateChat(chatData);
+        console.log("resChat", resChat);
+        const resPostUpdate = await updatePost(postData);
+        console.log("resPostUpdate", resPostUpdate);
         resetDialog();
 
         Alert.alert(
           "¡Cambio exitoso!",
           `Se realizó la recepción del código correctamente. Verás +${post?.pointsAwarded} puntos sumados en tu perfil. No olvides avisarle a quien te dio el código que ya puede confirmar el cambio en su pantalla.`
         );
+
+        router.replace(`/feed/${postId}`);
       }
     }
   };

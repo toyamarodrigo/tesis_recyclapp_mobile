@@ -12,6 +12,11 @@ const NewsDetail = () => {
 
   return (
     <Fragment>
+      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+        <Link href="/(home)" asChild>
+          <IconButton icon="arrow-left" size={24} />
+        </Link>
+      </View>
       <View style={styles.modalImageContainer}>
         <Card.Cover
           source={{ uri: selectedAd.image }}
@@ -30,7 +35,10 @@ const NewsDetail = () => {
         )}
       </View>
       <View style={styles.modalContent}>
-        <Text variant="headlineSmall" style={styles.modalTitle}>
+        <Text variant="titleLarge" style={styles.modalTitle}>
+          {selectedAd.title}
+        </Text>
+        <Text variant="bodyMedium" style={styles.modalTitle}>
           {selectedAd.text}
         </Text>
       </View>

@@ -2,6 +2,7 @@ import { postKeys } from "@api/query/post.factory";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi } from "@api/api.post";
 import { Post, PostCreate, PostUpdate } from "@models/post.type";
+import { userKeys } from "@api/query/user.factory";
 
 const usePostList = () => {
   return useQuery({ ...postKeys.post.list() });
@@ -33,6 +34,9 @@ const useCreatePost = () => {
       queryClient.invalidateQueries({
         queryKey: postKeys.post.list().queryKey,
       });
+      queryClient.invalidateQueries({
+        queryKey: userKeys.user.customerDetailsClerk(post.userId).queryKey,
+      });
     },
   });
 };
@@ -51,6 +55,9 @@ const useUpdatePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: postKeys.post.detail(post.id).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: userKeys.user.customerDetailsClerk(post.userId).queryKey,
       });
     },
   });

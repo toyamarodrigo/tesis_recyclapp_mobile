@@ -40,6 +40,10 @@ export default function Rewards() {
     setRefreshing(false);
   }, [refetch]);
 
+  const sortedPointsHistory = userCustomer?.pointsHistory?.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <View style={styles.container}>
       {isLoading && (
@@ -49,7 +53,7 @@ export default function Rewards() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        data={userCustomer?.pointsHistory}
+        data={sortedPointsHistory}
         renderItem={({ item }) => (
           <HistoricalPointItem
             points={item.pointsChange}

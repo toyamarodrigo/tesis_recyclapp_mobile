@@ -98,20 +98,23 @@ export default function SignUpScreen() {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
     } catch (err) {
-      // console.log(err);
       if (isClerkAPIResponseError(err)) {
-        console.log("err", err.errors);
-        console.log("err", err.message);
-        console.log("err", err.errors[0].code);
+        const ERROR_MESSAGES = {
+          email_address:
+            "Este correo electrónico ya está en uso. Por favor, intenta con otro.",
+          username:
+            "Este nombre de usuario ya está en uso. Por favor, intenta con otro.",
+          default: "Ocurrió un error. Por favor, intenta nuevamente.",
+        };
 
-        if (
-          err.errors[0].code === "form_identifier_exists" ||
-          err.errors[0].code === "user_already_exists"
-        ) {
-          return Alert.alert("Error", "El nombre de usuario ya existe.");
-        }
+        const message =
+          err.errors[0].code === "form_identifier_exists"
+            ? ERROR_MESSAGES[
+                err.errors[0].meta?.paramName as keyof typeof ERROR_MESSAGES
+              ] || ERROR_MESSAGES.default
+            : ERROR_MESSAGES.default;
 
-        return Alert.alert("Error", err.errors[0].longMessage);
+        return Alert.alert("Error", message);
       }
 
       return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");

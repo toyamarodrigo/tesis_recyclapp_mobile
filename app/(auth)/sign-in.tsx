@@ -67,17 +67,21 @@ export default function SignInScreen() {
       }
     } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
-        if (
+        const ERROR_MESSAGES = {
+          form_param_format_invalid:
+            "El email o nombre de usuario o la contraseña son inválidos",
+          form_password_incorrect:
+            "El email o nombre de usuario o la contraseña son inválidos",
+          default: "Ocurrió un error. Por favor, intenta nuevamente.",
+        };
+
+        const message =
           err.errors[0].code === "form_param_format_invalid" ||
           err.errors[0].code === "form_password_incorrect"
-        ) {
-          return Alert.alert(
-            "Error",
-            "El email o nombre de usuario o la contraseña son inválidos"
-          );
-        }
+            ? ERROR_MESSAGES[err.errors[0].code] || ERROR_MESSAGES.default
+            : ERROR_MESSAGES.default;
 
-        return Alert.alert("Error", err.errors[0].longMessage);
+        return Alert.alert("Error", message);
       }
 
       return Alert.alert("Error", "Ocurrió un error. Intente nuevamente.");

@@ -41,7 +41,7 @@ const AddressPutSchema = z.object({
   greenPointId: z.string().optional(),
   userId: z.string().optional(),
   isArchived: z.boolean().optional(),
-  displayName: z.string().nullable(),
+  displayName: z.string().nullable().optional(),
 });
 
 export type Address = z.infer<typeof AddressSchema>;

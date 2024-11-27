@@ -15,6 +15,7 @@ import { useAppTheme } from "src/theme";
 import type { Address, AddressPut } from "@models/address.type";
 import { useUser } from "@clerk/clerk-expo";
 import { useCallback, useState } from "react";
+import { useUserStoreByClerk } from "@hooks/index";
 
 export default function Addresses() {
   const { user, isLoaded } = useUser();
@@ -29,6 +30,7 @@ export default function Addresses() {
     refetch,
     isError,
   } = useAddressClerkId(user.id);
+  const { data: userStore } = useUserStoreByClerk({ userId: user.id });
 
   const [refreshing, setRefreshing] = useState(false);
 

@@ -5,6 +5,7 @@ import { PaperProvider } from "react-native-paper";
 import { theme } from "src/theme";
 import * as SecureStore from "expo-secure-store";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { esMX } from "@clerk/localizations";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,7 +58,11 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkProvider
+        tokenCache={tokenCache}
+        publishableKey={publishableKey}
+        localization={esMX}
+      >
         <QueryClientProvider client={queryClient}>
           <PaperProvider theme={theme}>
             <ClerkLoaded>

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.3.2",
+    "@clerk/localizations": "^3.7.0",
     "@dev-plugins/react-query": "^0.0.6",
     "@expo/metro-runtime": "~4.0.0",
     "@expo/ngrok": "^4.1.0",

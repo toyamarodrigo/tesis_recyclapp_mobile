@@ -88,7 +88,6 @@ export default function SignUpScreen() {
     if (!isLoaded) return;
 
     try {
-      setPendingVerification(true);
       await signUp.create({
         emailAddress: formData.emailAddress,
         password: formData.password,
@@ -97,8 +96,21 @@ export default function SignUpScreen() {
         lastName: formData.lastName,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPendingVerification(true);
     } catch (err) {
+      // console.log(err);
       if (isClerkAPIResponseError(err)) {
+        console.log("err", err.errors);
+        console.log("err", err.message);
+        console.log("err", err.errors[0].code);
+
+        if (
+          err.errors[0].code === "form_identifier_exists" ||
+          err.errors[0].code === "user_already_exists"
+        ) {
+          return Alert.alert("Error", "El nombre de usuario ya existe.");
+        }
+
         return Alert.alert("Error", err.errors[0].longMessage);
       }
 

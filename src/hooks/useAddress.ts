@@ -4,6 +4,20 @@ import { Address, AddressPost, AddressPut } from "@models/address.type";
 import { addressApi } from "@api/api.address";
 import { Alert } from "react-native";
 
+const useAddressListStores = () => {
+  return useQuery({
+    ...addressKeys.address.list(),
+    select: (data) =>
+      data.filter((address) => {
+        return (
+          address.displayName &&
+          typeof address.longitude === "number" &&
+          typeof address.latitude === "number"
+        );
+      }),
+  });
+};
+
 const useAddressClerkId = (userId: string) => {
   return useQuery({
     ...addressKeys.address.addressesClerk(userId),
@@ -19,6 +33,9 @@ const useCreateAddress = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: addressKeys.address.addressesClerk(data.userId).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: addressKeys.address.list().queryKey,
       });
 
       Alert.alert("Éxito", "Se creó la nueva dirección con éxito.");
@@ -40,6 +57,11 @@ const useUpdateAddress = () => {
           );
         }
       );
+
+      queryClient.invalidateQueries({
+        queryKey: addressKeys.address.list().queryKey,
+      });
+
       if (data.isArchived) {
         Alert.alert("Éxito", "Se eliminó la dirección con éxito.");
       } else {
@@ -49,4 +71,9 @@ const useUpdateAddress = () => {
   });
 };
 
-export { useCreateAddress, useUpdateAddress, useAddressClerkId };
+export {
+  useCreateAddress,
+  useUpdateAddress,
+  useAddressClerkId,
+  useAddressListStores,
+};

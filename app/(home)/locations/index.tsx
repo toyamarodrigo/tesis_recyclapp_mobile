@@ -9,7 +9,13 @@ import {
   type NativeScrollEvent,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {
   Text,
@@ -17,21 +23,25 @@ import {
   Searchbar,
   ActivityIndicator,
   FAB,
+  SegmentedButtons,
 } from "react-native-paper";
 import { FlashList } from "@shopify/flash-list";
 import { useMapLogic } from "@features/locations/hooks/useMapLogic";
 import { GreenPoint } from "@features/locations/components/card-green-point";
 import { LocationControls } from "@features/locations/components/location-controls";
 import { PermissionStatus } from "expo-location";
+import { AddressCard } from "@features/locations/components/address-card";
 
 const Locations = () => {
   const {
     mapRef,
     filteredAndSortedGreenPoints,
+    filteredAndSortedAddresses,
     selectedMarker,
     locationPermission,
     requestPermission,
     centerMapOnMarker,
+    centerMapOnAddress,
     centerMapOnUserLocation,
     sortOrder,
     toggleSortOrder,
@@ -39,8 +49,10 @@ const Locations = () => {
     handleSearch,
     userLocation,
     isPending,
+    isPendingAddresses,
     error,
     flashListRef,
+    flashListRefAddresses,
     scrollToTop,
     showScrollTopButton,
     handleScroll,
@@ -49,6 +61,13 @@ const Locations = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["25%", "100%"], []);
   const [bottomSheetIndex, setBottomSheetIndex] = useState(0);
+  const [selectedView, setSelectedView] = useState("greenPoints");
+
+  const displayedMarkers = useMemo(() => {
+    return selectedView === "greenPoints"
+      ? filteredAndSortedGreenPoints
+      : filteredAndSortedAddresses;
+  }, [selectedView, filteredAndSortedGreenPoints, filteredAndSortedAddresses]);
 
   const handleSheetChanges = useCallback((index: number) => {
     setBottomSheetIndex(index);
@@ -73,7 +92,7 @@ const Locations = () => {
     }
   }, [userLocation, locationPermission, centerMapOnUserLocation]);
 
-  if (isPending) {
+  if (isPending || isPendingAddresses) {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" />
@@ -104,15 +123,19 @@ const Locations = () => {
         showsUserLocation={locationPermission === PermissionStatus.GRANTED}
         showsMyLocationButton={false}
       >
-        {filteredAndSortedGreenPoints.map((marker) => (
+        {displayedMarkers.map((marker) => (
           <Marker
             key={`${marker.latitude}-${marker.longitude}`}
             coordinate={marker}
             pinColor={
               selectedMarker === marker ? colors.green[500] : colors.red[500]
             }
-            title={marker.title}
-            description={marker.description}
+            title={
+              "title" in marker ? marker.title : marker.displayName || "Tienda"
+            }
+            description={
+              "description" in marker ? marker.description : marker.street
+            }
           />
         ))}
       </MapView>
@@ -131,8 +154,19 @@ const Locations = () => {
       >
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
           <View style={styles.bottomSheetContent}>
+            <SegmentedButtons
+              value={selectedView}
+              onValueChange={setSelectedView}
+              buttons={[
+                { value: "greenPoints", label: "Puntos Verdes" },
+                { value: "addresses", label: "Tiendas" },
+              ]}
+              style={styles.segmentedButtons}
+            />
             <View style={styles.bottomSheetHeader}>
-              <Text style={styles.bottomSheetTitle}>Puntos Verdes</Text>
+              <Text style={styles.bottomSheetTitle}>
+                {selectedView === "greenPoints" ? "Puntos Verdes" : "Tiendas"}
+              </Text>
               <Button
                 icon={
                   sortOrder === "asc"
@@ -145,31 +179,52 @@ const Locations = () => {
               </Button>
             </View>
             <Searchbar
-              placeholder="Buscar puntos verdes"
+              placeholder={`Buscar ${selectedView === "greenPoints" ? "puntos verdes" : "tiendas"}`}
               onChangeText={handleSearch}
               value={searchQuery}
               style={styles.searchbar}
               onFocus={handleSearchBarFocus}
             />
-            <FlashList
-              ref={flashListRef}
-              data={filteredAndSortedGreenPoints}
-              renderItem={({ item: marker }) => (
-                <View style={styles.greenPointContainer}>
-                  <GreenPoint
-                    marker={marker}
-                    centerMapOnMarker={centerMapOnMarker}
-                    bottomSheetRef={bottomSheetRef}
-                    selectedMarker={selectedMarker}
-                  />
-                </View>
-              )}
-              estimatedItemSize={100}
-              contentContainerStyle={styles.listContainer}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              onScroll={onScroll}
-              scrollEventThrottle={16}
-            />
+            {selectedView === "greenPoints" ? (
+              <FlashList
+                ref={flashListRef}
+                data={filteredAndSortedGreenPoints}
+                renderItem={({ item: marker }) => (
+                  <View style={styles.greenPointContainer}>
+                    <GreenPoint
+                      marker={marker}
+                      centerMapOnMarker={centerMapOnMarker}
+                      bottomSheetRef={bottomSheetRef}
+                      selectedMarker={selectedMarker}
+                    />
+                  </View>
+                )}
+                estimatedItemSize={100}
+                contentContainerStyle={styles.listContainer}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
+              />
+            ) : (
+              <FlashList
+                ref={flashListRefAddresses}
+                data={filteredAndSortedAddresses}
+                renderItem={({ item: address }) => (
+                  <View style={styles.addressContainer}>
+                    <AddressCard
+                      address={address}
+                      centerMapOnAddress={() => centerMapOnAddress(address)}
+                      bottomSheetRef={bottomSheetRef}
+                    />
+                  </View>
+                )}
+                estimatedItemSize={100}
+                contentContainerStyle={styles.listContainer}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
+              />
+            )}
           </View>
         </TouchableWithoutFeedback>
       </BottomSheet>
@@ -229,6 +284,12 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+  },
+  segmentedButtons: {
+    margin: 16,
+  },
+  addressContainer: {
+    marginBottom: 8,
   },
 });
 

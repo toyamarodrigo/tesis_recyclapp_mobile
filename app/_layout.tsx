@@ -7,6 +7,8 @@ import * as SecureStore from "expo-secure-store";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { esES } from "@clerk/localizations";
 
+import "react-native-get-random-values";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -50,28 +50,12 @@ export const addressApi = {
     }
   },
   createAddress: async (address: AddressPost) => {
-    try {
-      const result = await axios.post<Address>(
-        `${backendApiConfig.baseURL}/address`,
-        address
-      );
+    const result = await axios.post<Address>(
+      `${backendApiConfig.baseURL}/address`,
+      address
+    );
 
-      return result.data;
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        Alert.alert(
-          "Error",
-          "Ocurrió un problema al crear la nueva dirección. Intente nuevamente."
-        );
-        throw new Error(e.message);
-      }
-
-      Alert.alert(
-        "Error",
-        "Ocurrió un problema al crear la nueva dirección. Intente nuevamente."
-      );
-      throw new Error("Unknown error");
-    }
+    return result.data;
   },
   updateAddress: async (address: AddressPut) => {
     try {

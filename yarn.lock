@@ -2402,6 +2402,7 @@ __metadata:
     "@tanstack/react-query-devtools": "npm:^5.34.1"
     "@total-typescript/ts-reset": "npm:^0.5.1"
     "@types/react": "npm:~18.3.12"
+    "@types/react-native-get-random-values": "npm:^1"
     "@typescript-eslint/eslint-plugin": "npm:^7.8.0"
     "@typescript-eslint/parser": "npm:^7.8.0"
     axios: "npm:^1.6.8"
@@ -2447,6 +2448,8 @@ __metadata:
     react-hook-form: "npm:^7.51.4"
     react-native: "npm:0.76.3"
     react-native-gesture-handler: "npm:~2.20.2"
+    react-native-get-random-values: "npm:^1.11.0"
+    react-native-google-places-autocomplete: "npm:^2.5.7"
     react-native-maps: "npm:1.18.0"
     react-native-modal-datetime-picker: "npm:^18.0.0"
     react-native-paper: "npm:^5.12.5"
@@ -3330,6 +3333,13 @@ __metadata:
   version: 15.7.13
   resolution: "@types/prop-types@npm:15.7.13"
   checksum: 10c0/1b20fc67281902c6743379960247bc161f3f0406ffc0df8e7058745a85ea1538612109db0406290512947f9632fe9e10e7337bf0ce6338a91d6c948df16a7c61
+  languageName: node
+  linkType: hard
+
+"@types/react-native-get-random-values@npm:^1":
+  version: 1.8.2
+  resolution: "@types/react-native-get-random-values@npm:1.8.2"
+  checksum: 10c0/66c0268151d0673bff88828d82d4087aeabbe29a8ffe433f50e2593cd04872fc890f0d2660203435d13412b10d866d24a3ab72981cf481e5676ccf88de12c235
   languageName: node
   linkType: hard
 
@@ -6414,6 +6424,13 @@ __metadata:
   version: 3.0.2
   resolution: "extend@npm:3.0.2"
   checksum: 10c0/73bf6e27406e80aa3e85b0d1c4fd987261e628064e170ca781125c0b635a3dabad5e05adbf07595ea0cf1e6c5396cacb214af933da7cbaf24fe75ff14818e8f9
+  languageName: node
+  linkType: hard
+
+"fast-base64-decode@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fast-base64-decode@npm:1.0.0"
+  checksum: 10c0/6d8feab513222a463d1cb58d24e04d2e04b0791ac6559861f99543daaa590e2636d040d611b40a50799bfb5c5304265d05e3658b5adf6b841a50ef6bf833d821
   languageName: node
   linkType: hard
 
@@ -9979,6 +9996,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qs@npm:~6.9.1":
+  version: 6.9.7
+  resolution: "qs@npm:6.9.7"
+  checksum: 10c0/d0274b3c2daa9e7b350fb695fc4b5f7a1e65e266d5798a07936975f0848bdca6d7ad41cded19ad4af6a6253b97e43b497e988e728eab7a286f277b6dddfbade4
+  languageName: node
+  linkType: hard
+
 "query-string@npm:^7.1.3":
   version: 7.1.3
   resolution: "query-string@npm:7.1.3"
@@ -10138,6 +10162,31 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/94c16a40370adfaaff8af6aec5938a8d5c5704afaf7ec569d9e11c66ecc3b5c763314c091a76573885636c04d9e6084de3696d59595c56aac9eb17b2f28e5c6c
+  languageName: node
+  linkType: hard
+
+"react-native-get-random-values@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "react-native-get-random-values@npm:1.11.0"
+  dependencies:
+    fast-base64-decode: "npm:^1.0.0"
+  peerDependencies:
+    react-native: ">=0.56"
+  checksum: 10c0/2ce71f1ab7f5b36d4a9dd59cc80b4aa75526f047c6680a7f1a388fa8b9a62efdacaf7b7de3be593c73e882773b2eee74916b00f7c8b158e40b46388998218586
+  languageName: node
+  linkType: hard
+
+"react-native-google-places-autocomplete@npm:^2.5.7":
+  version: 2.5.7
+  resolution: "react-native-google-places-autocomplete@npm:2.5.7"
+  dependencies:
+    lodash.debounce: "npm:^4.0.8"
+    prop-types: "npm:^15.7.2"
+    qs: "npm:~6.9.1"
+    uuid: "npm:^10.0.0"
+  peerDependencies:
+    react-native: ">= 0.59"
+  checksum: 10c0/64d455ebcac5338a110c35f65b73445830b6ef3f454f78fac3e50f3492d509170824ec522535299b85ed315515209912d978f815d984a05be16b807a945616c2
   languageName: node
   linkType: hard
 
@@ -12234,6 +12283,15 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10c0/02ba649de1b7ca8854bfe20a82f1dfbdda3fb57a22ab4a8972a63a34553cf7aa51bc9081cf7e001b035b88186d23689d69e71b510e610a09a4c66f68aa95b672
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/eab18c27fe4ab9fb9709a5d5f40119b45f2ec8314f8d4cf12ce27e4c6f4ffa4a6321dc7db6c515068fa373c075b49691ba969f0010bf37f44c37ca40cd6bf7fe
   languageName: node
   linkType: hard
 

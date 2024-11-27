@@ -25,6 +25,8 @@ type FormValues = {
   city: string;
   state: string;
   postalCode: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 const formSchema = z.object({
@@ -45,6 +47,8 @@ const formSchema = z.object({
       (val) => val.length === 4,
       "Debe ser un número de exactamente 4 dígitos"
     ),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 const prepareAddressData = (
@@ -59,6 +63,11 @@ const prepareAddressData = (
     userId: userId,
     isArchived: false,
   };
+
+  if (formData.latitude !== undefined && formData.longitude !== undefined) {
+    addressData.latitude = formData.latitude;
+    addressData.longitude = formData.longitude;
+  }
 
   return addressData;
 };
@@ -93,6 +102,7 @@ export default function NewAddress() {
   const onSubmit = async (formData: FormValues) => {
     try {
       const addressData = prepareAddressData(formData, user.id);
+      console.log("addressData", addressData);
       if (currentAddress) {
         await handleEdit({
           ...addressData,
@@ -127,6 +137,8 @@ export default function NewAddress() {
       city: currentAddress?.city || "",
       state: currentAddress?.state || "",
       postalCode: currentAddress?.postalCode || "",
+      latitude: currentAddress?.latitude,
+      longitude: currentAddress?.longitude,
     },
   });
 
@@ -190,6 +202,15 @@ export default function NewAddress() {
                     setValue("city", city);
                     setValue("state", state);
                     setValue("postalCode", postalCode);
+
+                    if (details.geometry?.location) {
+                      const { lat, lng } = details.geometry.location;
+                      setValue("latitude", lat);
+                      setValue("longitude", lng);
+                    } else {
+                      setValue("latitude", undefined);
+                      setValue("longitude", undefined);
+                    }
                   }
                 }}
                 query={{

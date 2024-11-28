@@ -194,7 +194,6 @@ export default function Chatconvo() {
                 value={code}
                 onChangeText={(text) => setCode(text.toUpperCase())}
                 placeholder="Ingresa el código aquí"
-                maxLength={6}
                 autoCapitalize="characters"
                 style={[styles.inputDialog, { height: 40 }]}
               />
@@ -304,7 +303,7 @@ export default function Chatconvo() {
               control={control}
               name="message"
               rules={{ maxLength: 250 }}
-              render={() => (
+              render={({ field: { onChange, value } }) => (
                 <TextInput
                   mode="outlined"
                   placeholder="Deja tu comentario aquí..."
@@ -313,6 +312,8 @@ export default function Chatconvo() {
                   numberOfLines={3}
                   style={styles.input}
                   returnKeyType="default"
+                  value={value}
+                  onChangeText={onChange}
                 />
               )}
             />

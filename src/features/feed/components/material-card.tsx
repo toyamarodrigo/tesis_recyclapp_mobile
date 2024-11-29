@@ -45,7 +45,7 @@ export const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
       <Card.Content style={styles.cardContent}>
         <Image
           source={{
-            uri: image || "",
+            uri: `${image}?timestamp=${Date.now()}` || "",
           }}
           style={styles.cardImage}
           contentFit="cover"

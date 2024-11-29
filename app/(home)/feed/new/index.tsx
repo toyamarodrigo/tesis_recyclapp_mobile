@@ -252,7 +252,7 @@ export default function NewPost() {
                 {image ? (
                   <View style={styles.marginBottom}>
                     <Image
-                      source={{ uri: image }}
+                      source={{ uri: `${image}?timestamp=${Date.now()}` }}
                       style={styles.image}
                       cachePolicy="none"
                     />

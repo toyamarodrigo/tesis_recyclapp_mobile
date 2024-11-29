@@ -184,12 +184,12 @@ export default function EditablePost() {
 
     await updatePost(formData);
 
+    setIsEditable(false);
+
     Alert.alert(
       "¡Operación exitosa!",
       "Se actualizó la publicación correctamente."
     );
-
-    setIsEditable(false);
 
     router.replace(`/(home)/feed/${postId}`);
   };
@@ -367,7 +367,7 @@ export default function EditablePost() {
           <View style={styles.imageWrapper}>
             {image ? (
               <Image
-                source={{ uri: image }}
+                source={{ uri: `${image}?timestamp=${Date.now()}` }}
                 style={styles.image}
                 cachePolicy="none"
               />

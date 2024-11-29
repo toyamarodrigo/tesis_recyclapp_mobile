@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
 import { Card, ActivityIndicator } from "react-native-paper";
 
@@ -11,7 +12,13 @@ export function PostCardImage({ imageUrl, isLoading }: PostCardImageProps) {
     return <ActivityIndicator size="large" style={styles.loader} />;
   }
 
-  return <Card.Cover source={{ uri: imageUrl }} style={styles.cardImage} />;
+  return (
+    <Image
+      source={{ uri: imageUrl }}
+      style={styles.cardImage}
+      cachePolicy="none"
+    />
+  );
 }
 
 const styles = StyleSheet.create({

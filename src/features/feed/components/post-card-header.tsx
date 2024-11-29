@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { View, StyleSheet } from "react-native";
 import { Avatar, Text } from "react-native-paper";
 import { theme, useAppTheme } from "src/theme";
@@ -17,12 +18,12 @@ export function PostCardHeader({
 
   return (
     <View style={styles.cardHeader}>
-      <Avatar.Image
-        size={56}
+      <Image
         style={styles.avatar}
         source={{
           uri: imageUrl,
         }}
+        cachePolicy="none"
       />
       <View style={styles.headerContent}>
         <Text style={[styles.username, { color: theme.colors.primary }]}>
@@ -51,6 +52,9 @@ const styles = StyleSheet.create({
   },
   avatar: {
     marginRight: 12,
+    width: 56,
+    height: 56,
+    borderRadius: 100,
   },
   headerContent: {
     flex: 1,

@@ -2,7 +2,6 @@ import { Link, Redirect, router } from "expo-router";
 import {
   SafeAreaView,
   View,
-  Image,
   Alert,
   ScrollView,
   StyleSheet,
@@ -30,6 +29,7 @@ import type { PostCreate } from "@models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCloudinary } from "@hooks/useImage";
 import { theme } from "src/theme";
+import { Image } from "expo-image";
 
 const postSchema = z.object({
   description: z
@@ -251,7 +251,11 @@ export default function NewPost() {
               <View style={styles.imageContainer}>
                 {image ? (
                   <View style={styles.marginBottom}>
-                    <Image source={{ uri: image }} style={styles.image} />
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.image}
+                      cachePolicy="none"
+                    />
                   </View>
                 ) : null}
                 <Button

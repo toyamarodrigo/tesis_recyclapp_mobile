@@ -49,6 +49,7 @@ export const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
           }}
           style={styles.cardImage}
           contentFit="cover"
+          cachePolicy="none"
         />
         <View style={styles.cardDetails}>
           <Text variant="titleMedium" style={styles.materialName}>
@@ -88,7 +89,11 @@ export const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
             </Text>
           </View>
           {post.description && (
-            <Text variant="bodySmall" style={styles.description} numberOfLines={2}>
+            <Text
+              variant="bodySmall"
+              style={styles.description}
+              numberOfLines={2}
+            >
               {post.description}
             </Text>
           )}

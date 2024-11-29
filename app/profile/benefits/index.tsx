@@ -22,6 +22,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
 import {
   useBenefitAssignmentByStoreBenefits,
+  useBenefitAssignmentList,
   useUpdateBenefitAssignment,
 } from "@hooks/useBenefitAssignment";
 
@@ -65,6 +66,11 @@ export default function Benefits() {
   const { mutate: updateBenefitAssignemnt } = useUpdateBenefitAssignment();
 
   const handleDelete = async (benefit: Benefit) => {
+    if (benefitAssignmentListStore && benefitAssignmentListStore.length > 0)
+      return Alert.alert(
+        "Error",
+        "El beneficio está en uso. No puede ser modificado ni eliminado"
+      );
     const removeBenefit = {
       id: benefit.id,
       isActive: false,
@@ -74,6 +80,11 @@ export default function Benefits() {
   };
 
   const handleEdit = (benefit: Benefit) => {
+    if (benefitAssignmentListStore && benefitAssignmentListStore.length > 0)
+      return Alert.alert(
+        "Error",
+        "El beneficio está en uso. No puede ser modificado ni eliminado"
+      );
     setCurrentBenefit(benefit);
     router.push("/profile/benefits/new");
   };

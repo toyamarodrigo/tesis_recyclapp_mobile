@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
-import { Card, ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
 interface PostCardImageProps {
   imageUrl: string;
@@ -14,7 +14,7 @@ export function PostCardImage({ imageUrl, isLoading }: PostCardImageProps) {
 
   return (
     <Image
-      source={{ uri: imageUrl }}
+      source={{ uri: `${imageUrl}?timestamp=${Date.now()}` }}
       style={styles.cardImage}
       cachePolicy="none"
     />

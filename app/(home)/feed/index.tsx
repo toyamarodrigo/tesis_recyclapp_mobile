@@ -51,7 +51,10 @@ const Feed = () => {
         }
       >
         <MyActivePosts posts={postsByClerkId} materials={materials} />
-        <AllActivePosts posts={postListNotFromUserSignedIn} materials={materials} />
+        <AllActivePosts
+          posts={postListNotFromUserSignedIn}
+          materials={materials}
+        />
         <AllPosts posts={postsList} materials={materials} />
       </ScrollView>
 

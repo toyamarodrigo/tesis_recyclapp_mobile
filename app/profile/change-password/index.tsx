@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PasswordInput } from "@components/PasswordInput";
 import { useUser } from "@clerk/clerk-expo";
+import { useState } from "react";
 
 type FormValues = {
   currentPassword: string;
@@ -44,13 +45,13 @@ const formSchema = z
 export default function ChangePassword() {
   const theme = useAppTheme();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const { user: userClerk } = useUser();
   const {
     control,
     reset,
     formState: { errors },
     handleSubmit,
-    setError,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,8 +62,9 @@ export default function ChangePassword() {
   });
 
   const onSubmit = async (data: FormValues) => {
+    setIsLoading(true);
     try {
-      userClerk?.updatePassword({
+      await userClerk?.updatePassword({
         newPassword: data.newPassword,
         currentPassword: data.currentPassword,
         signOutOfOtherSessions: true,
@@ -78,6 +80,8 @@ export default function ChangePassword() {
         "Error",
         "Ocurrió un error al actualizar la contraseña. Intente nuevamente."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -182,6 +186,8 @@ export default function ChangePassword() {
                 mode="contained"
                 onPress={handleSubmit(onSubmit)}
                 style={{ marginBottom: 10 }}
+                loading={isLoading}
+                disabled={isLoading}
               >
                 Cambiar contraseña
               </Button>
@@ -190,6 +196,7 @@ export default function ChangePassword() {
                 onPress={onCancel}
                 buttonColor={theme.colors.errorContainer}
                 textColor={theme.colors.onErrorContainer}
+                disabled={isLoading}
               >
                 Cancelar
               </Button>

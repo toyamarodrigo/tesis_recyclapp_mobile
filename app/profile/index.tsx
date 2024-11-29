@@ -40,7 +40,14 @@ const Profile = () => {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        padding: 16,
+        height: "100%",
+        backgroundColor: theme.colors.background,
+      }}
+    >
       <View style={{ flexDirection: "row", zIndex: 1 }}>
         <Link href="/" asChild>
           <IconButton icon="arrow-left" size={24} />

@@ -142,7 +142,11 @@ export default function ActiveBenefits() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        padding: 16,
+        backgroundColor: theme.colors.background,
+      }}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

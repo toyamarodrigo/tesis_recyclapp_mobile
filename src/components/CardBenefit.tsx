@@ -119,8 +119,7 @@ const styles = StyleSheet.create({
     margin: 15,
     borderRadius: 16,
     elevation: 4,
-    backgroundColor: theme.colors.surface,
-    shadowColor: theme.colors.surfaceVariant,
+    backgroundColor: "#fff",
     shadowOffset: {
       height: 2,
       width: 0,

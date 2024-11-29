@@ -126,12 +126,21 @@ export default function Benefits() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        padding: 16,
+        height: "100%",
+        backgroundColor: theme.colors.background,
+      }}
+    >
       <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
         <Link href="/profile" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>Mis beneficios</Title>
+        <Title style={{ color: theme.colors.primary, fontWeight: 700 }}>
+          Mis beneficios
+        </Title>
       </View>
       <View style={{ flex: 1 }}>
         <ScrollView

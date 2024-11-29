@@ -2,6 +2,7 @@ import { recyclingInfo } from "@features/wiki/constants/recycling-info";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { IconButton, Text, Card } from "react-native-paper";
+import { theme } from "src/theme";
 
 export default function HowToRecycleMaterialLayout() {
   const { material } = useLocalSearchParams();
@@ -54,7 +55,7 @@ export default function HowToRecycleMaterialLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",

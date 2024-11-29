@@ -3,6 +3,7 @@ import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, List, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import { compostableItems } from "@constants/data.constant";
+import { theme } from "src/theme";
 
 export default function CompostableItems() {
   return (
@@ -35,6 +36,7 @@ export default function CompostableItems() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",

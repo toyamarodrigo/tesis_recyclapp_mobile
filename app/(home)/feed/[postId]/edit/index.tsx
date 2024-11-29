@@ -1,5 +1,5 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { View, ScrollView, Alert, Image, StyleSheet } from "react-native";
+import { View, ScrollView, Alert, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
@@ -26,6 +26,8 @@ import { useCloudinary } from "@hooks/useImage";
 import { IMAGE } from "@constants/image.constant";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { imageApi } from "@api/api.imagen";
+import { Image } from "expo-image";
 
 type PostValues = {
   id: string;
@@ -143,41 +145,43 @@ export default function EditablePost() {
   }, [baseImageUrl, post?.materialProductId]);
 
   const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted)
-      return Alert.alert("Se necesitan permisos para acceder a las fotos.");
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted)
+        return Alert.alert("Se necesitan permisos para acceder a las fotos.");
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImage(result.assets[0].uri);
-      if (!image) {
-        return Alert.alert("Error", "Selecciona una imagen primero.");
-      }
-
-      const fileInfo = await FileSystem.getInfoAsync(image);
-      const fileUri = fileInfo.uri;
-      const fileExtension = getFileExtension(image);
-      const fileWithExtension = `${postId}${fileExtension}`;
-
-      await uploadImage({
-        fileUri,
-        publicId: postId,
-        folder: `${IMAGE.POST_UPLOAD}`,
-        file: fileWithExtension,
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
       });
 
-      Alert.alert("¡Éxito!", "Se subió la imagen");
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Error al seleccionar la imagen.");
     }
   };
 
   const onSubmit = async (formData: PostValues) => {
+    if (!image) return Alert.alert("Error", "Selecciona una imagen primero.");
+    await imageApi.deleteImage({ public_id: IMAGE.POST_UPLOAD + "/" + postId });
+
+    const fileInfo = await FileSystem.getInfoAsync(image);
+    const fileUri = fileInfo.uri;
+    const fileExtension = getFileExtension(image);
+    const fileWithExtension = `${postId}${fileExtension}`;
+
+    await uploadImage({
+      fileUri,
+      publicId: postId,
+      folder: `${IMAGE.POST_UPLOAD}`,
+      file: fileWithExtension,
+    });
+
     await updatePost(formData);
 
     Alert.alert(
@@ -186,6 +190,8 @@ export default function EditablePost() {
     );
 
     setIsEditable(false);
+
+    router.replace(`/(home)/feed/${postId}`);
   };
 
   const handleConfirmModal = async () => {
@@ -239,6 +245,7 @@ export default function EditablePost() {
               mode="contained-tonal"
               onPress={handleConfirmModal}
               style={styles.modalButton}
+              loading={isPending || isUploading}
             >
               Desactivar publicación
             </Button>
@@ -248,6 +255,7 @@ export default function EditablePost() {
               buttonColor={theme.colors.errorContainer}
               textColor={theme.colors.onErrorContainer}
               style={styles.modalButton}
+              disabled={isPending || isUploading}
             >
               Cancelar
             </Button>
@@ -358,18 +366,24 @@ export default function EditablePost() {
           </Text>
           <View style={styles.imageWrapper}>
             {image ? (
-              <Image source={{ uri: image }} style={styles.image} />
+              <Image
+                source={{ uri: image }}
+                style={styles.image}
+                cachePolicy="none"
+              />
             ) : (
               <ActivityIndicator size="small" />
             )}
-            <Button
-              mode="outlined"
-              onPress={pickImage}
-              icon="camera"
-              style={styles.imageButton}
-            >
-              {image ? "Cambiar imagen" : "Agregar imagen"}
-            </Button>
+            {isEditable && (
+              <Button
+                mode="outlined"
+                onPress={pickImage}
+                icon="camera"
+                style={styles.imageButton}
+              >
+                {image ? "Cambiar imagen" : "Agregar imagen"}
+              </Button>
+            )}
           </View>
         </View>
         {isError && <Text style={styles.errorText}>{error?.message}</Text>}
@@ -392,7 +406,6 @@ export default function EditablePost() {
                 onPress={onCancel}
                 buttonColor={theme.colors.errorContainer}
                 textColor={theme.colors.onErrorContainer}
-                loading={isPending || isUploading}
                 disabled={isPending || isUploading}
               >
                 Cancelar
@@ -403,7 +416,6 @@ export default function EditablePost() {
               <Button
                 mode="contained"
                 onPress={() => setIsEditable(true)}
-                loading={isPending || isUploading}
                 disabled={isPending || isUploading}
                 buttonColor={theme.colors.tertiaryContainer}
                 textColor={theme.colors.onTertiaryContainer}
@@ -413,7 +425,6 @@ export default function EditablePost() {
               <Button
                 mode="contained"
                 onPress={() => setShowModal(true)}
-                loading={isPending || isUploading}
                 disabled={isPending || isUploading}
                 buttonColor={theme.colors.errorContainer}
                 textColor={theme.colors.onErrorContainer}

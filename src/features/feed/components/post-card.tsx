@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Card } from "react-native-paper";
-import { theme, useAppTheme } from "src/theme";
+import { theme } from "src/theme";
 import type { Post } from "@models/post.type";
 import type { MaterialProduct } from "@models/materialProduct.type";
 import { PostCardHeader } from "./post-card-header";
@@ -29,8 +29,6 @@ export function PostCard({
   onEdit,
   onComment,
 }: PostCardProps) {
-  const theme = useAppTheme();
-
   return (
     <Card style={[styles.card, { opacity: post?.isArchived ? 0.5 : 1 }]}>
       <PostCardHeader

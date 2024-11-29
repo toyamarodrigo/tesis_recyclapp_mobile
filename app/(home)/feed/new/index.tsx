@@ -46,7 +46,9 @@ const postSchema = z.object({
       message: "Proposito requerido",
     })
     .default("WANT"),
-  materialProductId: z.string(),
+  materialProductId: z.string({
+    required_error: "Tipo de material requerido",
+  }),
   userId: z.string(),
   username: z.string(),
 });
@@ -153,6 +155,11 @@ export default function NewPost() {
                 fieldState: { error },
               }) => (
                 <View style={styles.marginBottom}>
+                  {error && (
+                    <Text style={[styles.errorText, { marginBottom: 8 }]}>
+                      {error.message}
+                    </Text>
+                  )}
                   <SegmentedButtons
                     value={value}
                     onValueChange={onChange}
@@ -164,9 +171,6 @@ export default function NewPost() {
                     }
                     style={styles.marginBottom}
                   />
-                  {error && (
-                    <Text style={styles.errorText}>{error.message}</Text>
-                  )}
                 </View>
               )}
             />

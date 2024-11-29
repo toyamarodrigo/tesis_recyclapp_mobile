@@ -148,18 +148,26 @@ export default function NewPost() {
             <Controller
               control={control}
               name="materialProductId"
-              render={({ field: { onChange, value } }) => (
-                <SegmentedButtons
-                  value={value}
-                  onValueChange={onChange}
-                  buttons={
-                    materials?.map((material) => ({
-                      value: material.id,
-                      label: material.name,
-                    })) ?? []
-                  }
-                  style={styles.marginBottom}
-                />
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <View style={styles.marginBottom}>
+                  <SegmentedButtons
+                    value={value}
+                    onValueChange={onChange}
+                    buttons={
+                      materials?.map((material) => ({
+                        value: material.id,
+                        label: material.name,
+                      })) ?? []
+                    }
+                    style={styles.marginBottom}
+                  />
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </View>
               )}
             />
             <Controller
@@ -169,15 +177,19 @@ export default function NewPost() {
                 field: { onChange, value },
                 fieldState: { error },
               }) => (
-                <TextInput
-                  label="Description"
-                  value={value}
-                  onChangeText={onChange}
-                  multiline
-                  numberOfLines={4}
-                  error={!!error}
-                  style={styles.marginBottom}
-                />
+                <View style={styles.marginBottom}>
+                  <TextInput
+                    label="Descripción"
+                    value={value}
+                    onChangeText={onChange}
+                    multiline
+                    numberOfLines={4}
+                    error={!!error}
+                  />
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </View>
               )}
             />
 
@@ -188,14 +200,18 @@ export default function NewPost() {
                 field: { onChange, value },
                 fieldState: { error },
               }) => (
-                <TextInput
-                  label="Quantity"
-                  value={value.toString()}
-                  onChangeText={(text) => onChange(+text || 0)}
-                  keyboardType="numeric"
-                  error={!!error}
-                  style={styles.marginBottom}
-                />
+                <View style={styles.marginBottom}>
+                  <TextInput
+                    label="Cantidad"
+                    value={value.toString()}
+                    onChangeText={(text) => onChange(+text || 0)}
+                    keyboardType="numeric"
+                    error={!!error}
+                  />
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </View>
               )}
             />
             <Controller
@@ -302,11 +318,13 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 8,
   },
-  errorText: {
-    color: "red",
-  },
   footer: {
     padding: 16,
     backgroundColor: "white",
+  },
+  errorText: {
+    color: theme.colors.error,
+    fontSize: 12,
+    marginTop: 4,
   },
 });

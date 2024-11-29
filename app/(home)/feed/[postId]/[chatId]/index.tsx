@@ -80,6 +80,9 @@ export default function Chatconvo() {
   const handleSend = async (data: { message: string }) => {
     if (!chat) return;
 
+    if (!data.message.trim())
+      return Alert.alert("Error", "Por favor ingresa un mensaje");
+
     await createChatMessage({
       chatId: chat.id,
       message: data.message,
@@ -323,7 +326,6 @@ export default function Chatconvo() {
             mode="contained"
             onPress={handleSubmit(handleSend)}
             style={styles.button}
-            disabled={messageLength === 0 || isUpdatingChatMessage}
             loading={isUpdatingChatMessage}
             buttonColor={theme.colors.primary}
             textColor={theme.colors.onPrimary}

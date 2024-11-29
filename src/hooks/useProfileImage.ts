@@ -1,8 +1,9 @@
 import { IMAGE } from "@constants/image.constant";
-import { useState, useEffect } from "react";
+import { useUserStore } from "@stores/useUserStore";
+import { useEffect } from "react";
 
 export const useProfileImage = (userId: string | undefined) => {
-  const [profileImage, setProfileImage] = useState<string>("");
+  const { setProfileImage, profileImage } = useUserStore();
 
   useEffect(() => {
     if (userId) {

@@ -195,7 +195,7 @@ export default function Chatconvo() {
               <TextInput
                 mode="outlined"
                 value={code}
-                onChangeText={(text) => setCode(text.toUpperCase())}
+                onChangeText={setCode}
                 placeholder="Ingresa el código aquí"
                 autoCapitalize="characters"
                 style={[styles.inputDialog, { height: 40 }]}

@@ -1,5 +1,5 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { View, ScrollView, Alert, Image } from "react-native";
+import { View, ScrollView, Alert, Image, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
@@ -17,7 +17,7 @@ import { usePostById, useUpdatePost } from "@hooks/usePost";
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import { useAppTheme } from "src/theme";
+import { theme, useAppTheme } from "src/theme";
 import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -205,44 +205,32 @@ export default function EditablePost() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
-      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>Publicación</Title>
+        <Title style={styles.title}>Publicación</Title>
       </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <Portal>
           <Modal
             visible={showModal}
             onDismiss={() => setShowModal(false)}
-            contentContainerStyle={{
-              backgroundColor: "white",
-              padding: 20,
-            }}
+            contentContainerStyle={styles.modalContainer}
           >
-            <View
-              style={{
-                padding: 10,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontWeight: 600, fontSize: 18, padding: 10 }}>
-                Desactivar publicación
-              </Text>
-              <Text style={{ padding: 10, fontSize: 16, textAlign: "center" }}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Desactivar publicación</Text>
+              <Text style={styles.modalText}>
                 Si desactivas la publicación, no podrás volver a activarla.
               </Text>
               <Text
-                style={{
-                  color: theme.colors.error,
-                  fontWeight: "600",
-                  fontSize: 16,
-                  padding: 10,
-                }}
+                style={[
+                  styles.modalText,
+                  styles.warningText,
+                  { color: theme.colors.error },
+                ]}
               >
                 Esta acción es IRREVERSIBLE.
               </Text>
@@ -250,9 +238,7 @@ export default function EditablePost() {
             <Button
               mode="contained-tonal"
               onPress={handleConfirmModal}
-              style={{
-                margin: 10,
-              }}
+              style={styles.modalButton}
             >
               Desactivar publicación
             </Button>
@@ -261,9 +247,7 @@ export default function EditablePost() {
               onPress={() => setShowModal(false)}
               buttonColor={theme.colors.errorContainer}
               textColor={theme.colors.onErrorContainer}
-              style={{
-                margin: 10,
-              }}
+              style={styles.modalButton}
             >
               Cancelar
             </Button>
@@ -271,7 +255,7 @@ export default function EditablePost() {
         </Portal>
 
         {isPending && <ActivityIndicator size="large" />}
-        <View style={{ width: "100%" }}>
+        <View style={styles.formContainer}>
           {/* Materials Input */}
           <Controller
             control={control}
@@ -287,7 +271,7 @@ export default function EditablePost() {
                     disabled: !isEditable,
                   })) ?? []
                 }
-                style={{ marginBottom: 16 }}
+                style={styles.segmentedButtons}
               />
             )}
           />
@@ -304,14 +288,12 @@ export default function EditablePost() {
                 value={value}
                 error={!!errors.description}
                 disabled={!isEditable}
-                style={{ marginBottom: 20 }}
+                style={styles.textInput}
               />
             )}
           />
           {errors.description && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.description.message}
-            </Text>
+            <Text style={styles.errorText}>{errors.description.message}</Text>
           )}
 
           {/* Quantity Input */}
@@ -327,14 +309,12 @@ export default function EditablePost() {
                 keyboardType="numeric"
                 error={!!errors.username}
                 disabled={!isEditable}
-                style={{ marginBottom: 20 }}
+                style={styles.textInput}
               />
             )}
           />
           {errors.quantity && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              {errors.quantity.message}
-            </Text>
+            <Text style={styles.errorText}>{errors.quantity.message}</Text>
           )}
         </View>
 
@@ -343,15 +323,8 @@ export default function EditablePost() {
           control={control}
           name="purpouse"
           render={({ field: { onChange, value } }) => (
-            <View style={{ marginBottom: 16 }}>
-              <Text
-                variant="titleMedium"
-                style={{
-                  marginBottom: 8,
-                  fontSize: 16,
-                  color: theme.colors.onSurfaceVariant,
-                }}
-              >
+            <View style={styles.radioGroup}>
+              <Text variant="titleMedium" style={styles.radioGroupLabel}>
                 ¿Lo necesita o lo ofrece?
               </Text>
               <RadioButton.Group
@@ -361,7 +334,7 @@ export default function EditablePost() {
                 }}
                 value={value}
               >
-                <View style={{ flexDirection: "row" }}>
+                <View style={styles.radioButtons}>
                   <RadioButton.Item
                     label="Necesito"
                     value="WANT"
@@ -379,22 +352,13 @@ export default function EditablePost() {
         />
 
         {/* Image input */}
-        <View style={{ marginBottom: 16 }}>
-          <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+        <View style={styles.imageContainer}>
+          <Text variant="titleMedium" style={styles.imageLabel}>
             Imagen
           </Text>
-          <View style={{ alignItems: "center" }}>
+          <View style={styles.imageWrapper}>
             {image ? (
-              <View style={{ marginBottom: 8 }}>
-                <Image
-                  source={{ uri: image }}
-                  style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: 8,
-                  }}
-                />
-              </View>
+              <Image source={{ uri: image }} style={styles.image} />
             ) : (
               <ActivityIndicator size="small" />
             )}
@@ -402,22 +366,22 @@ export default function EditablePost() {
               mode="outlined"
               onPress={pickImage}
               icon="camera"
-              style={{ marginTop: 8 }}
+              style={styles.imageButton}
             >
               {image ? "Cambiar imagen" : "Agregar imagen"}
             </Button>
           </View>
         </View>
-        {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
+        {isError && <Text style={styles.errorText}>{error?.message}</Text>}
 
-        <View style={{ flex: 1 }} />
-        <View style={{ marginBottom: 20 }}>
+        <View style={styles.spacer} />
+        <View style={styles.buttonContainer}>
           {isEditable ? (
             <View>
               <Button
                 mode="contained"
                 onPress={handleSubmit(onSubmit)}
-                style={{ marginBottom: 10 }}
+                style={styles.submitButton}
                 loading={isPending || isUploading}
                 disabled={isPending || isUploading}
               >
@@ -435,12 +399,7 @@ export default function EditablePost() {
               </Button>
             </View>
           ) : (
-            <View
-              style={{
-                margin: 10,
-                gap: 15,
-              }}
-            >
+            <View style={styles.actionButtons}>
               <Button
                 mode="contained"
                 onPress={() => setIsEditable(true)}
@@ -468,3 +427,103 @@ export default function EditablePost() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: "100%",
+  },
+  header: {
+    flexDirection: "row",
+    zIndex: 1,
+    alignItems: "center",
+  },
+  title: {
+    color: theme.colors.primary,
+    fontWeight: 700,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 16,
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+  },
+  modalContent: {
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontWeight: "600",
+    fontSize: 18,
+    padding: 10,
+  },
+  modalText: {
+    padding: 10,
+    fontSize: 16,
+    textAlign: "center",
+  },
+  warningText: {
+    fontWeight: "600",
+  },
+  modalButton: {
+    margin: 10,
+  },
+  formContainer: {
+    width: "100%",
+  },
+  segmentedButtons: {
+    marginBottom: 16,
+  },
+  textInput: {
+    marginBottom: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  radioGroup: {
+    marginBottom: 16,
+  },
+  radioGroupLabel: {
+    marginBottom: 8,
+    fontSize: 16,
+    color: theme.colors.onSurfaceVariant,
+  },
+  radioButtons: {
+    flexDirection: "row",
+  },
+  imageContainer: {
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  imageLabel: {
+    marginBottom: 8,
+  },
+  imageWrapper: {
+    marginBottom: 8,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+  },
+  imageButton: {
+    marginTop: 8,
+  },
+  spacer: {
+    flex: 1,
+  },
+  buttonContainer: {
+    marginBottom: 20,
+  },
+  submitButton: {
+    marginBottom: 10,
+  },
+  actionButtons: {
+    margin: 10,
+    gap: 15,
+  },
+});

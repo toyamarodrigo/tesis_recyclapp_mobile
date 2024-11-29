@@ -51,7 +51,8 @@ export default function NewBenefits() {
   const minDate = addMonths(currentDate, 1);
   const maxDate = addMonths(currentDate, 6);
   const [selectedDate, setSelectedDate] = useState(newDate);
-  const { mutateAsync: createBenefit, isPending: isCreating } = useCreateBenefit();
+  const { mutateAsync: createBenefit, isPending: isCreating } =
+    useCreateBenefit();
   const { mutateAsync: editBenefit, isPending: isEditing } = useUpdateBenefit();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -128,12 +129,19 @@ export default function NewBenefits() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        padding: 16,
+        height: "100%",
+        backgroundColor: theme.colors.background,
+      }}
+    >
       <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
         <Link href="/profile/benefits" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>
+        <Title style={{ color: theme.colors.primary, fontWeight: 700 }}>
           Beneficio {currentBenefit ? currentBenefit.name : "nuevo"}
         </Title>
       </View>

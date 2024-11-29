@@ -15,7 +15,13 @@ export default function ActiveBenefits() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        padding: 16,
+        backgroundColor: theme.colors.background,
+      }}
+    >
       <View style={styles.header}>
         <IconButton
           icon="chevron-left"

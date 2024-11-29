@@ -123,7 +123,7 @@ export default function DetailPost() {
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
-        <Title style={{ color: theme.colors.primary }}>Publicación</Title>
+        <Title style={styles.title}>Publicación</Title>
       </View>
 
       <ScrollView
@@ -224,11 +224,16 @@ export default function DetailPost() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",
     zIndex: 1,
     alignItems: "center",
+  },
+  title: {
+    color: theme.colors.primary,
+    fontWeight: 700,
   },
   scrollContent: {
     flexGrow: 1,

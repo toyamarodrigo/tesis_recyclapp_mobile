@@ -1,5 +1,12 @@
 import { Link, Redirect, router } from "expo-router";
-import { SafeAreaView, View, Image, Alert, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Image,
+  Alert,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import {
   IconButton,
   Text,
@@ -22,6 +29,7 @@ import { useAuth, useUser } from "@clerk/clerk-expo";
 import type { PostCreate } from "@models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCloudinary } from "@hooks/useImage";
+import { theme } from "src/theme";
 
 const postSchema = z.object({
   description: z
@@ -126,17 +134,17 @@ export default function NewPost() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "100%" }}>
-      <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
         <Link href="/(home)/feed" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
         <Text variant="titleLarge">Nueva publicación</Text>
       </View>
 
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <ScrollView style={{ flex: 1 }}>
-          <View style={{ padding: 16 }}>
+      <View style={styles.contentWrapper}>
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.formContainer}>
             <Controller
               control={control}
               name="materialProductId"
@@ -150,7 +158,7 @@ export default function NewPost() {
                       label: material.name,
                     })) ?? []
                   }
-                  style={{ marginBottom: 16 }}
+                  style={styles.marginBottom}
                 />
               )}
             />
@@ -168,7 +176,7 @@ export default function NewPost() {
                   multiline
                   numberOfLines={4}
                   error={!!error}
-                  style={{ marginBottom: 16 }}
+                  style={styles.marginBottom}
                 />
               )}
             />
@@ -186,7 +194,7 @@ export default function NewPost() {
                   onChangeText={(text) => onChange(+text || 0)}
                   keyboardType="numeric"
                   error={!!error}
-                  style={{ marginBottom: 16 }}
+                  style={styles.marginBottom}
                 />
               )}
             />
@@ -194,8 +202,8 @@ export default function NewPost() {
               control={control}
               name="purpouse"
               render={({ field: { onChange, value } }) => (
-                <View style={{ marginBottom: 16 }}>
-                  <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+                <View style={styles.marginBottom}>
+                  <Text variant="titleMedium" style={styles.sectionTitle}>
                     ¿Lo necesita o lo ofrece?
                   </Text>
                   <RadioButton.Group
@@ -216,38 +224,31 @@ export default function NewPost() {
                 </View>
               )}
             />
-            <View style={{ marginBottom: 16 }}>
-              <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+            <View style={styles.marginBottom}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
                 Imagen
               </Text>
-              <View style={{ alignItems: "center" }}>
+              <View style={styles.imageContainer}>
                 {image ? (
-                  <View style={{ marginBottom: 8 }}>
-                    <Image
-                      source={{ uri: image }}
-                      style={{
-                        width: 200,
-                        height: 200,
-                        borderRadius: 8,
-                      }}
-                    />
+                  <View style={styles.marginBottom}>
+                    <Image source={{ uri: image }} style={styles.image} />
                   </View>
                 ) : null}
                 <Button
                   mode="outlined"
                   onPress={pickImage}
                   icon="camera"
-                  style={{ marginTop: 8 }}
+                  style={styles.marginTop}
                 >
                   {image ? "Cambiar imagen" : "Agregar imagen"}
                 </Button>
               </View>
             </View>
-            {isError && <Text style={{ color: "red" }}>{error?.message}</Text>}
+            {isError && <Text style={styles.errorText}>{error?.message}</Text>}
           </View>
         </ScrollView>
 
-        <View style={{ padding: 16, backgroundColor: "white" }}>
+        <View style={styles.footer}>
           <Button
             icon="check"
             mode="contained"
@@ -262,3 +263,50 @@ export default function NewPost() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: "100%",
+    backgroundColor: theme.colors.background,
+  },
+  header: {
+    flexDirection: "row",
+    zIndex: 1,
+    alignItems: "center",
+  },
+  contentWrapper: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  formContainer: {
+    padding: 16,
+  },
+  marginBottom: {
+    marginBottom: 16,
+  },
+  marginTop: {
+    marginTop: 8,
+  },
+  sectionTitle: {
+    marginBottom: 8,
+  },
+  imageContainer: {
+    alignItems: "center",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+  },
+  errorText: {
+    color: "red",
+  },
+  footer: {
+    padding: 16,
+    backgroundColor: "white",
+  },
+});

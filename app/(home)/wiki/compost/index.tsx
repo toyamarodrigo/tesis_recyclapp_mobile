@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { View, StyleSheet, ScrollView, Linking } from "react-native";
 import { IconButton, Text, Card, Button } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { theme } from "src/theme";
 
 export default function Compost() {
   const openCompostGuide = useCallback(() => {
@@ -126,6 +127,7 @@ export default function Compost() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",

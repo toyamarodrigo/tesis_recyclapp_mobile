@@ -9,13 +9,7 @@ import {
   type NativeScrollEvent,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import {
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {
   Text,
@@ -31,6 +25,7 @@ import { GreenPoint } from "@features/locations/components/card-green-point";
 import { LocationControls } from "@features/locations/components/location-controls";
 import { PermissionStatus } from "expo-location";
 import { AddressCard } from "@features/locations/components/address-card";
+import { theme } from "src/theme";
 
 const Locations = () => {
   const {
@@ -242,6 +237,7 @@ const Locations = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   map: {
     height: "100%",

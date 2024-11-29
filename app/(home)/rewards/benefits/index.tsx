@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",

@@ -11,6 +11,7 @@ import { MaterialsSection } from "@features/wiki/components/materials-section";
 import { useDeferredValue } from "@features/wiki/hooks/useDeferredValue";
 import { normalizeText } from "@features/wiki/utils/normalize-text";
 import { useMaterialComponentList } from "@hooks/useMaterialComponent";
+import { theme } from "src/theme";
 
 export default function Wiki() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: theme.colors.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: "hidden",

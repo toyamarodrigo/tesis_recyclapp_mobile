@@ -5,6 +5,7 @@ import { CardRecyclingItem } from "@features/wiki/components/card-recycling-item
 import { ListHeader } from "@features/wiki/components/list-header";
 import { recyclingInfo } from "@features/wiki/constants/recycling-info";
 import { useSelectedMaterialStore } from "@features/wiki/hooks/useSelectedMaterial";
+import { theme } from "src/theme";
 
 export default function HowToRecycle() {
   const selectedMaterial = useSelectedMaterialStore(
@@ -43,7 +44,7 @@ export default function HowToRecycle() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: theme.colors.background,
   },
   listContent: {
     padding: 16,

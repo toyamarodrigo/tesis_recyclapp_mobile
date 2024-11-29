@@ -9,6 +9,7 @@ import { useMaterialProductList } from "@hooks/useMaterialProduct";
 import { MyActivePosts } from "@features/feed/components/my-active-posts";
 import { AllActivePosts } from "@features/feed/components/all-active-posts";
 import { AllPosts } from "@features/feed/components/all-posts";
+import { theme } from "src/theme";
 
 const Feed = () => {
   const router = useRouter();
@@ -67,7 +68,7 @@ const Feed = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.gray[50],
+    backgroundColor: theme.colors.background,
   },
   fab: {
     position: "absolute",

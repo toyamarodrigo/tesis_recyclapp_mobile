@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { StyleSheet, View, ScrollView, RefreshControl } from "react-native";
 import { FAB } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
@@ -23,8 +23,14 @@ const Feed = () => {
     useMaterialProductList();
   const { data: postsList, refetch: refetchPosts } = usePostList();
 
-  const postListNotFromUserSignedIn = postsList?.filter(
-    (post) => post.userId !== userId
+  const postListNotFromUserSignedIn = useMemo(
+    () => postsList?.filter((post) => post.userId !== userId),
+    [postsList, userId]
+  );
+
+  const postListFinished = useMemo(
+    () => postsList?.filter((post) => !post.isActive),
+    [postsList]
   );
 
   const onRefresh = useCallback(async () => {
@@ -55,7 +61,7 @@ const Feed = () => {
           posts={postListNotFromUserSignedIn}
           materials={materials}
         />
-        <AllPosts posts={postsList} materials={materials} />
+        <AllPosts posts={postListFinished} materials={materials} />
       </ScrollView>
 
       <FAB

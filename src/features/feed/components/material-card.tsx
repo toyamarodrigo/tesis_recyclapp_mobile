@@ -77,7 +77,7 @@ export const MaterialCard = ({ post, id, materials }: MaterialCardProps) => {
                 },
               ]}
             >
-              {post.isActive ? "Activa" : "Finalizada"}
+              {post.isActive ? "Activa" : "Cerrada"}
             </Text>
           </View>
           <View style={styles.infoContainer}>

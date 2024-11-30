@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import { Text } from "react-native-paper";
 import ReanimatedCarousel, {
   type ICarouselInstance,
+  Pagination,
 } from "react-native-reanimated-carousel";
 import { colors } from "@constants/colors.constant";
-import { CarouselPagination } from "./carousel-pagination";
+import { useSharedValue } from "react-native-reanimated";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -26,10 +27,13 @@ export function Carousel<T>({
   height = 250,
 }: CarouselProps<T>) {
   const carouselRef = useRef<ICarouselInstance>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const progress = useSharedValue<number>(0);
 
-  const scrollToIndex = (index: number) => {
-    carouselRef.current?.scrollTo({ index, animated: true });
+  const onPressPagination = (index: number) => {
+    carouselRef.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
   };
 
   return (
@@ -55,14 +59,22 @@ export function Carousel<T>({
               parallaxScrollingScale: 0.9,
               parallaxScrollingOffset: 50,
             }}
-            onProgressChange={(_, absoluteProgress) =>
-              setActiveIndex(Math.round(absoluteProgress))
-            }
+            onProgressChange={progress}
           />
-          <CarouselPagination
-            length={data.length}
-            activeIndex={activeIndex}
-            onPress={scrollToIndex}
+
+          <Pagination.Basic
+            progress={progress}
+            data={data as {}[]}
+            dotStyle={{
+              backgroundColor: "rgba(0,0,0,0.2)",
+              borderRadius: 50,
+            }}
+            activeDotStyle={{
+              backgroundColor: colors.green[700],
+              borderRadius: 50,
+            }}
+            containerStyle={{ gap: 5, marginTop: 10 }}
+            onPress={onPressPagination}
           />
         </View>
       ) : (

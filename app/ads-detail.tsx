@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { Card, Text, IconButton } from "react-native-paper";
 import { colors } from "@constants/colors.constant";
 import { Fragment } from "react";
@@ -8,12 +8,11 @@ import type { Advertisement } from "@models/advertisement.type";
 const NewsDetail = () => {
   const { adItem } = useLocalSearchParams();
   const selectedAd = JSON.parse(adItem as string) as Advertisement;
-  const isPresented = router.canGoBack();
 
   return (
     <Fragment>
       <View style={{ flexDirection: "row", zIndex: 1, alignItems: "center" }}>
-        <Link href="/(home)" asChild>
+        <Link href="../" asChild>
           <IconButton icon="arrow-left" size={24} />
         </Link>
       </View>
@@ -22,17 +21,6 @@ const NewsDetail = () => {
           source={{ uri: selectedAd.image }}
           style={styles.modalImage}
         />
-        {!isPresented && (
-          <Link href="../">
-            <IconButton
-              icon="close"
-              iconColor={colors.gray[50]}
-              size={24}
-              onPress={() => router.back()}
-              style={styles.closeIcon}
-            />
-          </Link>
-        )}
       </View>
       <View style={styles.modalContent}>
         <Text variant="titleLarge" style={styles.modalTitle}>

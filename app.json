@@ -5,10 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "runtimeVersion": "1.0.0",
@@ -17,17 +14,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile",
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyD9wT6IaYQWPY6moXdriGvCEcOUpaC5Pfc"
-        }
-      }
+      "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile"
     },
     "android": {
       "config": {
@@ -36,7 +26,7 @@
         }
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.toyama.rodrigo.tesisrecyclappmobile"
@@ -60,9 +50,7 @@
       [
         "expo-asset",
         {
-          "assets": [
-            "./assets/images/icon.png"
-          ]
+          "assets": ["./assets/images/icon.png"]
         }
       ],
       "expo-secure-store"

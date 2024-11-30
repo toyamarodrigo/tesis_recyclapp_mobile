@@ -13,7 +13,7 @@ interface AllPostsProps {
 export const AllPosts = ({ posts, materials }: AllPostsProps) => {
   return (
     <List.Accordion
-      title="Todas las publicaciones"
+      title="Publicaciones cerradas"
       style={{
         borderRadius: 8,
         padding: 8,

@@ -15,7 +15,7 @@ export const AllActivePosts = ({ posts, materials }: AllActivePostsProps) => {
 
   return (
     <List.Accordion
-      title="Todas las publicaciones activas"
+      title="Publicaciones activas"
       style={{
         borderRadius: 8,
         padding: 8,

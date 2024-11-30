@@ -1,10 +1,14 @@
 {
   "expo": {
-    "name": "tesis_recyclapp_mobile",
-    "slug": "tesisrecyclappmobile",
+    "name": "recyclapp",
+    "slug": "recyclapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "runtimeVersion": "1.0.0",
@@ -13,7 +17,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.toyama.rodrigo.tesisrecyclappmobile",
@@ -37,7 +43,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "57fb8058-86fd-435d-8e3d-29bb73a31aa1"
+        "projectId": "f4ace5c2-31ae-4000-acfd-4e19691b7ce4"
+      },
+      "router": {
+        "origin": false
       }
     },
     "web": {
@@ -51,7 +60,9 @@
       [
         "expo-asset",
         {
-          "assets": ["./assets/images/icon.png"]
+          "assets": [
+            "./assets/images/icon.png"
+          ]
         }
       ],
       "expo-secure-store"
@@ -59,6 +70,9 @@
     "experiments": {
       "typedRoutes": true
     },
-    "owner": "toyama.rodrigo"
+    "owner": "natdv",
+    "updates": {
+      "url": "https://u.expo.dev/f4ace5c2-31ae-4000-acfd-4e19691b7ce4"
+    }
   }
 }

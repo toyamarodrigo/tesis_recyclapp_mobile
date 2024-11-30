@@ -391,13 +391,15 @@ export default function EditablePost() {
         <View style={styles.spacer} />
         <View style={styles.buttonContainer}>
           {isEditable ? (
-            <View>
+            <View style={styles.actionButtons}>
               <Button
                 mode="contained"
                 onPress={handleSubmit(onSubmit)}
                 style={styles.submitButton}
                 loading={isPending || isUploading}
                 disabled={isPending || isUploading}
+                buttonColor={theme.colors.primaryContainer}
+                textColor={theme.colors.onPrimaryContainer}
               >
                 Confirmar cambios
               </Button>

@@ -3,8 +3,8 @@ import { Card, Text, Button, Avatar, Divider } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { theme } from "src/theme";
 import { transformDate } from "@utils/helpers";
-import { Benefit } from "@models/benefit.type";
-import { Dispatch, SetStateAction } from "react";
+import type { Benefit } from "@models/benefit.type";
+import type { Dispatch, SetStateAction } from "react";
 
 export default function CardBenefit({
   benefit,

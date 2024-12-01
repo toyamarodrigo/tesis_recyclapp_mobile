@@ -73,6 +73,7 @@ export default function EditablePost() {
   const [image, setImage] = useState<string>("");
   const { uploadImage, isUploading } = useCloudinary();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const onCancel = () => {
@@ -167,31 +168,47 @@ export default function EditablePost() {
   };
 
   const onSubmit = async (formData: PostValues) => {
-    if (!image) return Alert.alert("Error", "Selecciona una imagen primero.");
-    await imageApi.deleteImage({ public_id: IMAGE.POST_UPLOAD + "/" + postId });
+    setIsLoading(true);
+    try {
+      if (!image) return Alert.alert("Error", "Selecciona una imagen primero.");
+      if (image.includes("file://")) {
+        await imageApi.deleteImage({
+          public_id: IMAGE.POST_UPLOAD + "/" + postId,
+        });
+        const fileInfo = await FileSystem.getInfoAsync(image);
+        const fileUri = fileInfo.uri;
+        const fileExtension = getFileExtension(image);
+        const fileWithExtension = `${postId}${fileExtension}`;
 
-    const fileInfo = await FileSystem.getInfoAsync(image);
-    const fileUri = fileInfo.uri;
-    const fileExtension = getFileExtension(image);
-    const fileWithExtension = `${postId}${fileExtension}`;
+        await uploadImage({
+          fileUri,
+          publicId: postId,
+          folder: `${IMAGE.POST_UPLOAD}`,
+          file: fileWithExtension,
+        });
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió al subir la imagen.");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
 
-    await uploadImage({
-      fileUri,
-      publicId: postId,
-      folder: `${IMAGE.POST_UPLOAD}`,
-      file: fileWithExtension,
-    });
+    try {
+      await updatePost(formData);
+      setIsEditable(false);
+      Alert.alert(
+        "¡Operación exitosa!",
+        "Se actualizó la publicación correctamente."
+      );
 
-    await updatePost(formData);
-
-    setIsEditable(false);
-
-    Alert.alert(
-      "¡Operación exitosa!",
-      "Se actualizó la publicación correctamente."
-    );
-
-    router.replace(`/(home)/feed/${postId}`);
+      router.replace(`/(home)/feed/${postId}`);
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió al actualizar la publicación.");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleConfirmModal = async () => {

@@ -13,7 +13,7 @@ import {
 import { useAppTheme } from "src/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
-import { useUser } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useUser } from "@clerk/clerk-expo";
 import { useUserStoreByClerk } from "@hooks/useUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -80,7 +80,11 @@ export default function PersonalInfo() {
         onCancel();
         router.replace("/profile");
       } catch (error) {
-        Alert.alert(
+        if (isClerkAPIResponseError(error)) {
+          return Alert.alert("Error", error.errors[0].longMessage);
+        }
+
+        return Alert.alert(
           "Error",
           "Ocurrió al actualizar sus datos. Intente nuevamente."
         );

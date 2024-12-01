@@ -76,10 +76,13 @@ const Locations = () => {
     Keyboard.dismiss();
   }, []);
 
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    handleScroll(offsetY);
-  };
+  const onScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const offsetY = event.nativeEvent.contentOffset.y;
+      handleScroll(offsetY);
+    },
+    [handleScroll]
+  );
 
   useEffect(() => {
     if (userLocation && locationPermission === PermissionStatus.GRANTED) {
@@ -146,6 +149,9 @@ const Locations = () => {
         index={bottomSheetIndex}
         snapPoints={snapPoints}
         onChange={handleSheetChanges}
+        style={{ flex: 1 }}
+        enableContentPanningGesture={false}
+        enableHandlePanningGesture={true}
       >
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
           <View style={styles.bottomSheetContent}>
@@ -174,7 +180,9 @@ const Locations = () => {
               </Button>
             </View>
             <Searchbar
-              placeholder={`Buscar ${selectedView === "greenPoints" ? "puntos verdes" : "tiendas"}`}
+              placeholder={`Buscar ${
+                selectedView === "greenPoints" ? "puntos verdes" : "tiendas"
+              }`}
               onChangeText={handleSearch}
               value={searchQuery}
               style={styles.searchbar}
@@ -199,6 +207,9 @@ const Locations = () => {
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 onScroll={onScroll}
                 scrollEventThrottle={16}
+                showsVerticalScrollIndicator={true}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
               />
             ) : (
               <FlashList
@@ -218,6 +229,9 @@ const Locations = () => {
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
                 onScroll={onScroll}
                 scrollEventThrottle={16}
+                showsVerticalScrollIndicator={true}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
               />
             )}
           </View>
@@ -245,6 +259,7 @@ const styles = StyleSheet.create({
   },
   bottomSheetContent: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   bottomSheetHeader: {
     padding: 16,
@@ -263,7 +278,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray[100],
   },
   listContainer: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 100,
   },
   greenPointContainer: {
     marginBottom: 8,

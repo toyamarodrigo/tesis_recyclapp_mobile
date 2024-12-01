@@ -4,8 +4,8 @@ import type MapView from "react-native-maps";
 import { useUserLocation } from "@hooks/useUserLocation";
 import { useQuery } from "@tanstack/react-query";
 import type { FlashList } from "@shopify/flash-list";
-import { TransformedGreenPoint } from "@models/greenPoint.type";
-import { Address } from "@models/address.type";
+import type { TransformedGreenPoint } from "@models/greenPoint.type";
+import type { Address } from "@models/address.type";
 import { useAddressListStores } from "@hooks/useAddress";
 
 export type SortOrder = "asc" | "desc";
@@ -113,8 +113,8 @@ export const useMapLogic = () => {
     flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, []);
 
-  const handleScroll = useCallback((offset: number) => {
-    setShowScrollTopButton(offset > 100);
+  const handleScroll = useCallback((offsetY: number) => {
+    setShowScrollTopButton(offsetY > 100);
   }, []);
 
   return {

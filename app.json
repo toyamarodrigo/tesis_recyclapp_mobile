@@ -2,12 +2,12 @@
   "expo": {
     "name": "tesis_recyclapp_mobile",
     "slug": "tesisrecyclappmobile",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.0.1",
+    "runtimeVersion": "1.0.2",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",

@@ -9,7 +9,7 @@ const tabScreens = [
   { name: "feed", icon: "timeline-text-outline" as const },
   { name: "wiki", icon: "bookshelf" as const },
   { name: "index", icon: "leaf-circle" as const, size: 30 },
-  { name: "locations", icon: "map-marker-radius" as const },
+  // { name: "locations", icon: "map-marker-radius" as const },
   { name: "rewards", icon: "gift-outline" as const },
 ];
 

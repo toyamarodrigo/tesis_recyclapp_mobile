@@ -77,7 +77,7 @@ export default function Rewards() {
               }}
             />
             <View style={styles.circleContainer}>
-              <CircleLink
+              {/* <CircleLink
                 color={theme.colors.secondary}
                 href="/locations"
                 text="Locales verdes"
@@ -88,7 +88,7 @@ export default function Rewards() {
                     color="white"
                   />
                 }
-              />
+              /> */}
               <CircleLink
                 color={theme.colors.primary}
                 href="/rewards/benefits"
